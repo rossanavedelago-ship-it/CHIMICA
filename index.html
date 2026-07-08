@@ -121,6 +121,14 @@
 
 <div class="grid" id="card-grid"></div>
 
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="dropShadow" x="-30%" y="-30%" width="170%" height="170%">
+      <feDropShadow dx="2.5" dy="4" stdDeviation="0.8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+</svg>
+
 <div class="footer">Chemverse — un laboratorio di chimica da esplorare</div>
 
 <script>
@@ -128,38 +136,41 @@ const SECTIONS = [
   {
     label: 'Misure e grandezze',
     bg: '#e8811a',
-    svg: `<g fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="43" y1="16" x2="43" y2="70"/>
-      <line x1="16" y1="26" x2="70" y2="26"/>
-      <path d="M16 26 L8 46 Q8 54 20 54 Q32 54 32 46 Z"/>
-      <path d="M70 26 L62 46 Q62 54 74 54 Q86 54 86 46 Z" transform="translate(-16,0)"/>
-      <line x1="26" y1="70" x2="60" y2="70"/>
-      <circle cx="43" cy="16" r="4" fill="#fff" stroke="none"/>
+    svg: `<g filter="url(#dropShadow)">
+      <rect x="8" y="34" width="70" height="10" rx="5" fill="#fff"/>
+      <rect x="37" y="42" width="12" height="9" fill="#fff"/>
+      <rect x="14" y="49" width="58" height="30" rx="11" fill="#fff"/>
+      <circle cx="43" cy="65" r="13.5" fill="#fbf3df" stroke="#d8c7a3" stroke-width="1.5"/>
+      <g stroke="#8a7550" stroke-width="1.4" stroke-linecap="round">
+        <line x1="43" y1="54.5" x2="43" y2="57.5"/>
+        <line x1="43" y1="72.5" x2="43" y2="75.5"/>
+        <line x1="32.5" y1="65" x2="35.5" y2="65"/>
+        <line x1="50.5" y1="65" x2="53.5" y2="65"/>
+      </g>
+      <line x1="43" y1="65" x2="43" y2="58" stroke="#e11d48" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="43" cy="65" r="1.7" fill="#e11d48"/>
     </g>`
   },
   {
     label: 'Materia e trasformazioni',
     bg: '#1a9e8f',
-    svg: `<g>
-      <g stroke="#fff" stroke-width="3" fill="none" opacity="0.95">
-        <rect x="14" y="14" width="14" height="14" rx="2"/>
-        <rect x="30" y="14" width="14" height="14" rx="2"/>
-        <rect x="14" y="30" width="14" height="14" rx="2"/>
-        <rect x="30" y="30" width="14" height="14" rx="2"/>
-      </g>
-      <path d="M50 30 Q62 24 72 32" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" marker-end="url(#arrow)"/>
-      <path d="M64 46 C64 58 78 58 78 46 C78 40 71 32 71 32 C71 32 64 40 64 46 Z" fill="#fff" opacity="0.95"/>
-      <defs>
-        <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-          <path d="M0,0 L8,4 L0,8 Z" fill="#fff"/>
-        </marker>
-      </defs>
+    svg: `<g filter="url(#dropShadow)">
+      <rect x="10" y="28" width="66" height="6" rx="3" fill="#2f2f2f"/>
+      <rect x="14" y="66" width="58" height="6" rx="3" fill="#2f2f2f"/>
+      <rect x="16" y="28" width="4" height="44" fill="#2f2f2f"/>
+      <rect x="66" y="28" width="4" height="44" fill="#2f2f2f"/>
+      <rect x="24" y="24" width="11" height="48" rx="5.5" fill="#eef6f4"/>
+      <path d="M24 46 h11 v20.5 a5.5 5.5 0 0 1 -5.5 5.5 a5.5 5.5 0 0 1 -5.5 -5.5 Z" fill="#22c55e"/>
+      <rect x="38" y="18" width="11" height="54" rx="5.5" fill="#eef6f4"/>
+      <path d="M38 40 h11 v26.5 a5.5 5.5 0 0 1 -5.5 5.5 a5.5 5.5 0 0 1 -5.5 -5.5 Z" fill="#3b82f6"/>
+      <rect x="52" y="24" width="11" height="48" rx="5.5" fill="#eef6f4"/>
+      <path d="M52 50 h11 v16.5 a5.5 5.5 0 0 1 -5.5 5.5 a5.5 5.5 0 0 1 -5.5 -5.5 Z" fill="#a855f7"/>
     </g>`
   },
   {
     label: 'Gas',
     bg: '#2f6fd6',
-    svg: `<g>
+    svg: `<g filter="url(#dropShadow)">
       <circle cx="26" cy="24" r="7" fill="#ef4444"/>
       <circle cx="60" cy="18" r="6" fill="#22c55e"/>
       <circle cx="70" cy="40" r="6.5" fill="#f5c518"/>
@@ -176,22 +187,21 @@ const SECTIONS = [
   {
     label: 'Mole e stechiometria',
     bg: '#2f9e4f',
-    svg: `<g>
-      <path d="M36 12 h14 v14 l16 30 q4 8 -6 8 H26 q-10 0 -6 -8 l16 -30 Z" fill="#fdf6e3" stroke="#0a3a1a" stroke-width="2.5"/>
-      <text x="43" y="34" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#0a3a1a">MOL</text>
-      <circle cx="34" cy="52" r="3.4" fill="#ef4444"/>
-      <circle cx="46" cy="58" r="3" fill="#22c55e"/>
-      <circle cx="38" cy="63" r="3.2" fill="#f5c518"/>
-      <circle cx="52" cy="50" r="2.8" fill="#a855f7"/>
-      <circle cx="30" cy="60" r="2.6" fill="#ec4899"/>
-      <circle cx="48" cy="66" r="2.6" fill="#38bdf8"/>
+    svg: `<g filter="url(#dropShadow)">
+      <rect x="35" y="9" width="16" height="6" rx="2" fill="#eef2f0"/>
+      <path d="M35 14 h16 v15 l18 33 q5 9 -7 9 H24 q-12 0 -7 -9 l18 -33 Z" fill="#eef2f0"/>
+      <path d="M27.5 46 L18 64 q-3 6 4 6 h42 q7 0 4 -6 L58.5 46 Z" fill="#e11d48"/>
+      <circle cx="34" cy="54" r="2" fill="#fff" opacity="0.55"/>
+      <circle cx="47" cy="58" r="1.6" fill="#fff" opacity="0.55"/>
+      <circle cx="40" cy="64" r="1.9" fill="#fff" opacity="0.55"/>
+      <circle cx="52" cy="52" r="1.5" fill="#fff" opacity="0.55"/>
     </g>`
   },
   {
     label: 'Atomo',
     href: 'chemverse-orbital.html',
     bg: '#1a9e8f',
-    svg: `<g fill="none">
+    svg: `<g fill="none" filter="url(#dropShadow)">
       <ellipse cx="43" cy="43" rx="34" ry="13" stroke="#f5c518" stroke-width="4" transform="rotate(-20 43 43)"/>
       <ellipse cx="43" cy="43" rx="34" ry="13" stroke="#ef4444" stroke-width="4" transform="rotate(40 43 43)"/>
       <ellipse cx="43" cy="43" rx="34" ry="13" stroke="#22c55e" stroke-width="4" transform="rotate(100 43 43)"/>
@@ -204,7 +214,7 @@ const SECTIONS = [
   {
     label: 'Tavola periodica',
     bg: '#e8811a',
-    svg: `<g>
+    svg: `<g filter="url(#dropShadow)">
       <g font-family="Arial, sans-serif" font-weight="900" text-anchor="middle">
         <rect x="12" y="12" width="30" height="30" rx="5" fill="#f5c518"/>
         <text x="27" y="33" font-size="16" fill="#3a2a00">K</text>
@@ -220,33 +230,44 @@ const SECTIONS = [
   {
     label: 'Legami e molecole',
     bg: '#7c3aed',
-    svg: `<g>
-      <rect x="18" y="34" width="52" height="16" rx="8" fill="#fff" opacity="0.95"/>
-      <circle cx="22" cy="42" r="16" fill="#ef4444"/>
-      <text x="22" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#fff">H</text>
-      <circle cx="66" cy="42" r="18" fill="#38bdf8"/>
-      <text x="66" y="48" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#0a2a3a">O</text>
-      <circle cx="38" cy="42" r="2.6" fill="#7c3aed"/>
-      <circle cx="46" cy="42" r="2.6" fill="#7c3aed"/>
-      <circle cx="54" cy="42" r="2.6" fill="#7c3aed"/>
+    svg: `<g filter="url(#dropShadow)">
+      <g stroke="#ffffff" stroke-width="1.3" opacity="0.55">
+        <line x1="43" y1="16" x2="20" y2="30"/>
+        <line x1="43" y1="16" x2="66" y2="30"/>
+        <line x1="20" y1="30" x2="18" y2="55"/>
+        <line x1="66" y1="30" x2="68" y2="55"/>
+        <line x1="20" y1="30" x2="43" y2="43"/>
+        <line x1="66" y1="30" x2="43" y2="43"/>
+        <line x1="18" y1="55" x2="43" y2="43"/>
+        <line x1="68" y1="55" x2="43" y2="43"/>
+        <line x1="18" y1="55" x2="34" y2="70"/>
+        <line x1="68" y1="55" x2="52" y2="70"/>
+        <line x1="43" y1="43" x2="34" y2="70"/>
+        <line x1="43" y1="43" x2="52" y2="70"/>
+      </g>
+      <circle cx="43" cy="16" r="5.5" fill="#a855f7"/>
+      <circle cx="20" cy="30" r="4" fill="#f5c518"/>
+      <circle cx="66" cy="30" r="4.5" fill="#3b82f6"/>
+      <circle cx="43" cy="43" r="6" fill="#ef4444"/>
+      <circle cx="18" cy="55" r="4" fill="#22c55e"/>
+      <circle cx="68" cy="55" r="4.5" fill="#22c55e"/>
+      <circle cx="34" cy="70" r="5" fill="#ec4899"/>
+      <circle cx="52" cy="70" r="5.5" fill="#a855f7"/>
     </g>`
   },
   {
     label: 'Molecole',
     bg: '#d6336c',
-    svg: `<g stroke="#fff" stroke-width="3" stroke-linecap="round">
-      <line x1="30" y1="30" x2="52" y2="24"/>
-      <line x1="30" y1="30" x2="26" y2="54"/>
-      <line x1="52" y1="24" x2="66" y2="40"/>
-      <line x1="26" y1="54" x2="46" y2="64"/>
-      <line x1="46" y1="64" x2="66" y2="40"/>
-      <g stroke="none">
-        <circle cx="30" cy="30" r="9" fill="#f5c518"/>
-        <circle cx="52" cy="24" r="7" fill="#22c55e"/>
-        <circle cx="66" cy="40" r="8" fill="#a855f7"/>
-        <circle cx="26" cy="54" r="7.5" fill="#38bdf8"/>
-        <circle cx="46" cy="64" r="8.5" fill="#ec4899"/>
+    svg: `<g filter="url(#dropShadow)">
+      <g stroke="#fff" stroke-width="4" stroke-linecap="round">
+        <line x1="43" y1="40" x2="43" y2="18"/>
+        <line x1="43" y1="40" x2="22" y2="58"/>
+        <line x1="43" y1="40" x2="64" y2="58"/>
       </g>
+      <circle cx="43" cy="18" r="10" fill="#f5a623"/>
+      <circle cx="22" cy="58" r="10" fill="#f5a623"/>
+      <circle cx="64" cy="58" r="10" fill="#f5a623"/>
+      <circle cx="43" cy="40" r="13" fill="#c0392b"/>
     </g>`
   }
 ];
