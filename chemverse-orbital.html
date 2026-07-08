@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Chemverse — Tavola Periodica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:500;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;background:#0a0a0a;border-bottom:1px solid #222;flex-shrink:0}
+#back-btn{background:#1a1a2e;border:1px solid #444;color:#0ff;padding:3px 10px;font-size:11px;cursor:pointer;border-radius:3px;font-family:'Chakra Petch',sans-serif;letter-spacing:0.04em}
+#back-btn:hover{background:#222}
+#pt-title{color:#ddd;font-size:13px;letter-spacing:0.18em;font-weight:700;font-family:'Chakra Petch',sans-serif}
+#synth-label{font-size:10px;color:#555;letter-spacing:0.1em}
+#periodic-section{flex-shrink:0;padding:4px 6px 2px;background:#050505}
+.pt-grid{display:grid;grid-template-columns:repeat(18,1fr);gap:1px;max-width:100%}
+.el{font-size:9px;padding:3px 2px;border:1px solid #333;cursor:pointer;text-align:center;line-height:1.25;border-radius:1px;transition:filter 0.15s;user-select:none;min-width:0;display:flex;align-items:baseline;justify-content:center;gap:2px}
+.el:hover{filter:brightness(1.5);border-color:#0ff}
+.el.active{border:1px solid #0ff;box-shadow:0 0 4px #0ff}
+.el.cat-highlight{border:2px solid #fff;box-shadow:0 0 7px rgba(255,255,255,0.85);position:relative;z-index:2}
+.el.bond-compatible{outline:3px solid #facc15;outline-offset:-3px;box-shadow:0 0 6px 1px rgba(250,204,21,0.85);position:relative;z-index:1}
+.el .sym{font-size:10.5px;font-weight:bold;font-family:'Chakra Petch',sans-serif}
+.el .num{font-size:7px;color:rgba(255,255,255,0.6);font-family:'Rajdhani',sans-serif}
+.spacer{background:transparent;border:none;cursor:default}
+.cat-alkali{background:#4a1010;color:#ff8888}
+.cat-alkaline{background:#3a2a05;color:#ffcc66}
+.cat-transition{background:#1a2a1a;color:#88cc88}
+.cat-post{background:#1a1a3a;color:#8888ff}
+.cat-metalloid{background:#2a1a2a;color:#cc88cc}
+.cat-nonmetal{background:#0a2a1a;color:#44ffaa}
+.cat-halogen{background:#1a2a2a;color:#44dddd}
+.cat-noble{background:#2a1a3a;color:#aa88ff}
+.cat-lanthanide{background:#2a0a2a;color:#dd88ff}
+.cat-actinide{background:#2a1a0a;color:#ffaa44}
+.cat-unknown{background:#1a1a1a;color:#888}
+#legend{display:flex;gap:12px;padding:4px 6px;background:#050505;border-top:1px solid #111;font-size:11px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:4px;cursor:pointer;padding:1px 4px;border-radius:3px;transition:background 0.15s}
+.leg-item:hover{background:#141414}
+.leg-item.leg-active{background:#1a1a1a}
+.leg-item.leg-active .leg-dot{box-shadow:0 0 5px 1px #fff}
+.leg-item.leg-active span{font-weight:700}
+.leg-dot{width:9px;height:9px;border-radius:50%;border:1px solid rgba(255,255,255,0.3)}
+#main{display:flex;flex:1;min-height:0;overflow:hidden;position:relative}
+#sidebar{width:185px;flex-shrink:0;background:#080808;border-right:1px solid #1a1a1a;display:flex;flex-direction:column;overflow-y:auto;padding:8px}
+#ab-tabs{display:none;gap:4px;margin-bottom:8px}
+.ab-tab{flex:1;padding:5px 2px;font-size:10px;border:1px solid #333;background:#111;color:#888;cursor:pointer;border-radius:2px;font-family:'Chakra Petch',sans-serif;letter-spacing:0.03em;transition:all 0.15s}
+.ab-tab.active{background:#0a3a3a;color:#0ff;border-color:#0ff}
+#atom-info{background:#111;border:1px solid #222;border-radius:3px;padding:8px;margin-bottom:8px}
+#atom-info-header{display:flex;align-items:center;gap:4px;font-size:9px;color:#555;margin-bottom:6px;letter-spacing:0.1em;font-family:'Chakra Petch',sans-serif}
+#atom-symbol-big{font-size:32px;font-weight:700;color:#fff;line-height:1;font-family:'Chakra Petch',sans-serif;letter-spacing:0.01em}
+#atom-name{font-size:13px;color:#aaa}
+#atom-config{font-size:10px;color:#777;margin-top:6px;line-height:1.6;display:flex;flex-wrap:wrap;gap:3px 9px;font-family:'Rajdhani',sans-serif;font-weight:600}
+.cfg-term{white-space:nowrap}
+#orbitals-label{font-size:9px;color:#555;letter-spacing:0.1em;margin-bottom:6px;font-family:'Chakra Petch',sans-serif}
+#orbital-filter{display:flex;gap:4px;margin-bottom:8px}
+.filter-btn{flex:1;padding:4px 2px;font-size:10px;border:1px solid #333;background:#111;color:#888;cursor:pointer;border-radius:2px;font-family:'Chakra Petch',sans-serif;letter-spacing:0.03em;transition:all 0.15s}
+.filter-btn.active{background:#0a3a3a;color:#0ff;border-color:#0ff}
+#orbital-list{display:flex;flex-direction:column;gap:2px}
+.orb-row{display:flex;align-items:center;gap:6px;padding:4px 4px;border-radius:2px}
+.orb-row:hover{background:#111}
+.orb-check{width:14px;height:14px;accent-color:#0ff;cursor:pointer;flex-shrink:0}
+.orb-color{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.orb-name{font-size:14px;color:#f2f2f2;font-weight:600;flex:1}
+.orb-electrons{font-size:13px;color:#b8b8b8;font-weight:600;margin-left:auto}
+.orb-sub{padding-left:18px}
+.orb-sub .orb-name{font-size:13px;color:#d5d5d5;font-weight:500}
+#canvas-area{flex:1;min-width:0;min-height:0;position:relative;background:#000;overflow:hidden}
+#viewers-wrapper{display:flex;width:100%;height:100%;min-width:0;min-height:0}
+.viewer-pane{position:relative;flex:1;min-width:0;min-height:0;height:100%;overflow:hidden}
+#pane-a{border-right:none}
+#pane-b{border-left:none}
+.viewer-pane canvas{display:block}
+#split-divider{flex:0 0 6px;width:6px;height:100%;background:#0a0a0a;border-left:1px solid #1a1a2e;border-right:1px solid #1a1a2e;cursor:col-resize;display:none;position:relative;z-index:6}
+#split-divider::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:34px;background:#0ff;border-radius:2px;opacity:0.5;transition:opacity 0.15s}
+#split-divider:hover::after,#split-divider.dragging::after{opacity:1}
+#split-divider.dragging{background:#111}
+.pane-label{position:absolute;top:10px;left:10px;font-family:'Chakra Petch',sans-serif;font-size:11px;letter-spacing:0.1em;color:#0ff;background:rgba(0,0,0,0.6);border:1px solid #0ff;border-radius:3px;padding:3px 10px;cursor:pointer;z-index:5;transition:all 0.15s}
+.pane-label:hover{background:rgba(0,255,255,0.15)}
+.pane-label.pane-label-active{background:#0ff;color:#000;font-weight:700}
+#rotate-toggle-btn.rotation-stopped{color:#ffaa44;border-color:#ffaa44}
+#rotate-toggle-btn.rotation-stopped:hover{background:rgba(255,170,68,0.15)}
+canvas{display:block}
+#view-toggle{position:absolute;top:10px;right:10px;display:flex;gap:0;z-index:10}
+.view-btn{padding:5px 14px;font-size:11px;border:1px solid #0ff;background:transparent;color:#0ff;cursor:pointer;font-family:'Chakra Petch',sans-serif;letter-spacing:0.03em;transition:all 0.15s}
+.view-btn[data-view-mode="bohr"]{border-radius:20px 0 0 20px}
+.view-btn[data-view-mode="cloud"]{border-radius:0 20px 20px 0}
+.view-btn.active{background:#0ff;color:#000}
+#legame-btn{border-color:#ffd700;color:#ffd700}
+#legame-btn.active{background:#ffd700;color:#3a2a00}
+#cloud-controls{position:absolute;top:40px;right:10px;background:#111;border:1px solid #333;border-radius:4px;padding:10px;width:160px;display:none;z-index:10}
+#bg-swatches{position:absolute;bottom:10px;right:10px;background:#111;border:1px solid #333;border-radius:6px;padding:9px;width:160px;display:none;z-index:10;flex-wrap:wrap;gap:7px}
+#bg-swatches.show{display:flex}
+#bg-swatches-label{width:100%;font-size:9px;color:#888;letter-spacing:0.08em;margin-bottom:2px;font-family:'Chakra Petch',sans-serif}
+.bg-swatch{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,0.25);transition:transform 0.1s,border-color 0.1s;flex-shrink:0}
+.bg-swatch:hover{transform:scale(1.15)}
+.bg-swatch.bg-swatch-selected{border-color:#0ff;box-shadow:0 0 5px #0ff}
+#cloud-controls.show{display:block}
+.ctrl-label{font-size:10px;color:#888;margin-bottom:4px;display:flex;justify-content:space-between}
+.ctrl-slider{width:100%;accent-color:#0ff;margin-bottom:10px}
+#loading-msg{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:1px solid #333;border-radius:20px;padding:8px 20px;font-size:11px;color:#888;pointer-events:none;opacity:0;transition:opacity 0.3s}
+#loading-msg.show{opacity:1}
+/* ── FLAT STYLE THEME ─────────────────────────────────────────────────────
+   Same layout/logic, just re-skinned: a single solid background (chosen from
+   a small swatch palette) instead of black, and bold, borderless, saturated
+   periodic-table cells instead of the muted realistic palette. */
+:root{
+  --flat-bg:#0e6b78;
+  --flat-panel:#0a505a;
+  --flat-border:#12808f;
+  --flat-text:#ffffff;
+  --flat-text-dim:#dffcff;
+}
+body.theme-flat{background:var(--flat-bg);color:var(--flat-text)}
+body.theme-flat #topbar{background:var(--flat-panel);border-bottom:1px solid var(--flat-border)}
+body.theme-flat #periodic-section{background:var(--flat-bg)}
+body.theme-flat #legend{background:var(--flat-bg);border-top:1px solid var(--flat-border)}
+body.theme-flat #sidebar{background:var(--flat-panel);border-right:1px solid var(--flat-border)}
+body.theme-flat #canvas-area{background:var(--flat-bg)}
+body.theme-flat #atom-info{background:var(--flat-panel);border:1px solid var(--flat-border)}
+body.theme-flat #pt-title,body.theme-flat #synth-label{color:var(--flat-text-dim)}
+body.theme-flat #atom-name,body.theme-flat #atom-config,body.theme-flat .orb-name,body.theme-flat .orb-electrons,body.theme-flat #orbitals-label,body.theme-flat .cfg-term{color:var(--flat-text)}
+body.theme-flat .orb-electrons{color:var(--flat-text-dim)}
+
+body.theme-flat .el{border:none;border-radius:6px}
+body.theme-flat .el:hover{filter:brightness(1.15);border-color:transparent;box-shadow:0 0 0 2px var(--flat-text)}
+body.theme-flat .el.active{border:none;box-shadow:0 0 0 2px var(--flat-text),0 0 10px var(--flat-text)}
+body.theme-flat .el.cat-highlight{border:none;box-shadow:0 0 0 2px var(--flat-text),0 0 10px var(--flat-text)}
+body.theme-flat .el .num{color:rgba(255,255,255,0.85)}
+
+body.theme-flat .cat-alkali{background:#ff5b5b;color:#fff}
+body.theme-flat .cat-alkaline{background:#ffb020;color:#fff}
+body.theme-flat .cat-transition{background:#34d399;color:#0a3a2a}
+body.theme-flat .cat-post{background:#6c8cff;color:#fff}
+body.theme-flat .cat-metalloid{background:#d16bd1;color:#fff}
+body.theme-flat .cat-nonmetal{background:#22e0a0;color:#0a3a2a}
+body.theme-flat .cat-halogen{background:#22d3ee;color:#08414a}
+body.theme-flat .cat-noble{background:#a78bfa;color:#fff}
+body.theme-flat .cat-lanthanide{background:#f472b6;color:#fff}
+body.theme-flat .cat-actinide{background:#fb923c;color:#fff}
+body.theme-flat .cat-unknown{background:#c3ccd4;color:#333}
+
+body.theme-flat .leg-item:hover{background:rgba(128,128,128,0.15)}
+body.theme-flat .leg-item.leg-active{background:rgba(128,128,128,0.25)}
+body.theme-flat #view-toggle .view-btn{border-color:var(--flat-text);color:var(--flat-text)}
+body.theme-flat #view-toggle .view-btn.active{background:var(--flat-text);color:var(--flat-panel)}
+body.theme-flat #compare-btn.active,body.theme-flat #style-btn.active{background:var(--flat-text);color:var(--flat-panel)}
+body.theme-flat #cloud-controls{background:var(--flat-panel);border-color:var(--flat-border)}
+body.theme-flat #split-divider{background:var(--flat-panel);border-left-color:var(--flat-border);border-right-color:var(--flat-border)}
+body.theme-flat .pane-label{border-color:var(--flat-text);color:var(--flat-text)}
+body.theme-flat .pane-label.pane-label-active{background:var(--flat-text);color:var(--flat-panel)}
+body.theme-flat #rotate-toggle-btn.rotation-stopped{color:#ffaa44;border-color:#ffaa44}
+body.theme-flat #bg-swatches{background:var(--flat-panel);border-color:var(--flat-border)}
+body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-dim)}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <button id="back-btn">← ChemVerse</button>
+  <span id="pt-title">T A V O L A &nbsp; P E R I O D I C A</span>
+  <span id="synth-label">• sintetico</span>
+</div>
+
+<div id="periodic-section">
+  <div class="pt-grid" id="pt-grid"></div>
+  <div style="height:4px"></div>
+  <div class="pt-grid" id="pt-grid-lana" style="grid-template-columns:repeat(15,1fr);max-width:calc(15 * (100%/18));margin-left:calc(3 * (100%/18))"></div>
+</div>
+
+<div id="legend">
+  <div class="leg-item" data-cat="alkali"><div class="leg-dot" style="background:#ff8888"></div><span style="color:#ff8888">Alcalini</span></div>
+  <div class="leg-item" data-cat="alkaline"><div class="leg-dot" style="background:#ffcc66"></div><span style="color:#ffcc66">Alcalino-terrosi</span></div>
+  <div class="leg-item" data-cat="transition"><div class="leg-dot" style="background:#88cc88"></div><span style="color:#88cc88">Metalli di transizione</span></div>
+  <div class="leg-item" data-cat="post"><div class="leg-dot" style="background:#8888ff"></div><span style="color:#8888ff">Post-transizione</span></div>
+  <div class="leg-item" data-cat="metalloid"><div class="leg-dot" style="background:#cc88cc"></div><span style="color:#cc88cc">Metalloidi</span></div>
+  <div class="leg-item" data-cat="nonmetal"><div class="leg-dot" style="background:#44ffaa"></div><span style="color:#44ffaa">Non metalli</span></div>
+  <div class="leg-item" data-cat="halogen"><div class="leg-dot" style="background:#44dddd"></div><span style="color:#44dddd">Alogeni</span></div>
+  <div class="leg-item" data-cat="noble"><div class="leg-dot" style="background:#aa88ff"></div><span style="color:#aa88ff">Gas nobili</span></div>
+  <div class="leg-item" data-cat="lanthanide"><div class="leg-dot" style="background:#dd88ff"></div><span style="color:#dd88ff">Lantanidi</span></div>
+  <div class="leg-item" data-cat="actinide"><div class="leg-dot" style="background:#ffaa44"></div><span style="color:#ffaa44">Attinidi</span></div>
+  <div class="leg-item" data-cat="unknown"><div class="leg-dot" style="background:#888"></div><span style="color:#888">Proprietà ignote</span></div>
+</div>
+
+<div id="main">
+  <div id="sidebar">
+    <div id="ab-tabs">
+      <button class="ab-tab active" id="tab-a" onclick="switchActiveViewer('A')">Atomo A</button>
+      <button class="ab-tab" id="tab-b" onclick="switchActiveViewer('B')">Atomo B</button>
+    </div>
+    <div id="atom-info">
+      <div id="atom-info-header">⊙ L'ATOMO</div>
+      <div id="atom-symbol-big">H</div>
+      <div id="atom-name">Idrogeno <span style="font-size:10px;color:#555">Z=1</span></div>
+      <div id="atom-config">1s¹</div>
+    </div>
+    <div id="orbitals-label">ORBITALI</div>
+    <div id="orbital-filter">
+      <button class="filter-btn active" onclick="setPreset('all', this)">Tutti</button>
+      <button class="filter-btn" onclick="setPreset('valence', this)">Valenza</button>
+      <button class="filter-btn" onclick="setPreset('none', this)">Nessuno</button>
+    </div>
+    <div id="orbital-list"></div>
+  </div>
+
+  <div id="canvas-area">
+    <div id="viewers-wrapper">
+      <div id="pane-a" class="viewer-pane"><canvas id="c"></canvas><div class="pane-label pane-label-active" id="pane-label-a" style="display:none" onclick="switchActiveViewer('A')">A</div></div>
+      <div id="split-divider"></div>
+      <div id="pane-b" class="viewer-pane" style="display:none"><canvas id="c2"></canvas><div class="pane-label" id="pane-label-b" onclick="switchActiveViewer('B')">B</div></div>
+      <div class="pane-label" id="rotate-toggle-btn" style="top:44px" onclick="toggleRotation()">Stop</div>
+    </div>
+    <div id="view-toggle">
+      <button class="view-btn" data-view-mode="bohr" onclick="setView('bohr')">Bohr</button>
+      <button class="view-btn active" data-view-mode="lines" onclick="setView('lines')">Linee</button>
+      <button class="view-btn" data-view-mode="cloud" onclick="setView('cloud')">Nuvola</button>
+      <button class="view-btn" id="compare-btn" onclick="toggleCompare()" style="margin-left:8px;border-radius:20px">⇄ Confronta</button>
+      <button class="view-btn" id="legame-btn" onclick="toggleBond()" style="margin-left:8px;border-radius:20px;display:none">⚛ Legame</button>
+      <button class="view-btn" id="style-btn" onclick="toggleStyle()" style="margin-left:8px;border-radius:20px">🎨 Stile Flat</button>
+    </div>
+    <div id="cloud-controls">
+      <div class="ctrl-label"><span>Grandezza punti</span><span id="size-val">0.3</span></div>
+      <input type="range" class="ctrl-slider" id="size-slider" min="0.1" max="2" step="0.1" value="0.3">
+      <div class="ctrl-label"><span>Intensità</span><span id="int-val">2.90</span></div>
+      <input type="range" class="ctrl-slider" id="int-slider" min="0.5" max="9" step="0.1" value="2.9">
+    </div>
+    <div id="bg-swatches">
+      <div id="bg-swatches-label">SFONDO</div>
+    </div>
+    <div id="loading-msg">Caricamento orbitali...</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── ELEMENT DATA ──────────────────────────────────────────────────────────────
+const ELEMENTS = [
+  {n:1,sym:'H',name:'Idrogeno',cat:'nonmetal',group:1,period:1},
+  {n:2,sym:'He',name:'Elio',cat:'noble',group:18,period:1},
+  {n:3,sym:'Li',name:'Litio',cat:'alkali',group:1,period:2},
+  {n:4,sym:'Be',name:'Berillio',cat:'alkaline',group:2,period:2},
+  {n:5,sym:'B',name:'Boro',cat:'metalloid',group:13,period:2},
+  {n:6,sym:'C',name:'Carbonio',cat:'nonmetal',group:14,period:2},
+  {n:7,sym:'N',name:'Azoto',cat:'nonmetal',group:15,period:2},
+  {n:8,sym:'O',name:'Ossigeno',cat:'nonmetal',group:16,period:2},
+  {n:9,sym:'F',name:'Fluoro',cat:'halogen',group:17,period:2},
+  {n:10,sym:'Ne',name:'Neon',cat:'noble',group:18,period:2},
+  {n:11,sym:'Na',name:'Sodio',cat:'alkali',group:1,period:3},
+  {n:12,sym:'Mg',name:'Magnesio',cat:'alkaline',group:2,period:3},
+  {n:13,sym:'Al',name:'Alluminio',cat:'post',group:13,period:3},
+  {n:14,sym:'Si',name:'Silicio',cat:'metalloid',group:14,period:3},
+  {n:15,sym:'P',name:'Fosforo',cat:'nonmetal',group:15,period:3},
+  {n:16,sym:'S',name:'Zolfo',cat:'nonmetal',group:16,period:3},
+  {n:17,sym:'Cl',name:'Cloro',cat:'halogen',group:17,period:3},
+  {n:18,sym:'Ar',name:'Argon',cat:'noble',group:18,period:3},
+  {n:19,sym:'K',name:'Potassio',cat:'alkali',group:1,period:4},
+  {n:20,sym:'Ca',name:'Calcio',cat:'alkaline',group:2,period:4},
+  {n:21,sym:'Sc',name:'Scandio',cat:'transition',group:3,period:4},
+  {n:22,sym:'Ti',name:'Titanio',cat:'transition',group:4,period:4},
+  {n:23,sym:'V',name:'Vanadio',cat:'transition',group:5,period:4},
+  {n:24,sym:'Cr',name:'Cromo',cat:'transition',group:6,period:4},
+  {n:25,sym:'Mn',name:'Manganese',cat:'transition',group:7,period:4},
+  {n:26,sym:'Fe',name:'Ferro',cat:'transition',group:8,period:4},
+  {n:27,sym:'Co',name:'Cobalto',cat:'transition',group:9,period:4},
+  {n:28,sym:'Ni',name:'Nichel',cat:'transition',group:10,period:4},
+  {n:29,sym:'Cu',name:'Rame',cat:'transition',group:11,period:4},
+  {n:30,sym:'Zn',name:'Zinco',cat:'transition',group:12,period:4},
+  {n:31,sym:'Ga',name:'Gallio',cat:'post',group:13,period:4},
+  {n:32,sym:'Ge',name:'Germanio',cat:'metalloid',group:14,period:4},
+  {n:33,sym:'As',name:'Arsenico',cat:'metalloid',group:15,period:4},
+  {n:34,sym:'Se',name:'Selenio',cat:'nonmetal',group:16,period:4},
+  {n:35,sym:'Br',name:'Bromo',cat:'halogen',group:17,period:4},
+  {n:36,sym:'Kr',name:'Kripton',cat:'noble',group:18,period:4},
+  {n:37,sym:'Rb',name:'Rubidio',cat:'alkali',group:1,period:5},
+  {n:38,sym:'Sr',name:'Stronzio',cat:'alkaline',group:2,period:5},
+  {n:39,sym:'Y',name:'Ittrio',cat:'transition',group:3,period:5},
+  {n:40,sym:'Zr',name:'Zirconio',cat:'transition',group:4,period:5},
+  {n:41,sym:'Nb',name:'Niobio',cat:'transition',group:5,period:5},
+  {n:42,sym:'Mo',name:'Molibdeno',cat:'transition',group:6,period:5},
+  {n:43,sym:'Tc',name:'Tecnezio',cat:'transition',group:7,period:5},
+  {n:44,sym:'Ru',name:'Rutenio',cat:'transition',group:8,period:5},
+  {n:45,sym:'Rh',name:'Rodio',cat:'transition',group:9,period:5},
+  {n:46,sym:'Pd',name:'Palladio',cat:'transition',group:10,period:5},
+  {n:47,sym:'Ag',name:'Argento',cat:'transition',group:11,period:5},
+  {n:48,sym:'Cd',name:'Cadmio',cat:'transition',group:12,period:5},
+  {n:49,sym:'In',name:'Indio',cat:'post',group:13,period:5},
+  {n:50,sym:'Sn',name:'Stagno',cat:'post',group:14,period:5},
+  {n:51,sym:'Sb',name:'Antimonio',cat:'metalloid',group:15,period:5},
+  {n:52,sym:'Te',name:'Tellurio',cat:'metalloid',group:16,period:5},
+  {n:53,sym:'I',name:'Iodio',cat:'halogen',group:17,period:5},
+  {n:54,sym:'Xe',name:'Xenon',cat:'noble',group:18,period:5},
+  {n:55,sym:'Cs',name:'Cesio',cat:'alkali',group:1,period:6},
+  {n:56,sym:'Ba',name:'Bario',cat:'alkaline',group:2,period:6},
+  {n:57,sym:'La',name:'Lantanio',cat:'lanthanide',group:3,period:6},
+  {n:58,sym:'Ce',name:'Cerio',cat:'lanthanide',group:null,period:6},
+  {n:59,sym:'Pr',name:'Praseodimio',cat:'lanthanide',group:null,period:6},
+  {n:60,sym:'Nd',name:'Neodimio',cat:'lanthanide',group:null,period:6},
+  {n:61,sym:'Pm',name:'Promezio',cat:'lanthanide',group:null,period:6},
+  {n:62,sym:'Sm',name:'Samario',cat:'lanthanide',group:null,period:6},
+  {n:63,sym:'Eu',name:'Europio',cat:'lanthanide',group:null,period:6},
+  {n:64,sym:'Gd',name:'Gadolinio',cat:'lanthanide',group:null,period:6},
+  {n:65,sym:'Tb',name:'Terbio',cat:'lanthanide',group:null,period:6},
+  {n:66,sym:'Dy',name:'Disprosio',cat:'lanthanide',group:null,period:6},
+  {n:67,sym:'Ho',name:'Olmio',cat:'lanthanide',group:null,period:6},
+  {n:68,sym:'Er',name:'Erbio',cat:'lanthanide',group:null,period:6},
+  {n:69,sym:'Tm',name:'Tulio',cat:'lanthanide',group:null,period:6},
+  {n:70,sym:'Yb',name:'Itterbio',cat:'lanthanide',group:null,period:6},
+  {n:71,sym:'Lu',name:'Lutezio',cat:'lanthanide',group:null,period:6},
+  {n:72,sym:'Hf',name:'Afnio',cat:'transition',group:4,period:6},
+  {n:73,sym:'Ta',name:'Tantalio',cat:'transition',group:5,period:6},
+  {n:74,sym:'W',name:'Tungsteno',cat:'transition',group:6,period:6},
+  {n:75,sym:'Re',name:'Renio',cat:'transition',group:7,period:6},
+  {n:76,sym:'Os',name:'Osmio',cat:'transition',group:8,period:6},
+  {n:77,sym:'Ir',name:'Iridio',cat:'transition',group:9,period:6},
+  {n:78,sym:'Pt',name:'Platino',cat:'transition',group:10,period:6},
+  {n:79,sym:'Au',name:'Oro',cat:'transition',group:11,period:6},
+  {n:80,sym:'Hg',name:'Mercurio',cat:'transition',group:12,period:6},
+  {n:81,sym:'Tl',name:'Tallio',cat:'post',group:13,period:6},
+  {n:82,sym:'Pb',name:'Piombo',cat:'post',group:14,period:6},
+  {n:83,sym:'Bi',name:'Bismuto',cat:'post',group:15,period:6},
+  {n:84,sym:'Po',name:'Polonio',cat:'post',group:16,period:6},
+  {n:85,sym:'At',name:'Astato',cat:'halogen',group:17,period:6},
+  {n:86,sym:'Rn',name:'Radon',cat:'noble',group:18,period:6},
+  {n:87,sym:'Fr',name:'Francio',cat:'alkali',group:1,period:7},
+  {n:88,sym:'Ra',name:'Radio',cat:'alkaline',group:2,period:7},
+  {n:89,sym:'Ac',name:'Attinio',cat:'actinide',group:3,period:7},
+  {n:90,sym:'Th',name:'Torio',cat:'actinide',group:null,period:7},
+  {n:91,sym:'Pa',name:'Protoattinio',cat:'actinide',group:null,period:7},
+  {n:92,sym:'U',name:'Uranio',cat:'actinide',group:null,period:7},
+  {n:93,sym:'Np',name:'Nettunio',cat:'actinide',group:null,period:7},
+  {n:94,sym:'Pu',name:'Plutonio',cat:'actinide',group:null,period:7},
+  {n:95,sym:'Am',name:'Americio',cat:'actinide',group:null,period:7},
+  {n:96,sym:'Cm',name:'Curio',cat:'actinide',group:null,period:7},
+  {n:97,sym:'Bk',name:'Berkelio',cat:'actinide',group:null,period:7},
+  {n:98,sym:'Cf',name:'Californio',cat:'actinide',group:null,period:7},
+  {n:99,sym:'Es',name:'Einsteinio',cat:'actinide',group:null,period:7},
+  {n:100,sym:'Fm',name:'Fermio',cat:'actinide',group:null,period:7},
+  {n:101,sym:'Md',name:'Mendelevio',cat:'actinide',group:null,period:7},
+  {n:102,sym:'No',name:'Nobelio',cat:'actinide',group:null,period:7},
+  {n:103,sym:'Lr',name:'Laurenzio',cat:'actinide',group:null,period:7},
+  {n:104,sym:'Rf',name:'Rutherfordio',cat:'transition',group:4,period:7},
+  {n:105,sym:'Db',name:'Dubnio',cat:'transition',group:5,period:7},
+  {n:106,sym:'Sg',name:'Seaborgio',cat:'transition',group:6,period:7},
+  {n:107,sym:'Bh',name:'Bohrio',cat:'transition',group:7,period:7},
+  {n:108,sym:'Hs',name:'Hassio',cat:'transition',group:8,period:7},
+  {n:109,sym:'Mt',name:'Meitnerio',cat:'unknown',group:9,period:7},
+  {n:110,sym:'Ds',name:'Darmstadtio',cat:'unknown',group:10,period:7},
+  {n:111,sym:'Rg',name:'Roentgenio',cat:'unknown',group:11,period:7},
+  {n:112,sym:'Cn',name:'Copernicio',cat:'transition',group:12,period:7},
+  {n:113,sym:'Nh',name:'Nihonio',cat:'unknown',group:13,period:7},
+  {n:114,sym:'Fl',name:'Flerovio',cat:'unknown',group:14,period:7},
+  {n:115,sym:'Mc',name:'Moscovio',cat:'unknown',group:15,period:7},
+  {n:116,sym:'Lv',name:'Livermorio',cat:'unknown',group:16,period:7},
+  {n:117,sym:'Ts',name:'Tennesso',cat:'unknown',group:17,period:7},
+  {n:118,sym:'Og',name:'Oganessone',cat:'unknown',group:18,period:7},
+];
+
+// Electron configurations
+function getConfig(Z){
+  const order=['1s','2s','2p','3s','3p','4s','3d','4p','5s','4d','5p','6s','4f','5d','6p','7s','5f','6d','7p'];
+  const max={s:2,p:6,d:10,f:14};
+  let rem=Z, cfg={};
+  for(let orb of order){
+    if(rem<=0) break;
+    const type=orb[1];
+    const fill=Math.min(rem,max[type]);
+    cfg[orb]=fill;
+    rem-=fill;
+  }
+  return cfg;
+}
+
+function configStr(cfg){
+  const sup=['⁰','¹','²','³','⁴','⁵','⁶','⁷','⁸','⁹','¹⁰','¹¹','¹²','¹³','¹⁴'];
+  return Object.entries(cfg).map(([o,n])=>o+sup[n]).join(' ');
+}
+
+// Groups a per-orbital electron config into per-shell (principal quantum
+// number n) totals — e.g. {1s:2,2s:2,2p:4} → {1:2, 2:6} — used by the
+// classic Bohr-model view, which shows shells rather than sublevels.
+function computeShellCounts(cfg){
+  const shells={};
+  for(let orb of Object.keys(cfg)){
+    if(cfg[orb]<=0) continue;
+    const n=parseInt(orb[0]);
+    shells[n]=(shells[n]||0)+cfg[orb];
+  }
+  return shells;
+}
+
+// A "part key" is an orbital string ("3p") or orbital sub-level ("3p|x",
+// "4d|xy") — this extracts its shell (principal quantum number). The
+// 'bohr:' prefix check is legacy/defensive: Bohr view now uses these same
+// keys, but nothing generates the old shell-only format anymore.
+function keyShellNumber(key){
+  return key.startsWith('bohr:') ? parseInt(key.slice(5)) : parseInt(key[0]);
+}
+
+// ── SIMPLIFIED OCTET-RULE BONDING (for the "Legame" feature) ────────────────
+// This is a deliberately simplified, pedagogical model — not a full
+// valence-bond-theory engine — meant to give a reasonable yes/no answer for
+// whether two atoms' outer shells can complete each other's octet (or duet,
+// for shell 1). It covers the two most common textbook cases:
+//   - covalent: both atoms need to GAIN the same number of electrons, so
+//     that many shared pairs satisfy both at once (e.g. H+H, O+O, H+Cl).
+//   - ionic: one atom needs to LOSE exactly what the other needs to GAIN
+//     (e.g. Na+Cl), assuming (as is true for main-group elements) that the
+//     shell below is already complete once the outer shell is emptied.
+// Noble gases (already at capacity) never bond. This is intentionally scoped
+// to exactly two atoms for now.
+function bondingProfile(cfg){
+  const shells=computeShellCounts(cfg);
+  const ns=Object.keys(shells).map(Number);
+  const maxN=Math.max(...ns);
+  const v=shells[maxN];
+  const capacity=maxN===1?2:8;
+  if(v>=capacity) return {type:'inert', shellN:maxN};
+  if(maxN===1) return {type:'gain', amount:capacity-v, shellN:maxN}; // H: can only gain, no lower shell to expose
+  const toGain=capacity-v, toLose=v;
+  if(toLose<=toGain) return {type:'lose', amount:toLose, shellN:maxN};
+  return {type:'gain', amount:toGain, shellN:maxN};
+}
+
+function canFormBond(cfgA, cfgB){
+  const a=bondingProfile(cfgA), b=bondingProfile(cfgB);
+  if(a.type==='inert'||b.type==='inert') return null;
+  if(a.type==='gain'&&b.type==='gain'&&a.amount===b.amount&&a.amount>0){
+    return {kind:'covalent', shellA:a.shellN, shellB:b.shellN};
+  }
+  if(a.type==='lose'&&b.type==='gain'&&a.amount===b.amount&&a.amount>0){
+    return {kind:'ionic', shellA:a.shellN, shellB:b.shellN};
+  }
+  if(b.type==='lose'&&a.type==='gain'&&b.amount===a.amount&&b.amount>0){
+    return {kind:'ionic', shellA:a.shellN, shellB:b.shellN};
+  }
+  return null;
+}
+
+// Outlines every periodic-table cell whose element would actually satisfy
+// the octet rule together with refCfg (same check used to decide whether
+// Legame fuses the two outer shells) — only meaningful while Legame is
+// active. Pass null to just clear it.
+function updateCompatibleHighlight(refCfg){
+  document.querySelectorAll('.el.bond-compatible').forEach(e=>e.classList.remove('bond-compatible'));
+  if(!bondMode || !refCfg) return;
+  for(let el of ELEMENTS){
+    if(canFormBond(refCfg, getConfig(el.n))){
+      const div=document.querySelector(`.el[data-n="${el.n}"]`);
+      if(div) div.classList.add('bond-compatible');
+    }
+  }
+}
+
+// ── PERIODIC TABLE LAYOUT ─────────────────────────────────────────────────────
+const catClass={alkali:'cat-alkali',alkaline:'cat-alkaline',transition:'cat-transition',
+  post:'cat-post',metalloid:'cat-metalloid',nonmetal:'cat-nonmetal',
+  halogen:'cat-halogen',noble:'cat-noble',lanthanide:'cat-lanthanide',
+  actinide:'cat-actinide',unknown:'cat-unknown'};
+
+// ── REUSABLE: PERIODIC TABLE BUILDER ─────────────────────────────────────────
+// Renders the full periodic table (main grid + lanthanide/actinide row) into
+// the given container elements, using the shared ELEMENTS data and catClass
+// map above. Takes no dependency on this page's specific viewers/sidebar:
+// `onSelect(atomicNumber)` is called whenever the person clicks an element,
+// so any host page can wire it up to whatever it wants to do with that pick.
+// This makes it a drop-in piece other projects can lift out as-is, together
+// with ELEMENTS/catClass and the .el/.cat-*/.pt-grid CSS rules above.
+function buildPeriodicTable(gridEl, gridLanaEl, onSelect){
+  const cells=Array(7).fill(null).map(()=>Array(18).fill(null));
+  const lana=[], acta=[];
+  for(let el of ELEMENTS){
+    if(el.cat==='lanthanide'&&el.n!==57){lana.push(el);continue;}
+    if(el.cat==='actinide'&&el.n!==89){acta.push(el);continue;}
+    if(el.group&&el.period){
+      cells[el.period-1][el.group-1]=el;
+    }
+  }
+  for(let r=0;r<7;r++){
+    for(let c=0;c<18;c++){
+      const el=cells[r][c];
+      const div=document.createElement('div');
+      if(el){
+        div.className='el '+catClass[el.cat];
+        div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
+        div.title=el.name;
+        div.dataset.n=el.n;
+        div.onclick=()=>onSelect(el.n);
+      } else {
+        if(r===5&&c===2){
+          div.className='el cat-lanthanide';
+          div.style.opacity='0.4';
+          div.innerHTML='<span class="sym" style="font-size:6px">La-Lu</span><span class="num">57-71</span>';
+        } else if(r===6&&c===2){
+          div.className='el cat-actinide';
+          div.style.opacity='0.4';
+          div.innerHTML='<span class="sym" style="font-size:6px">Ac-Lr</span><span class="num">89-103</span>';
+        } else {
+          div.className='spacer el';
+          div.style.visibility='hidden';
+        }
+      }
+      gridEl.appendChild(div);
+    }
+  }
+  const lans=ELEMENTS.filter(e=>e.cat==='lanthanide');
+  const acts=ELEMENTS.filter(e=>e.cat==='actinide');
+  for(let el of [...lans, ...acts]){
+    const div=document.createElement('div');
+    div.className='el '+catClass[el.cat];
+    div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
+    div.title=el.name; div.dataset.n=el.n;
+    div.onclick=()=>onSelect(el.n);
+    gridLanaEl.appendChild(div);
+  }
+}
+
+buildPeriodicTable(
+  document.getElementById('pt-grid'),
+  document.getElementById('pt-grid-lana'),
+  (n)=>activeViewer.selectElement(n)
+);
+
+// Renderer/camera/mouse-controls/resize are created per-viewer inside
+// createViewer() further below, so that two independent atoms (A and B) can
+// be shown side by side when compare mode is active.
+
+
+// Orbital colors
+const ORB_COLORS={
+  '1s':0x00ffff,'2s':0xff4488,'2p':0xffaa00,
+  '3s':0x00ff88,'3p':0xff6600,'3d':0x4488ff,
+  '4s':0x88ff00,'4p':0xff0088,'4d':0x00aaff,'4f':0xffdd00,
+  '5s':0xff8844,'5p':0x44ffdd,'5d':0xaa44ff,'5f':0xff4444,
+  '6s':0x44ff44,'6p':0xffaa44,'6d':0x44aaff,
+  '7s':0xff44aa,'7p':0xaaffaa
+};
+
+// p sub-orbital colors (x,y,z)
+const SUB_COLORS={ x:0xff4444, y:0x4488ff, z:0x44cc44 };
+
+// d sub-orbital definitions, labels and colors
+const D_SUB_DEFS=[
+  {key:'xy', v1:[1,0,0], v2:[0,1,0]},
+  {key:'yz', v1:[0,1,0], v2:[0,0,1]},
+  {key:'xz', v1:[1,0,0], v2:[0,0,1]},
+  {key:'x2y2', v1:[1,0,0], v2:[0,1,0], alongAxis:true},
+  {key:'z2', special:'z2'},
+];
+const D_SUB_LABELS={xy:'xy', yz:'yz', xz:'xz', x2y2:'x²-y²', z2:'z²'};
+const D_SUB_COLORS={xy:0xff4444, yz:0x4488ff, xz:0x44cc44, x2y2:0xffaa00, z2:0xaa44ff};
+const P_SUBS=['x','y','z'];
+
+// Current display mode ('lines' or 'cloud') — shared by both viewers.
+let viewMode='lines';
+
+// Global point-cloud density multiplier (controlled by the "Intensità" slider).
+// 1.0 = the baseline density the shapes were originally tuned for.
+let cloudDensity=1.0;
+
+function makeWireSphereGrid(radius, color, opacity=0.32, latLines=9, lonLines=14, segPerLine=40){
+  const group=new THREE.Group();
+  const mat=new THREE.LineBasicMaterial({color, transparent:true, opacity, linewidth:2});
+  for(let i=1;i<latLines;i++){
+    const phi=Math.PI*i/latLines;
+    const rr=radius*Math.sin(phi);
+    const y=radius*Math.cos(phi);
+    const pts=[];
+    for(let j=0;j<=segPerLine;j++){
+      const theta=(j/segPerLine)*Math.PI*2;
+      pts.push(new THREE.Vector3(rr*Math.cos(theta), y, rr*Math.sin(theta)));
+    }
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
+  }
+  for(let i=0;i<lonLines;i++){
+    const theta=(i/lonLines)*Math.PI*2;
+    const pts=[];
+    for(let j=0;j<=segPerLine;j++){
+      const phi=(j/segPerLine)*Math.PI*2;
+      pts.push(new THREE.Vector3(radius*Math.sin(phi)*Math.cos(theta), radius*Math.cos(phi), radius*Math.sin(phi)*Math.sin(theta)));
+    }
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
+  }
+  return group;
+}
+
+// Radial profile of a lobe: rounded off at BOTH the near end (t=0, close to the
+// nucleus) and the far end (t=1) — no sharp cusp/point at either end — while the
+// bulge is still biased toward the outer part of the lobe, so it "widens
+// progressively" moving away from the nucleus rather than being a symmetric blob.
+function rawLobeProfile(t){
+  return Math.sqrt(Math.max(0,t*(1-t)))*(1+0.6*t);
+}
+const LOBE_PROFILE_MAX=(()=>{
+  let max=0;
+  for(let i=0;i<=200;i++){ const v=rawLobeProfile(i/200); if(v>max) max=v; }
+  return max;
+})();
+function teardropProfile(t){
+  return rawLobeProfile(t)/LOBE_PROFILE_MAX;
+}
+
+// Teardrop-shaped wire lobe, detached from the nucleus, widening progressively.
+function makeTeardropWire(axis, sign, r, color, opacity=0.32, levels=14, meridians=10, segPerRing=28){
+  const group=new THREE.Group();
+  const mat=new THREE.LineBasicMaterial({color, transparent:true, opacity, linewidth:2});
+  const gap=r*0.14, length=r-gap, maxR=r*0.42;
+  const dir=axis.clone().normalize().multiplyScalar(sign);
+  const quat=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
+
+  for(let i=0;i<=levels;i++){
+    const t=i/levels;
+    const radius=maxR*teardropProfile(t);
+    if(radius<0.003) continue;
+    const y=gap+t*length;
+    const pts=[];
+    for(let j=0;j<=segPerRing;j++){
+      const theta=(j/segPerRing)*Math.PI*2;
+      pts.push(new THREE.Vector3(radius*Math.cos(theta), y, radius*Math.sin(theta)));
+    }
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
+  }
+  for(let j=0;j<meridians;j++){
+    const theta=(j/meridians)*Math.PI*2;
+    const pts=[];
+    for(let i=0;i<=levels;i++){
+      const t=i/levels;
+      const radius=maxR*teardropProfile(t);
+      const y=gap+t*length;
+      pts.push(new THREE.Vector3(radius*Math.cos(theta), y, radius*Math.sin(theta)));
+    }
+    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
+  }
+  group.quaternion.copy(quat);
+  return group;
+}
+
+// Electron dot on orbit
+function makeElectron(color){
+  const size=visualStyle==='flat'?0.1:0.06;
+  const geo=new THREE.SphereGeometry(size,10,10);
+  const mat=new THREE.MeshBasicMaterial({color});
+  return new THREE.Mesh(geo,mat);
+}
+
+// Line/wire opacity is boosted for the Flat style, so shapes read as bold and
+// solid-feeling rather than delicate technical wireframes.
+function lineOpacity(base){
+  return visualStyle==='flat' ? Math.min(1, base+0.45) : base;
+}
+
+// Cloud points for a spherical shell (s orbitals / fallback) — denser near the
+// inner edge of the shell band, fading out toward the outer edge.
+function makeCloudShell(radius, color, count=800, spread=0.55){
+  const positions=[];
+  const rMin=radius*(1-spread/2), rMax=radius*(1+spread/2);
+  for(let i=0;i<count;i++){
+    const u=Math.pow(Math.random(),1.8);
+    const r=rMin+(rMax-rMin)*u;
+    const theta=Math.random()*Math.PI*2;
+    const phi=Math.acos(2*Math.random()-1);
+    positions.push(r*Math.sin(phi)*Math.cos(theta), r*Math.sin(phi)*Math.sin(theta), r*Math.cos(phi));
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  const mat=new THREE.PointsMaterial({color,size:visualStyle==='flat'?0.09:0.06,transparent:true,opacity:visualStyle==='flat'?0.95:0.75});
+  return new THREE.Points(geo,mat);
+}
+
+// Teardrop-shaped point cloud — constant point density per slice ALONG the axis,
+// so the wide part of the drop (bigger cross-section) naturally looks sparser.
+function makeTeardropCloud(axis, sign, r, color, count){
+  const positions=[];
+  const gap=r*0.14, length=r-gap, maxR=r*0.42;
+  const dir=axis.clone().normalize().multiplyScalar(sign);
+  const quat=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
+  for(let i=0;i<count;i++){
+    const t=Math.random();
+    const radius=maxR*teardropProfile(t)*Math.sqrt(Math.random());
+    const theta=Math.random()*Math.PI*2;
+    const y=gap+t*length;
+    const v=new THREE.Vector3(radius*Math.cos(theta), y, radius*Math.sin(theta));
+    v.applyQuaternion(quat);
+    positions.push(v.x,v.y,v.z);
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  const mat=new THREE.PointsMaterial({color,size:visualStyle==='flat'?0.09:0.06,transparent:true,opacity:visualStyle==='flat'?0.95:0.75});
+  return new THREE.Points(geo,mat);
+}
+
+// Cloud points scattered in a torus (dz² equatorial ring)
+function makeTorusCloud(radius, color, count){
+  const positions=[];
+  for(let i=0;i<count;i++){
+    const theta=Math.random()*Math.PI*2;
+    const rr=radius+(Math.random()-0.5)*radius*0.35;
+    const zz=(Math.random()-0.5)*radius*0.35;
+    positions.push(rr*Math.cos(theta), rr*Math.sin(theta), zz);
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  const mat=new THREE.PointsMaterial({color,size:visualStyle==='flat'?0.09:0.06,transparent:true,opacity:visualStyle==='flat'?0.95:0.75});
+  return new THREE.Points(geo,mat);
+}
+
+function getDLobeDirs(def){
+  if(def.special==='z2') return {special:'z2'};
+  const v1=new THREE.Vector3(...def.v1), v2=new THREE.Vector3(...def.v2);
+  if(def.alongAxis) return {dirs:[v1.clone(), v1.clone().negate(), v2.clone(), v2.clone().negate()]};
+  return {dirs:[
+    v1.clone().add(v2).normalize(),
+    v1.clone().sub(v2).normalize(),
+    v1.clone().negate().add(v2).normalize(),
+    v1.clone().negate().sub(v2).normalize(),
+  ]};
+}
+
+function buildDShapeWire(def, r, color){
+  const group=new THREE.Group();
+  const info=getDLobeDirs(def);
+  if(info.special==='z2'){
+    for(let s of [-1,1]) group.add(makeTeardropWire(new THREE.Vector3(0,0,1), s, r, color, lineOpacity(0.32)));
+    const torusGeo=new THREE.TorusGeometry(r*0.5, r*0.09, 8, 32);
+    const torusMat=new THREE.MeshBasicMaterial({color, wireframe:true, transparent:true, opacity:lineOpacity(0.3)});
+    const torus=new THREE.Mesh(torusGeo, torusMat);
+    group.add(torus);
+  } else {
+    for(let d of info.dirs) group.add(makeTeardropWire(d, 1, r, color, lineOpacity(0.32)));
+  }
+  return group;
+}
+
+function buildDShapeCloud(def, r, color, ptCount){
+  const group=new THREE.Group();
+  const info=getDLobeDirs(def);
+  if(info.special==='z2'){
+    for(let s of [-1,1]) group.add(makeTeardropCloud(new THREE.Vector3(0,0,1), s, r, color, Math.floor(ptCount/3)));
+    group.add(makeTorusCloud(r*0.5, color, Math.floor(ptCount/3)));
+  } else {
+    for(let d of info.dirs) group.add(makeTeardropCloud(d, 1, r, color, Math.floor(ptCount/4)));
+  }
+  return group;
+}
+
+// Orbital radii (Bohr-ish, scaled for display)
+const RADII={'1s':1.2,'2s':2.0,'2p':1.8,'3s':3.0,'3p':2.8,'3d':2.4,'4s':4.0,'4p':3.8,'4d':3.4,'4f':3.0,'5s':5.0,'5p':4.8,'5d':4.4,'5f':4.0,'6s':6.0,'6p':5.8,'6d':5.4,'7s':7.0,'7p':6.8};
+
+function getRadius(orb){return (RADII[orb]||parseFloat(orb[0])*1.2)*0.85;}
+
+// In cloud mode, a fixed point count spread over an ever-larger spherical
+// shell (as the shell radius grows for outer orbitals) looks progressively
+// sparser and less defined — surface area grows with r², point count didn't.
+// In Flat style specifically (where the shapes are meant to read as bold and
+// clear) we compensate by scaling the point count with r², using the
+// innermost s-shell (1s) as the "already well-defined" reference density —
+// and slightly beyond r² so bigger shells end up looking at least as crisp.
+function sphericalCloudCount(base, r){
+  if(visualStyle!=='flat') return Math.floor(base);
+  const refR=getRadius('1s');
+  const scale=Math.pow(r/refR, 2); // area-based: keeps dot-to-dot spacing constant as the shell grows
+  return Math.min(45000, Math.floor(base*scale));
+}
+
+
+function removePart(layer, key){
+  const rec=layer.rendered[key];
+  if(!rec) return;
+  for(let m of rec.meshes){
+    layer.group.remove(m);
+    const idx=layer.orbitalObjects.indexOf(m);
+    if(idx>=0) layer.orbitalObjects.splice(idx,1);
+  }
+  for(let ed of rec.electrons){
+    layer.group.remove(ed.mesh);
+    const idx=layer.electronObjects.indexOf(ed);
+    if(idx>=0) layer.electronObjects.splice(idx,1);
+  }
+  delete layer.rendered[key];
+}
+
+// Builds one classic-Bohr-model shell: a flat circular ring (lying in the
+// XY-plane, like Saturn's rings) plus its electrons evenly spaced around it,
+// orbiting in that same plane.
+const BOHR_RADII={1:1.3,2:2.3,3:3.3,4:4.3,5:5.3,6:6.3,7:7.3};
+
+// Each orbital TYPE within a shell gets its own "sub-center" offset from the
+// shell's base radius — this is what creates the wider s↔p↔d↔f gap. Within
+// one orbital's own sub-levels (e.g. 3p_x/y/z), rings cluster more tightly
+// around that type's sub-center.
+const BOHR_TYPE_OFFSET={s:-0.6, p:0, d:0.65, f:1.15};
+const BOHR_SUB_SPACING=0.15;
+
+// Radius for one Bohr-view ring, given a part key ("3s", "3p|x", "4d|xy"...).
+function bohrKeyRadius(key){
+  const [orb,sub]=key.split('|');
+  const n=parseInt(orb[0]), type=orb[1];
+  const center=(BOHR_RADII[n]||n*1.1) + (BOHR_TYPE_OFFSET[type]||0);
+  if(!sub) return center;
+  const subsList = type==='p' ? P_SUBS : D_SUB_DEFS.map(d=>d.key);
+  const idx=subsList.indexOf(sub);
+  return center + (idx-(subsList.length-1)/2)*BOHR_SUB_SPACING;
+}
+
+// Bohr-view rendering for one orbital/sub-level key: always a plain flat
+// ring (never the lobed p/d shapes used in Linee/Nuvola) — all sub-levels of
+// the SAME orbital share that orbital's one color, so "3p_x/y/z" all render
+// in the same hue rather than three different ones.
+function addBohrOrbitalRing(layer, key, cfg){
+  const [orb,sub]=key.split('|');
+  const color=ORB_COLORS[orb]||0xffffff;
+  const r=bohrKeyRadius(key);
+  const rec={meshes:[], electrons:[]};
+  layer.rendered[key]=rec;
+
+  const tube=visualStyle==='flat'?0.03:0.015;
+  const ringGeo=new THREE.TorusGeometry(r, tube, 8, 64);
+  const ringMat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:lineOpacity(0.5)});
+  const ring=new THREE.Mesh(ringGeo, ringMat);
+  layer.group.add(ring);
+  rec.meshes.push(ring);
+
+  // s/f (no sub-level) show their true electron count; p/d sub-levels always
+  // show their pair, matching the convention used in Linee/Nuvola.
+  const count = sub ? 2 : cfg[orb];
+  for(let i=0;i<count;i++){
+    const e=makeElectron(color);
+    layer.group.add(e);
+    const ed={mesh:e, orb:key, r, theta:(i/count)*Math.PI*2, speed:0.35+0.15*Math.random(), type:'bohr'};
+    layer.electronObjects.push(ed);
+    rec.electrons.push(ed);
+  }
+}
+
+// ── "LEGAME" BOND SCENE ──────────────────────────────────────────────────────
+// A standalone, self-contained scene (independent from the per-viewer atom
+// layer system above) that draws two atoms side by side, close together, in
+// the classic Bohr style — and, if their outer shells satisfy the octet rule
+// together, replaces their outer rings with one shared ring encircling both.
+// Electrons here are tracked in the flat `bondElectrons` array and animated
+// each frame from animateAll(), rather than through a viewer's layer system.
+let bondElectrons=[];
+
+// Builds a nucleus instantly (no fly-in animation — this is a quick derived
+// view, not a fresh atom "formation" moment).
+function buildStaticNucleus(Z, parentGroup){
+  const N=getNeutronCount(Z);
+  const total=Z+N;
+  const nucRadius=0.16+Math.cbrt(total)*0.05;
+
+  const haloGeo=new THREE.SphereGeometry(nucRadius+0.1,16,16);
+  const haloMat=new THREE.MeshBasicMaterial({color:0x4488ff,transparent:true,opacity:visualStyle==='flat'?0.05:0.1});
+  parentGroup.add(new THREE.Mesh(haloGeo,haloMat));
+
+  const nucleonGeo=new THREE.SphereGeometry(visualStyle==='flat'?0.075:0.05,9,9);
+  const pMat=new THREE.MeshBasicMaterial({color:visualStyle==='flat'?0xff2e88:0xff4444});
+  const nMat=new THREE.MeshBasicMaterial({color:visualStyle==='flat'?0x2ec4ff:0x4488ff});
+  for(let i=0;i<total;i++){
+    const mesh=new THREE.Mesh(nucleonGeo, i<Z?pMat:nMat);
+    const rr=nucRadius*0.85*Math.cbrt(Math.random());
+    const theta=Math.random()*Math.PI*2, phi=Math.acos(2*Math.random()-1);
+    mesh.position.set(rr*Math.sin(phi)*Math.cos(theta), rr*Math.sin(phi)*Math.sin(theta), rr*Math.cos(phi));
+    parentGroup.add(mesh);
+  }
+}
+
+// One individual (non-fused) shell ring, local to a single atom's sub-group.
+function addStaticBohrRing(parentGroup, key, cfg){
+  const [orb,sub]=key.split('|');
+  const color=ORB_COLORS[orb]||0xffffff;
+  const r=bohrKeyRadius(key);
+  const tube=visualStyle==='flat'?0.03:0.015;
+  const ringGeo=new THREE.TorusGeometry(r, tube, 8, 64);
+  const baseOpacity=lineOpacity(0.5);
+  const ringMat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:baseOpacity});
+  parentGroup.add(new THREE.Mesh(ringGeo, ringMat));
+  const electronMats=[];
+  const count = sub ? 2 : cfg[orb];
+  for(let i=0;i<count;i++){
+    const e=makeElectron(color);
+    e.material.transparent=true;
+    electronMats.push(e.material);
+    parentGroup.add(e);
+    bondElectrons.push({mesh:e, kind:'circle', r, theta:(i/count)*Math.PI*2, speed:0.35+0.15*Math.random()});
+  }
+  return {
+    setOpacity(factor){
+      ringMat.opacity=baseOpacity*factor;
+      for(let m of electronMats) m.opacity=factor;
+    }
+  };
+}
+
+// All the orbital/sub-level part keys for a given electron config — the same
+// set the sidebar list would show (main s/f orbitals, plus individual p/d
+// sub-levels). Used by the bond scene so it preserves the exact same detail
+// level as the main Bohr view.
+function allBohrKeysForCfg(cfg){
+  const keys=[];
+  for(let orb of Object.keys(cfg)){
+    if(cfg[orb]<=0) continue;
+    const t=orb[1];
+    if(t==='p'){
+      const nShow=Math.min(P_SUBS.length, Math.ceil(cfg[orb]/2));
+      for(let i=0;i<nShow;i++) keys.push(orb+'|'+P_SUBS[i]);
+    } else if(t==='d'){
+      const nShow=Math.min(D_SUB_DEFS.length, Math.ceil(cfg[orb]/2));
+      for(let i=0;i<nShow;i++) keys.push(orb+'|'+D_SUB_DEFS[i].key);
+    } else {
+      keys.push(orb);
+    }
+  }
+  return keys;
+}
+
+// A point on a "stadium" (elongated circle / capsule) outline: two straight
+// sides of length 2*halfLen at y=±capR, joined by semicircular caps of
+// radius capR centered on each atom's nucleus. t goes from 0 to 1 around
+// the whole closed loop.
+function stadiumPoint(t, halfLen, capR){
+  const straight=2*halfLen, arc=Math.PI*capR;
+  const total=2*straight+2*arc;
+  let s=((t%1)+1)%1*total;
+  if(s<straight) return {x:-halfLen+s, y:capR};
+  s-=straight;
+  if(s<arc){ const th=Math.PI/2-(s/arc)*Math.PI; return {x:halfLen+capR*Math.cos(th), y:capR*Math.sin(th)}; }
+  s-=arc;
+  if(s<straight) return {x:halfLen-s, y:-capR};
+  s-=straight;
+  const th=-Math.PI/2-(s/arc)*Math.PI;
+  return {x:-halfLen+capR*Math.cos(th), y:capR*Math.sin(th)};
+}
+
+// The radius of the largest shell an atom keeps individually visible once
+// bonded (i.e. every shell except the outer one, which fades into the fused
+// ring) — used to size the fused ring's caps so they fully clear it.
+function secondaryShellRadius(shells, maxN){
+  const others=Object.keys(shells).map(Number).filter(n=>n!==maxN);
+  if(others.length===0) return 0.5; // only one shell existed (e.g. H, He) — just clear the nucleus
+  return Math.max(...others.map(n=>BOHR_RADII[n]||n*1.1));
+}
+
+// The shared stadium-shaped ring that encircles both nuclei (and whatever
+// inner shells they kept) once bonded — never overlapping them, since its
+// straight sides + caps are sized to fully clear each atom's own shells.
+function addFusedRing(parentGroup, halfLen, capR, totalCount){
+  const color=0xffd700; // a neutral gold, distinct from either atom's own shell colors
+  const segs=100;
+  const pts=[];
+  for(let i=0;i<=segs;i++){
+    const p=stadiumPoint(i/segs, halfLen, capR);
+    pts.push(new THREE.Vector3(p.x, p.y, 0));
+  }
+  const curve=new THREE.CatmullRomCurve3(pts, true);
+  const tubeGeo=new THREE.TubeGeometry(curve, 160, visualStyle==='flat'?0.05:0.03, 8, true);
+  const baseOpacity=lineOpacity(0.6);
+  const tubeMat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+  parentGroup.add(new THREE.Mesh(tubeGeo, tubeMat));
+  const electronMats=[];
+  for(let i=0;i<totalCount;i++){
+    const e=makeElectron(color);
+    e.material.transparent=true;
+    e.material.opacity=0;
+    electronMats.push(e.material);
+    parentGroup.add(e);
+    bondElectrons.push({mesh:e, kind:'stadium', halfLen, capR, t:i/totalCount, speed:0.12+0.05*Math.random()});
+  }
+  return {
+    capR,
+    setOpacity(factor){
+      tubeMat.opacity=baseOpacity*factor;
+      for(let m of electronMats) m.opacity=factor;
+    }
+  };
+}
+
+// Rebuilds the whole bond scene from scratch inside viewerA's atomGroup,
+// using whatever elements are currently selected in A and B. Sets up an
+// animated approach (see bondAnim / updateBondAnimation): the atoms always
+// start apart and glide together. If bonding is possible, once they arrive
+// the outer orbital(s) — sub-levels included — cross-fade into the single
+// shared ring; inner orbitals always keep their full sub-level detail. If
+// bonding isn't possible, they stop as close as possible while the outer
+// shells still don't overlap. The whole scene is then uniformly scaled down
+// if needed so it comfortably fits the view regardless of atom size.
+let bondLayerGroup=null;
+let bondAnim=null;
+function buildBondLayer(){
+  const elA=viewerA.currentElement, elB=viewerB && viewerB.currentElement;
+  if(!elA||!elB) return;
+  const cfgA=viewerA.currentCfg, cfgB=viewerB.currentCfg;
+
+  if(bondLayerGroup){ viewerA.atomGroup.remove(bondLayerGroup); }
+  bondElectrons=[];
+  bondAnim=null;
+  const group=new THREE.Group();
+  viewerA.atomGroup.add(group);
+  bondLayerGroup=group;
+
+  const shellsA=computeShellCounts(cfgA), shellsB=computeShellCounts(cfgB);
+  const maxNA=Math.max(...Object.keys(shellsA).map(Number));
+  const maxNB=Math.max(...Object.keys(shellsB).map(Number));
+  const rA=BOHR_RADII[maxNA]||maxNA*1.1;
+  const rB=BOHR_RADII[maxNB]||maxNB*1.1;
+
+  const bond=canFormBond(cfgA, cfgB);
+  const startOffset=(rA+rB)*1.35;             // starting distance: clearly apart
+  const endOffset = bond ? (rA+rB)*0.4         // bonding: close/overlapping (outer rings fade → fused ring)
+                         : (rA+rB);            // no bond: exact tangency — as close as possible, never overlapping
+
+  const groupA=new THREE.Group(); groupA.position.x=-startOffset; group.add(groupA);
+  const groupB=new THREE.Group(); groupB.position.x=startOffset; group.add(groupB);
+
+  buildStaticNucleus(elA.n, groupA);
+  buildStaticNucleus(elB.n, groupB);
+
+  const keysA=allBohrKeysForCfg(cfgA), keysB=allBohrKeysForCfg(cfgB);
+  const innerKeysA=keysA.filter(k=>keyShellNumber(k)!==maxNA);
+  const outerKeysA=keysA.filter(k=>keyShellNumber(k)===maxNA);
+  const innerKeysB=keysB.filter(k=>keyShellNumber(k)!==maxNB);
+  const outerKeysB=keysB.filter(k=>keyShellNumber(k)===maxNB);
+
+  for(let k of innerKeysA) addStaticBohrRing(groupA, k, cfgA);
+  for(let k of innerKeysB) addStaticBohrRing(groupB, k, cfgB);
+  const outerRecsA=outerKeysA.map(k=>addStaticBohrRing(groupA, k, cfgA));
+  const outerRecsB=outerKeysB.map(k=>addStaticBohrRing(groupB, k, cfgB));
+
+  let fusedRec=null, totalWidth;
+  if(bond){
+    const totalE=shellsA[maxNA]+shellsB[maxNB];
+    const capR=Math.max(secondaryShellRadius(shellsA,maxNA), secondaryShellRadius(shellsB,maxNB))*1.45;
+    fusedRec=addFusedRing(group, endOffset, capR, totalE);
+    totalWidth=2*(endOffset+capR);
+  } else {
+    totalWidth=2*endOffset+rA+rB;
+  }
+
+  // Fit the whole pair within a comfortable width, scaling everything down
+  // uniformly (not just the fused ring) if it would otherwise be too big.
+  const MAX_WIDTH=13;
+  const scale=totalWidth>MAX_WIDTH ? MAX_WIDTH/totalWidth : 1;
+  group.scale.setScalar(scale);
+
+  bondAnim={
+    groupA, groupB, startOffset, endOffset,
+    startTime:performance.now(), approachDuration:1600,
+    bond, outerRecsA, outerRecsB, fusedRec,
+    fadeStarted:false, fadeStartTime:0, fadeDuration:1200
+  };
+}
+
+// Advances the approach + (if bonding) crossfade animation. Called every
+// frame from animateAll() while a bond scene exists and is still animating.
+function updateBondAnimation(){
+  if(!bondAnim) return;
+  const now=performance.now();
+  const t=Math.min(1, (now-bondAnim.startTime)/bondAnim.approachDuration);
+  const te=1-Math.pow(1-t,3); // ease-out cubic
+  const offset=bondAnim.startOffset+(bondAnim.endOffset-bondAnim.startOffset)*te;
+  bondAnim.groupA.position.x=-offset;
+  bondAnim.groupB.position.x=offset;
+
+  if(t>=1){
+    if(bondAnim.bond){
+      if(!bondAnim.fadeStarted){ bondAnim.fadeStarted=true; bondAnim.fadeStartTime=now; }
+      const ft=Math.min(1, (now-bondAnim.fadeStartTime)/bondAnim.fadeDuration);
+      for(let rec of bondAnim.outerRecsA) rec.setOpacity(1-ft);
+      for(let rec of bondAnim.outerRecsB) rec.setOpacity(1-ft);
+      bondAnim.fusedRec.setOpacity(ft);
+      if(ft>=1) bondAnim=null; // animation fully settled
+    } else {
+      bondAnim=null; // no bond — approach finished, nothing further to animate
+    }
+  }
+}
+
+// cfg is the config object of the atom this layer belongs to (electron counts
+// per orbital) — passed explicitly rather than read off a global, since two
+// independent atoms (A/B) may be on screen at once.
+function addPart(layer, key, mode, cfg){
+  if(mode==='bohr'){
+    addBohrOrbitalRing(layer, key, cfg);
+    return;
+  }
+  const [orb, sub]=key.split('|');
+  const count=cfg[orb];
+  const type=orb[1];
+  const color=ORB_COLORS[orb]||0xffffff;
+  const r=getRadius(orb);
+  const rec={meshes:[], electrons:[]};
+  layer.rendered[key]=rec;
+
+  if(type==='s'){
+    if(mode==='lines'){
+      const sphere=makeWireSphereGrid(r, color, lineOpacity(0.32));
+      layer.group.add(sphere); layer.orbitalObjects.push(sphere); rec.meshes.push(sphere);
+      for(let i=0;i<count;i++){
+        const e=makeElectron(color);
+        layer.group.add(e);
+        const ed={mesh:e, orb, r, theta:Math.random()*Math.PI*2, phi:Math.random()*Math.PI, speed:0.4+Math.random()*0.3, type:'s'};
+        layer.electronObjects.push(ed); rec.electrons.push(ed);
+      }
+    } else {
+      const cloud=makeCloudShell(r, color, sphericalCloudCount((count*480+900)*cloudDensity, r), 0.55);
+      layer.group.add(cloud); layer.orbitalObjects.push(cloud); rec.meshes.push(cloud);
+    }
+  } else if(type==='f'){
+    if(mode==='lines'){
+      const sphere=makeWireSphereGrid(r, color, lineOpacity(0.26));
+      const ringGeo=new THREE.TorusGeometry(r, 0.025, 6, 48);
+      const ringMat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:lineOpacity(0.4)});
+      const ring=new THREE.Mesh(ringGeo, ringMat);
+      layer.group.add(sphere); layer.group.add(ring);
+      layer.orbitalObjects.push(sphere, ring); rec.meshes.push(sphere, ring);
+      for(let i=0;i<count;i++){
+        const e=makeElectron(color);
+        layer.group.add(e);
+        const ed={mesh:e, orb, r, theta:Math.random()*Math.PI*2, phi:Math.random()*Math.PI, speed:0.3+Math.random()*0.2, type:'s'};
+        layer.electronObjects.push(ed); rec.electrons.push(ed);
+      }
+    } else {
+      const cloud=makeCloudShell(r, color, sphericalCloudCount((count*200+400)*cloudDensity, r), 0.55);
+      layer.group.add(cloud); layer.orbitalObjects.push(cloud); rec.meshes.push(cloud);
+    }
+  } else if(type==='p'){
+    const axisMap={x:new THREE.Vector3(1,0,0), y:new THREE.Vector3(0,1,0), z:new THREE.Vector3(0,0,1)};
+    const axis=axisMap[sub];
+    const c=SUB_COLORS[sub];
+    if(mode==='lines'){
+      for(let s of [-1,1]){
+        const lobe=makeTeardropWire(axis, s, r, c, lineOpacity(0.32));
+        layer.group.add(lobe); layer.orbitalObjects.push(lobe); rec.meshes.push(lobe);
+      }
+      for(let k=0;k<2;k++){
+        const e=makeElectron(c);
+        layer.group.add(e);
+        const sign=k===0?1:-1;
+        const ed={mesh:e, orb, r:r*0.6, theta:Math.random()*Math.PI*2, phi:Math.PI/2, speed:0.5+Math.random()*0.3, type:'p', axis, sign};
+        layer.electronObjects.push(ed); rec.electrons.push(ed);
+      }
+    } else {
+      for(let s of [-1,1]){
+        const cloud=makeTeardropCloud(axis, s, r, c, Math.floor(750*cloudDensity));
+        layer.group.add(cloud); layer.orbitalObjects.push(cloud); rec.meshes.push(cloud);
+      }
+    }
+  } else if(type==='d'){
+    const def=D_SUB_DEFS.find(d=>d.key===sub);
+    const c=D_SUB_COLORS[sub];
+    if(mode==='lines'){
+      const shape=buildDShapeWire(def, r, c);
+      layer.group.add(shape); layer.orbitalObjects.push(shape); rec.meshes.push(shape);
+      for(let k=0;k<2;k++){
+        const e=makeElectron(c);
+        layer.group.add(e);
+        const ed={mesh:e, orb, r:r*0.7, theta:Math.random()*Math.PI*2, phi:Math.random()*Math.PI, speed:0.35+Math.random()*0.25, type:'s'};
+        layer.electronObjects.push(ed); rec.electrons.push(ed);
+      }
+    } else {
+      const cloud=buildDShapeCloud(def, r, c, Math.floor(1500*cloudDensity));
+      layer.group.add(cloud); layer.orbitalObjects.push(cloud); rec.meshes.push(cloud);
+    }
+  }
+}
+
+// Update cloud point sizes/opacity across every viewer (cheap — live on 'input')
+function updateCloudParams(){
+  const sz=parseFloat(document.getElementById('size-slider').value);
+  const intens=parseFloat(document.getElementById('int-slider').value);
+  document.getElementById('size-val').textContent=sz.toFixed(1);
+  document.getElementById('int-val').textContent=intens.toFixed(2);
+  for(let v of [viewerA, viewerB]){
+    if(!v) continue;
+    for(let layer of v.layers){
+      for(let o of layer.orbitalObjects){
+        o.traverse(c=>{
+          if(c.isPoints){
+            c.material.size=sz*0.06;
+            c.material.opacity=Math.min(1,intens*0.16);
+          }
+        });
+      }
+    }
+  }
+}
+
+// Actually regenerate the point clouds with more/fewer points (real density,
+// not just opacity). Expensive-ish, so only triggered when the slider drag ends,
+// and only meaningful in cloud view mode.
+function regenerateCloudDensity(){
+  if(viewMode!=='cloud') return;
+  const intens=parseFloat(document.getElementById('int-slider').value);
+  cloudDensity=intens/2.9; // 2.9 was the original default → factor 1 at the old baseline
+  for(let v of [viewerA, viewerB]){
+    if(!v || !v.currentLayer) continue;
+    const layer=v.currentLayer;
+    const keys=Object.keys(layer.rendered);
+    if(keys.length===0) continue;
+    for(let k of keys) removePart(layer,k);
+    for(let k of keys) addPart(layer,k,'cloud',v.currentCfg);
+  }
+}
+
+document.getElementById('size-slider').addEventListener('input', updateCloudParams);
+document.getElementById('int-slider').addEventListener('input', updateCloudParams);
+document.getElementById('int-slider').addEventListener('change', regenerateCloudDensity);
+
+// ── VIEWER FACTORY ───────────────────────────────────────────────────────────
+// Everything needed to display ONE independent atom: its own renderer, scene,
+// camera, mouse-drag rotation, atom layers, and the currently-selected element.
+// Two of these (viewerA / viewerB) can exist at once for side-by-side compare.
+function createViewer(canvasEl, paneEl){
+  const renderer=new THREE.WebGLRenderer({canvas:canvasEl,antialias:true,alpha:true});
+  renderer.setPixelRatio(window.devicePixelRatio);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(50,2,0.1,1000);
+  camera.position.set(0,0,12);
+  const atomGroup=new THREE.Group();
+  scene.add(atomGroup);
+
+  const viewer={
+    canvas:canvasEl, pane:paneEl, renderer, scene, camera, atomGroup,
+    layers:[], currentLayer:null, currentElement:null, currentCfg:{},
+    rotX:0.3, rotY:0, isDragging:false, prevMouse:{x:0,y:0}
+  };
+
+  function resize(){
+    const w=paneEl.clientWidth, h=paneEl.clientHeight;
+    if(w<2||h<2) return;
+    renderer.setSize(w,h);
+    camera.aspect=w/h;
+    camera.updateProjectionMatrix();
+  }
+  viewer.resize=resize;
+  resize();
+  new ResizeObserver(resize).observe(paneEl);
+
+  canvasEl.addEventListener('mousedown', e=>{viewer.isDragging=true; viewer.prevMouse={x:e.clientX,y:e.clientY};});
+  window.addEventListener('mouseup', ()=>{viewer.isDragging=false;});
+  canvasEl.addEventListener('mousemove', e=>{
+    if(!viewer.isDragging) return;
+    const dx=e.clientX-viewer.prevMouse.x, dy=e.clientY-viewer.prevMouse.y;
+    viewer.rotY+=dx*0.005; viewer.rotX+=dy*0.005;
+    viewer.prevMouse={x:e.clientX,y:e.clientY};
+  });
+  canvasEl.addEventListener('wheel', e=>{
+    e.preventDefault();
+    viewer.camera.position.z=Math.max(3,Math.min(30,viewer.camera.position.z+e.deltaY*0.01));
+  }, {passive:false});
+
+  // Removes every atom layer from this viewer (used when switching to a new atom).
+  viewer.clearAllLayers=function(){
+    for(let layer of viewer.layers){
+      layer.dead=true;
+      viewer.atomGroup.remove(layer.group);
+    }
+    viewer.layers=[];
+    viewer.currentLayer=null;
+  };
+
+  viewer.newLayer=function(){
+    viewer.clearAllLayers();
+    const group=new THREE.Group();
+    viewer.atomGroup.add(group);
+    const layer={group, nucleus:null, orbitalObjects:[], electronObjects:[], flights:[], rendered:{}, buildGen:0, dead:false};
+    viewer.layers.push(layer);
+    viewer.currentLayer=layer;
+    return layer;
+  };
+
+  // Builds the nucleus by having each proton (red) / neutron (blue) fly in
+  // one at a time from a random point outside, converging to its resting spot.
+  viewer.buildNucleus=function(Z, layer){
+    const N=getNeutronCount(Z);
+    const total=Z+N;
+    const nucRadius=0.16+Math.cbrt(total)*0.05;
+
+    const nucGroup=new THREE.Group();
+    layer.group.add(nucGroup);
+    layer.nucleus=nucGroup;
+
+    const haloGeo=new THREE.SphereGeometry(nucRadius+0.1,16,16);
+    const haloMat=new THREE.MeshBasicMaterial({color:0x4488ff,transparent:true,opacity:visualStyle==='flat'?0.05:0.1});
+    nucGroup.add(new THREE.Mesh(haloGeo,haloMat));
+
+    const queue=[];
+    for(let i=0;i<Z;i++) queue.push('p');
+    for(let i=0;i<N;i++) queue.push('n');
+    for(let i=queue.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [queue[i],queue[j]]=[queue[j],queue[i]];
+    }
+
+    const nucleonGeo=new THREE.SphereGeometry(visualStyle==='flat'?0.075:0.05,9,9);
+    const pMat=new THREE.MeshBasicMaterial({color:visualStyle==='flat'?0xff2e88:0xff4444});
+    const nMat=new THREE.MeshBasicMaterial({color:visualStyle==='flat'?0x2ec4ff:0x4488ff});
+
+    layer.flights=[];
+    layer.nucleusTotal=total;
+    layer.nucleusLanded=0;
+    layer.nucleusReady=false;
+    const totalFormMs=2600;
+    const spawnInterval=Math.max(10,Math.min(70,totalFormMs/Math.max(1,total)));
+    const flightDuration=420;
+    let idx=0;
+    (function spawnNext(){
+      if(layer.dead) return;
+      if(idx>=queue.length) return;
+      const type=queue[idx++];
+      const mesh=new THREE.Mesh(nucleonGeo, type==='p'?pMat:nMat);
+
+      const rr=nucRadius*0.85*Math.cbrt(Math.random());
+      const theta=Math.random()*Math.PI*2, phi=Math.acos(2*Math.random()-1);
+      const endPos=new THREE.Vector3(rr*Math.sin(phi)*Math.cos(theta), rr*Math.sin(phi)*Math.sin(theta), rr*Math.cos(phi));
+
+      // The "empty space" nucleons fly in from scales WITH the nucleus itself
+      // (proportional to nucRadius), so a tiny nucleus (e.g. hydrogen) forms
+      // in a compact, proportionally small volume instead of a fixed-size void.
+      const dist=nucRadius*(3+Math.random()*3);
+      const theta2=Math.random()*Math.PI*2, phi2=Math.acos(2*Math.random()-1);
+      const startPos=new THREE.Vector3(dist*Math.sin(phi2)*Math.cos(theta2), dist*Math.sin(phi2)*Math.sin(theta2), dist*Math.cos(phi2));
+
+      mesh.position.copy(startPos);
+      nucGroup.add(mesh);
+      layer.flights.push({mesh, start:startPos, end:endPos, startTime:performance.now(), duration:flightDuration});
+      setTimeout(spawnNext, spawnInterval);
+    })();
+  };
+
+
+  // Core engine: syncs this layer's 3D parts to an EXPLICIT desired-keys set.
+  // Only added/removed parts are touched — everything already on screen stays
+  // completely undisturbed. Used both by rebuildCurrentLayer (DOM-checkbox
+  // driven) and by anything that needs to restore a known set of parts without
+  // touching the sidebar (style changes, compare-mode tab restores).
+  // staggerCloud=true reveals cloud parts one at a time too (used on atom switch).
+  viewer.applyPartsSet=function(want, staggerCloud){
+    const layer=viewer.currentLayer;
+    if(!layer || !layer.nucleusReady) return;
+
+    layer.buildGen++; // always invalidate any in-flight staggered queue from a previous call
+    const myGen=layer.buildGen;
+
+    const have=new Set(Object.keys(layer.rendered));
+    for(let key of have){
+      if(!want.has(key)) removePart(layer, key);
+    }
+    const toAdd=[...want].filter(k=>!have.has(k));
+    if(toAdd.length===0) return;
+
+    if(viewMode==='lines'){
+      const queue=toAdd;
+      (function next(){
+        if(layer.dead||myGen!==layer.buildGen) return;
+        if(queue.length===0) return;
+        const key=queue.shift();
+        addPart(layer, key, 'lines', viewer.currentCfg);
+        setTimeout(next, 220);
+      })();
+    } else if(staggerCloud){
+      const queue=toAdd;
+      (function next(){
+        if(layer.dead||myGen!==layer.buildGen) return;
+        if(queue.length===0) return;
+        const key=queue.shift();
+        addPart(layer, key, viewMode, viewer.currentCfg);
+        setTimeout(next, 200);
+      })();
+    } else {
+      for(let key of toAdd) addPart(layer, key, viewMode, viewer.currentCfg);
+    }
+  };
+
+  viewer.rebuildCurrentLayer=function(staggerCloud){
+    if(!viewer.currentLayer || !viewer.currentElement) return;
+    viewer.applyPartsSet(desiredParts(getVisibility()), staggerCloud);
+  };
+
+  viewer.selectElement=function(n){
+    const el=ELEMENTS.find(e=>e.n===n);
+    if(!el) return;
+    viewer.currentElement=el;
+    viewer.currentCfg=getConfig(n);
+
+    const layer=viewer.newLayer();
+    layer.restoreKeys=null; // null → brand-new atom, default all-checked once ready
+    if(bondMode && (viewer===viewerA||viewer===viewerB)) layer.group.visible=false;
+    viewer.buildNucleus(n, layer);
+
+    if(activeViewer===viewer){
+      refreshSidebarInfo(viewer);
+      updateOrbitalList(viewer.currentCfg, null); // null → brand-new atom, default all-checked
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelector('.filter-btn').classList.add('active');
+    }
+
+    // Orbitals only start fading in once the nucleus has fully formed
+    // (see the flight-landing check in viewer.render below).
+
+    if(bondMode && (viewer===viewerA||viewer===viewerB)){
+      buildBondLayer();
+      updateCompatibleHighlight(viewer.currentCfg);
+    }
+  };
+
+  // Rebuilds this viewer's atom from scratch (new nucleus-formation animation)
+  // using the CURRENT visual style, restoring exactly the orbitals that were
+  // visible before — used when switching between Realistico/Flat.
+  viewer.rebuildWithCurrentStyle=function(){
+    if(!viewer.currentElement) return;
+    const keep=renderedKeysOf(viewer);
+    const n=viewer.currentElement.n;
+    const layer=viewer.newLayer();
+    layer.restoreKeys=keep;
+    if(bondMode && (viewer===viewerA||viewer===viewerB)) layer.group.visible=false;
+    viewer.buildNucleus(n, layer);
+  };
+
+
+  viewer.render=function(){
+    if(!viewer.isDragging && autoRotate) viewer.rotY+=0.002;
+    viewer.atomGroup.rotation.x=viewer.rotX;
+    viewer.atomGroup.rotation.y=viewer.rotY;
+
+    const now=performance.now();
+    for(let layer of viewer.layers){
+      if(layer.flights && layer.flights.length){
+        for(let i=layer.flights.length-1;i>=0;i--){
+          const f=layer.flights[i];
+          const t=(now-f.startTime)/f.duration;
+          if(t>=1){
+            f.mesh.position.copy(f.end);
+            layer.flights.splice(i,1);
+            layer.nucleusLanded++;
+            if(!layer.nucleusReady && layer.nucleusLanded>=layer.nucleusTotal){
+              layer.nucleusReady=true;
+              if(layer.restoreKeys){
+                viewer.applyPartsSet(layer.restoreKeys, true);
+              } else {
+                viewer.rebuildCurrentLayer(true);
+              }
+            }
+            continue;
+          }
+          const te=1-Math.pow(1-t,3);
+          f.mesh.position.lerpVectors(f.start,f.end,te);
+        }
+      }
+      for(let ed of layer.electronObjects){
+        if(ed.type==='s'){
+          ed.theta+=ed.speed*0.02; ed.phi+=ed.speed*0.013;
+          const r=ed.r;
+          ed.mesh.position.set(r*Math.sin(ed.phi)*Math.cos(ed.theta), r*Math.sin(ed.phi)*Math.sin(ed.theta), r*Math.cos(ed.phi));
+        } else if(ed.type==='p'){
+          ed.theta+=ed.speed*0.025;
+          const pos=ed.axis.clone().multiplyScalar(ed.sign*ed.r*Math.abs(Math.cos(ed.theta)));
+          const perp=new THREE.Vector3(ed.axis.y, ed.axis.z, ed.axis.x);
+          pos.addScaledVector(perp, ed.r*0.4*Math.sin(ed.theta));
+          ed.mesh.position.copy(pos);
+        } else if(ed.type==='bohr'){
+          ed.theta+=ed.speed*0.02;
+          ed.mesh.position.set(ed.r*Math.cos(ed.theta), ed.r*Math.sin(ed.theta), 0);
+        }
+      }
+    }
+    viewer.renderer.render(viewer.scene, viewer.camera);
+  };
+
+  return viewer;
+}
+
+// Approximate neutron count for a schematic nucleus (illustrative, not an isotope table):
+// the neutron/proton ratio grows roughly from 1.0 (light elements) to ~1.6 (heavy elements).
+function getNeutronCount(Z){
+  if(Z===1) return 0; // protium, the common case, has no neutron
+  const ratio=1.0+0.6*(Z/118);
+  return Math.round(Z*ratio);
+}
+
+// ── ORBITAL CHECKBOX LIST (reflects/controls the current ACTIVE viewer) ─────
+function updateOrbitalList(cfg, renderedKeys){
+  const list=document.getElementById('orbital-list');
+  list.innerHTML='';
+
+  const orbKeys=Object.keys(cfg).filter(o=>cfg[o]>0);
+  const maxE={s:2,p:6,d:10,f:14};
+
+  for(let orb of orbKeys){
+    const count=cfg[orb];
+    const color=ORB_COLORS[orb]||0xffffff;
+    const hexColor='#'+color.toString(16).padStart(6,'0');
+    const t=orb[1];
+    const mainChecked=renderedKeys ? renderedKeys.has(orb) : true;
+
+    const row=document.createElement('div');
+    row.className='orb-row';
+    row.innerHTML=`
+      <input type="checkbox" class="orb-check" ${mainChecked?'checked':''} data-orb="${orb}">
+      <div class="orb-color" style="background:${hexColor}"></div>
+      <span class="orb-name">${orb}</span>
+      <span class="orb-electrons">${count}/${maxE[t]} e⁻</span>
+    `;
+    list.appendChild(row);
+    const mainCb=row.querySelector('.orb-check');
+    mainCb.addEventListener('change', function(){
+      // toggling the main level cascades the same value to all its sub-levels
+      document.querySelectorAll(`.orb-sub-check[data-orb="${orb}"]`).forEach(sc=>{ sc.checked=this.checked; });
+      activeViewer.rebuildCurrentLayer(false);
+    });
+
+    let subs=null, subColors=null, subLabel=k=>k;
+    if(t==='p'){ subs=P_SUBS; subColors=SUB_COLORS; }
+    else if(t==='d'){ subs=D_SUB_DEFS.map(d=>d.key); subColors=D_SUB_COLORS; subLabel=k=>D_SUB_LABELS[k]; }
+
+    if(subs && count>0){
+      const nShow=Math.min(subs.length, Math.ceil(count/2));
+      for(let i=0;i<nShow;i++){
+        const key=subs[i];
+        const subChecked=renderedKeys ? renderedKeys.has(orb+'|'+key) : true;
+        const sub=document.createElement('div');
+        sub.className='orb-row orb-sub';
+        const sc=subColors[key];
+        const shex='#'+sc.toString(16).padStart(6,'0');
+        sub.innerHTML=`
+          <input type="checkbox" class="orb-check orb-sub-check" ${subChecked?'checked':''} data-orb="${orb}" data-sub="${key}">
+          <div class="orb-color" style="background:${shex};width:7px;height:7px"></div>
+          <span class="orb-name">${orb}_${subLabel(key)}</span>
+        `;
+        list.appendChild(sub);
+        sub.querySelector('.orb-check').addEventListener('change', ()=>activeViewer.rebuildCurrentLayer(false));
+      }
+    }
+  }
+}
+
+// Read checkbox state from the DOM → { orb: {checked, subs:Set|null} }
+function getVisibility(){
+  const map={};
+  document.querySelectorAll('#orbital-list .orb-check').forEach(cb=>{
+    const orb=cb.dataset.orb;
+    const sub=cb.dataset.sub;
+    if(!map[orb]) map[orb]={checked:false, subs:null};
+    if(sub){
+      if(!map[orb].subs) map[orb].subs=new Set();
+      if(cb.checked) map[orb].subs.add(sub);
+    } else {
+      map[orb].checked=cb.checked;
+    }
+  });
+  return map;
+}
+
+// Desired set of part-keys ("3s", "3p|x", "4d|xy", ...). For p/d orbitals each
+// sub-level checkbox is authoritative on its own: a child is shown whenever ITS
+// checkbox is checked, independently of the parent's state. The parent checkbox
+// is only a convenience that cascades its value down to its children on click.
+function desiredParts(vis){
+  const parts=new Set();
+  for(let orb of Object.keys(vis)){
+    const v=vis[orb];
+    if(v.subs){
+      for(let s of v.subs) parts.add(orb+'|'+s);
+    } else if(v.checked){
+      parts.add(orb);
+    }
+  }
+  return parts;
+}
+
+function renderedKeysOf(viewer){
+  return new Set(viewer.currentLayer ? Object.keys(viewer.currentLayer.rendered) : []);
+}
+
+// Reflects a viewer's current element/config into the shared sidebar header
+// and highlights it on the periodic table.
+function refreshSidebarInfo(viewer){
+  const el=viewer.currentElement;
+  if(!el) return;
+  document.getElementById('atom-symbol-big').textContent=el.sym;
+  document.getElementById('atom-name').innerHTML=`${el.name} <span style="font-size:10px;color:#555">Z=${el.n}</span>`;
+  document.getElementById('atom-config').innerHTML=configStr(viewer.currentCfg).split(' ').map(term=>`<span class="cfg-term">${term}</span>`).join('');
+  document.querySelectorAll('.el.active').forEach(e=>e.classList.remove('active'));
+  const elDiv=document.querySelector(`.el[data-n="${el.n}"]`);
+  if(elDiv) elDiv.classList.add('active');
+}
+
+// Re-renders every viewer's currently-visible parts in the new style. Uses
+// each viewer's own `rendered` keys as the source of truth (not the DOM), so
+// this works correctly for the inactive viewer too, whose checkboxes aren't
+// on screen. Bohr, Lines and Cloud all share the exact same orbital/sub-level
+// key format (only the geometry addPart builds for a key differs), so no
+// key translation is needed when switching between them.
+function setView(mode){
+  viewMode=mode;
+  document.querySelectorAll('.view-btn').forEach(b=>{
+    if(b.id==='compare-btn'||b.id==='style-btn') return;
+    b.classList.toggle('active', b.dataset.viewMode===mode);
+  });
+  const cc=document.getElementById('cloud-controls');
+  if(mode==='cloud') cc.classList.add('show'); else cc.classList.remove('show');
+
+  for(let v of [viewerA, viewerB]){
+    if(!v || !v.currentLayer) continue;
+    const layer=v.currentLayer;
+    const keys=Object.keys(layer.rendered);
+    if(keys.length===0) continue;
+
+    for(let k of keys) removePart(layer,k);
+    layer.buildGen++; // invalidate any in-flight staggered queue from a previous action
+    for(let k of keys){
+      try{ addPart(layer,k,mode, v.currentCfg); }
+      catch(e){ console.error('setView: failed to add part', k, e); }
+    }
+  }
+
+  updateLegameVisibility();
+  if(bondMode) buildBondLayer(); // still bonded and still in Bohr — just refresh visuals
+}
+
+// "Tutti" / "Valenza" / "Nessuno" — act on the currently ACTIVE viewer.
+function setPreset(mode, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+
+  const cfg=activeViewer.currentCfg;
+  const orbKeys=Object.keys(cfg).filter(o=>cfg[o]>0);
+  const maxN=orbKeys.length?Math.max(...orbKeys.map(o=>parseInt(o[0]))):null;
+
+  document.querySelectorAll('#orbital-list .orb-check').forEach(cb=>{
+    const orb=cb.dataset.orb;
+    if(mode==='none'){ cb.checked=false; }
+    else if(mode==='all'){ cb.checked=true; }
+    else if(mode==='valence'){ cb.checked=(keyShellNumber(orb)===maxN); }
+  });
+  activeViewer.rebuildCurrentLayer(false);
+}
+
+// ── LEGEND CLICK → HIGHLIGHT CATEGORY ────────────────────────────────────────
+document.querySelectorAll('.leg-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    const cat=item.dataset.cat;
+    const wasActive=item.classList.contains('leg-active');
+    document.querySelectorAll('.leg-item').forEach(i=>i.classList.remove('leg-active'));
+    document.querySelectorAll('.el.cat-highlight').forEach(e=>e.classList.remove('cat-highlight'));
+    if(!wasActive){
+      item.classList.add('leg-active');
+      document.querySelectorAll('.el.'+catClass[cat]).forEach(e=>e.classList.add('cat-highlight'));
+    }
+  });
+});
+
+// ── A/B TABS & COMPARE MODE ──────────────────────────────────────────────────
+let viewerA, viewerB=null, activeViewer, compareMode=false;
+let bondMode=false;
+let visualStyle='realistic'; // 'realistic' | 'flat'
+
+// Auto-rotation is shared by both viewers (A and B rotate/stop together).
+// Manual drag-rotation with the mouse always still works either way.
+let autoRotate=true;
+function toggleRotation(){
+  autoRotate=!autoRotate;
+  const btn=document.getElementById('rotate-toggle-btn');
+  btn.textContent = autoRotate ? 'Stop' : 'Gira';
+  btn.classList.toggle('rotation-stopped', !autoRotate);
+
+  // In Bohr style, stopping also snaps to a frontal (top-down) view, so the
+  // flat rings are seen face-on as full circles rather than mid-tilt — the
+  // person can still freely re-tilt it afterward with the mouse.
+  if(!autoRotate && viewMode==='bohr'){
+    for(let v of [viewerA, viewerB]){
+      if(v){ v.rotX=0; v.rotY=0; }
+    }
+  }
+}
+
+// Switches between the two visual representations — same atom, same
+// selection, same everything, just re-skinned. Both currently-shown atoms
+// (A, and B if compare mode is on) replay their nucleus-formation animation
+// in the new style, then restore exactly the orbitals that were visible.
+function toggleStyle(){
+  visualStyle = visualStyle==='realistic' ? 'flat' : 'realistic';
+  document.body.classList.toggle('theme-flat', visualStyle==='flat');
+  document.getElementById('style-btn').classList.toggle('active', visualStyle==='flat');
+  document.getElementById('bg-swatches').classList.toggle('show', visualStyle==='flat');
+  for(let v of [viewerA, viewerB]){
+    if(v && v.currentElement) v.rebuildWithCurrentStyle();
+  }
+  if(bondMode) buildBondLayer();
+}
+
+// ── FLAT-STYLE BACKGROUND COLOR PICKER ───────────────────────────────────────
+// A deliberately small, curated palette — the same muted/mid-tone hues used
+// for the periodic table categories — plus plain white and black. No neon.
+const BG_PALETTE=['#0e6b78','#ff5b5b','#ffb020','#34d399','#6c8cff','#d16bd1','#22e0a0','#22d3ee','#a78bfa','#f472b6','#fb923c','#ffffff','#000000'];
+
+function hexToRgb(hex){
+  const v=parseInt(hex.slice(1),16);
+  return [(v>>16)&255,(v>>8)&255,v&255];
+}
+function rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
+}
+function shadeColor(hex, amt){
+  const [r,g,b]=hexToRgb(hex);
+  return rgbToHex(r+amt,g+amt,b+amt);
+}
+function relLuminance(hex){
+  const [r,g,b]=hexToRgb(hex).map(v=>v/255);
+  const lin=c=> c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4);
+  return 0.2126*lin(r)+0.7152*lin(g)+0.0722*lin(b);
+}
+
+function applyBgColor(hex){
+  const light=relLuminance(hex)>0.55;
+  const panel=shadeColor(hex, light?18:26);
+  const border=shadeColor(hex, light?-30:38);
+  const root=document.documentElement.style;
+  root.setProperty('--flat-bg', hex);
+  root.setProperty('--flat-panel', light ? shadeColor(hex,-10) : panel);
+  root.setProperty('--flat-border', border);
+  root.setProperty('--flat-text', light ? '#1a2b2e' : '#ffffff');
+  root.setProperty('--flat-text-dim', light ? '#3d5052' : '#dffcff');
+  document.querySelectorAll('.bg-swatch').forEach(sw=>{
+    sw.classList.toggle('bg-swatch-selected', sw.dataset.hex.toLowerCase()===hex.toLowerCase());
+  });
+}
+
+(function buildBgSwatches(){
+  const container=document.getElementById('bg-swatches');
+  for(let hex of BG_PALETTE){
+    const sw=document.createElement('div');
+    sw.className='bg-swatch';
+    sw.style.background=hex;
+    sw.dataset.hex=hex;
+    sw.title=hex;
+    sw.onclick=()=>applyBgColor(hex);
+    container.appendChild(sw);
+  }
+  applyBgColor(BG_PALETTE[0]); // default: the original teal
+})();
+
+function switchActiveViewer(which){
+  const target=which==='A'?viewerA:viewerB;
+  if(!target || activeViewer===target) return;
+  activeViewer=target;
+  document.getElementById('tab-a').classList.toggle('active', which==='A');
+  document.getElementById('tab-b').classList.toggle('active', which==='B');
+  document.getElementById('pane-label-a').classList.toggle('pane-label-active', which==='A');
+  document.getElementById('pane-label-b').classList.toggle('pane-label-active', which==='B');
+  refreshSidebarInfo(target);
+  updateOrbitalList(target.currentCfg, renderedKeysOf(target));
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+}
+
+// ── DRAGGABLE SPLIT DIVIDER (compare mode) ──────────────────────────────────
+let splitRatio=0.5; // fraction of the wrapper's width given to pane A
+
+function applySplit(){
+  if(!compareMode) return;
+  const wrapper=document.getElementById('viewers-wrapper');
+  const paneA=document.getElementById('pane-a');
+  const dividerW=6;
+  const totalW=wrapper.clientWidth;
+  const usable=Math.max(0,totalW-dividerW);
+  const aW=Math.round(usable*splitRatio);
+  paneA.style.flex='0 0 '+aW+'px';
+  resizeBothSoon();
+}
+
+function resizeBothSoon(){
+  requestAnimationFrame(()=>{
+    viewerA.resize();
+    if(viewerB) viewerB.resize();
+  });
+}
+
+(function initDivider(){
+  const divider=document.getElementById('split-divider');
+  let dragging=false;
+  divider.addEventListener('mousedown', e=>{
+    dragging=true;
+    divider.classList.add('dragging');
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    const wrapper=document.getElementById('viewers-wrapper');
+    const rect=wrapper.getBoundingClientRect();
+    let ratio=(e.clientX-rect.left)/rect.width;
+    ratio=Math.max(0.15,Math.min(0.85,ratio));
+    splitRatio=ratio;
+    applySplit();
+  });
+  window.addEventListener('mouseup', ()=>{
+    if(dragging){ dragging=false; divider.classList.remove('dragging'); }
+  });
+})();
+
+function toggleCompare(){
+  compareMode=!compareMode;
+  document.getElementById('compare-btn').classList.toggle('active', compareMode);
+  const paneA=document.getElementById('pane-a');
+  const paneB=document.getElementById('pane-b');
+  const divider=document.getElementById('split-divider');
+  const abTabs=document.getElementById('ab-tabs');
+  const labelA=document.getElementById('pane-label-a');
+
+  if(compareMode){
+    paneB.style.display='block';
+    divider.style.display='block';
+    abTabs.style.display='flex';
+    labelA.style.display='block';
+    splitRatio=0.5;
+    applySplit(); // sizes pane A explicitly; pane B (flex:1) fills the rest deterministically
+    if(!viewerB){
+      viewerB=createViewer(document.getElementById('c2'), paneB);
+      viewerB.selectElement(viewerA.currentElement.n);
+    }
+    applySplit(); // re-apply once B exists, so both are guaranteed correctly sized
+  } else {
+    paneA.style.flex='';
+    paneB.style.display='none';
+    divider.style.display='none';
+    abTabs.style.display='none';
+    labelA.style.display='none';
+    activeViewer=viewerA;
+    document.getElementById('tab-a').classList.add('active');
+    document.getElementById('tab-b').classList.remove('active');
+    document.getElementById('pane-label-a').classList.add('pane-label-active');
+    document.getElementById('pane-label-b').classList.remove('pane-label-active');
+    refreshSidebarInfo(viewerA);
+    updateOrbitalList(viewerA.currentCfg, renderedKeysOf(viewerA));
+    resizeBothSoon();
+  }
+  updateLegameVisibility();
+}
+
+// ── LEGAME (BOND) TOGGLE ──────────────────────────────────────────────────────
+// The "Legame" button only ever makes sense when two atoms are on screen
+// (Confronta) in the Bohr view (shells, not sublevels). Whenever either of
+// those conditions stops holding, we force bond mode off automatically.
+function updateLegameVisibility(){
+  const show=compareMode && viewMode==='bohr';
+  document.getElementById('legame-btn').style.display = show ? 'inline-block' : 'none';
+  if(!show) toggleBond(true);
+}
+
+function toggleBond(forceOff){
+  if(forceOff && !bondMode) return;
+  bondMode = forceOff ? false : !bondMode;
+  document.getElementById('legame-btn').classList.toggle('active', bondMode);
+  const paneA=document.getElementById('pane-a');
+  const paneB=document.getElementById('pane-b');
+  const divider=document.getElementById('split-divider');
+
+  if(bondMode){
+    divider.style.display='none';
+    paneB.style.display='none';
+    paneA.style.flex='1 1 auto';
+    if(viewerA.currentLayer) viewerA.currentLayer.group.visible=false;
+    buildBondLayer();
+    updateCompatibleHighlight(viewerA.currentCfg);
+    requestAnimationFrame(()=>viewerA.resize());
+  } else {
+    if(bondLayerGroup){ viewerA.atomGroup.remove(bondLayerGroup); bondLayerGroup=null; }
+    bondElectrons=[];
+    bondAnim=null;
+    updateCompatibleHighlight(null);
+    if(viewerA.currentLayer) viewerA.currentLayer.group.visible=true;
+    if(compareMode){
+      divider.style.display='block';
+      paneB.style.display='block';
+      applySplit();
+    }
+  }
+}
+
+new ResizeObserver(()=>{ if(compareMode) applySplit(); }).observe(document.getElementById('viewers-wrapper'));
+
+// Extra safety net: some browsers/environments are sluggish to fire
+// ResizeObserver on a plain window resize, so also react to it directly.
+window.addEventListener('resize', ()=>{
+  if(compareMode) applySplit();
+  else resizeBothSoon();
+});
+
+// ── ANIMATION LOOP (drives both viewers) ─────────────────────────────────────
+function animateAll(){
+  requestAnimationFrame(animateAll);
+  viewerA.render();
+  if(viewerB) viewerB.render();
+  if(bondMode){
+    updateBondAnimation();
+    for(let be of bondElectrons){
+      if(be.kind==='circle'){
+        be.theta+=be.speed*0.02;
+        be.mesh.position.set(be.r*Math.cos(be.theta), be.r*Math.sin(be.theta), 0);
+      } else if(be.kind==='stadium'){
+        be.t+=be.speed*0.004;
+        const p=stadiumPoint(be.t, be.halfLen, be.capR);
+        be.mesh.position.set(p.x, p.y, 0);
+      }
+    }
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+viewerA=createViewer(document.getElementById('c'), document.getElementById('pane-a'));
+activeViewer=viewerA;
+animateAll();
+viewerA.selectElement(19); // Potassium, matches the original reference view
+
+// ── REUSABLE PUBLIC API ───────────────────────────────────────────────────────
+// The atom viewer and the periodic table are self-contained enough to lift
+// into another project as-is. This namespace is the intended entry point;
+// everything else in this file is this page's own UI wiring around them.
+//
+//  Chemverse.ELEMENTS               → the 118-element data array {n,sym,name,cat,group,period}
+//  Chemverse.catClass               → category → CSS class name map (needs the .cat-* rules from <style>)
+//  Chemverse.getConfig(Z)           → electron configuration object for atomic number Z, e.g. {1s:2,2s:2,2p:2}
+//  Chemverse.computeShellCounts(cfg)→ groups a config into per-shell totals, e.g. {1:2,2:4}
+//  Chemverse.buildPeriodicTable(gridEl, gridLanaEl, onSelect) → renders the table into two container
+//                                      elements (main grid + lanthanide/actinide row); onSelect(n) fires on click
+//  Chemverse.createViewer(canvasEl, paneEl) → a full standalone 3D atom viewer bound to a <canvas> +
+//                                      its sizing container. Key methods on the returned viewer object:
+//                                        viewer.selectElement(n)         – load a new atom by atomic number
+//                                        viewer.applyPartsSet(keysSet)   – show exactly this set of orbital/
+//                                                                          shell keys, with no DOM dependency
+//                                        viewer.rebuildWithCurrentStyle()– replays formation in the current
+//                                                                          realistic/flat visual style
+//                                        viewer.render()                 – call once per animation frame
+//                                        viewer.resize()                 – call after the pane's size changes
+//                                      A minimal host page only needs: create a <canvas> inside a sized
+//                                      container, call createViewer(canvas, container), call
+//                                      viewer.selectElement(1), and drive requestAnimationFrame(viewer.render).
+//                                      No dependency on this page's sidebar/checkboxes is required —
+//                                      applyPartsSet() takes an explicit Set of keys instead.
+window.Chemverse={
+  ELEMENTS, catClass,
+  getConfig, computeShellCounts,
+  buildPeriodicTable, createViewer
+};
+
+
+</script>
+</body>
+</html>
