@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Chemverse — Tavola Periodica</title>
+<title>Stato fondamentale e stato eccitato — Chemverse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:500;overflow:hidden;height:100vh;display:flex;flex-direction:column}
-#topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 10px;background:#0a0a0a;border-bottom:1px solid #222;flex-shrink:0}
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#0a0a0a;border-bottom:1px solid #222;flex-shrink:0}
 #back-btn{background:#1a1a2e;border:1px solid #444;color:#0ff;padding:3px 10px;font-size:11px;cursor:pointer;border-radius:3px;font-family:'Chakra Petch',sans-serif;letter-spacing:0.04em}
 #back-btn:hover{background:#222}
-#pt-title{color:#ddd;font-size:13px;letter-spacing:0.18em;font-weight:700;font-family:'Chakra Petch',sans-serif}
+#pt-title{color:#ddd;font-size:19px;letter-spacing:0.16em;font-weight:700;font-family:'Chakra Petch',sans-serif}
 #synth-label{font-size:10px;color:#555;letter-spacing:0.1em}
-#periodic-section{flex-shrink:0;padding:4px 6px 2px;background:#050505}
+#periodic-section{flex-shrink:0;padding:20px 6px 22px;background:#050505}
 .pt-grid{display:grid;grid-template-columns:repeat(18,1fr);gap:1px;max-width:100%}
 .el{font-size:9px;padding:3px 2px;border:1px solid #333;cursor:pointer;text-align:center;line-height:1.25;border-radius:1px;transition:filter 0.15s;user-select:none;min-width:0;display:flex;align-items:baseline;justify-content:center;gap:2px}
 .el:hover{filter:brightness(1.5);border-color:#0ff}
@@ -159,37 +159,22 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
 <body>
 
 <div id="topbar">
-  <button id="back-btn">← ChemVerse</button>
-  <span id="pt-title">T A V O L A &nbsp; P E R I O D I C A</span>
-  <span id="synth-label">• sintetico</span>
+  <a id="back-btn" href="atomo.html" style="text-decoration:none">← Atomo</a>
+  <span id="pt-title">STATO FONDAMENTALE E STATO ECCITATO</span>
+  <span id="synth-label">• atomo</span>
 </div>
 
 <div id="periodic-section">
-  <div class="pt-grid" id="pt-grid"></div>
-  <div style="height:4px"></div>
-  <div class="pt-grid" id="pt-grid-lana" style="grid-template-columns:repeat(15,1fr);max-width:calc(15 * (100%/18));margin-left:calc(3 * (100%/18))"></div>
+  <div class="pt-grid" id="pt-grid" style="grid-template-columns:repeat(8,1fr);max-width:calc(8 * 62px);gap:6px;margin:0 auto"></div>
 </div>
-
-<div id="legend">
-  <div class="leg-item" data-cat="alkali"><div class="leg-dot" style="background:#ff8888"></div><span style="color:#ff8888">Alcalini</span></div>
-  <div class="leg-item" data-cat="alkaline"><div class="leg-dot" style="background:#ffcc66"></div><span style="color:#ffcc66">Alcalino-terrosi</span></div>
-  <div class="leg-item" data-cat="transition"><div class="leg-dot" style="background:#88cc88"></div><span style="color:#88cc88">Metalli di transizione</span></div>
-  <div class="leg-item" data-cat="post"><div class="leg-dot" style="background:#8888ff"></div><span style="color:#8888ff">Post-transizione</span></div>
-  <div class="leg-item" data-cat="metalloid"><div class="leg-dot" style="background:#cc88cc"></div><span style="color:#cc88cc">Metalloidi</span></div>
-  <div class="leg-item" data-cat="nonmetal"><div class="leg-dot" style="background:#44ffaa"></div><span style="color:#44ffaa">Non metalli</span></div>
-  <div class="leg-item" data-cat="halogen"><div class="leg-dot" style="background:#44dddd"></div><span style="color:#44dddd">Alogeni</span></div>
-  <div class="leg-item" data-cat="noble"><div class="leg-dot" style="background:#aa88ff"></div><span style="color:#aa88ff">Gas nobili</span></div>
-  <div class="leg-item" data-cat="lanthanide"><div class="leg-dot" style="background:#dd88ff"></div><span style="color:#dd88ff">Lantanidi</span></div>
-  <div class="leg-item" data-cat="actinide"><div class="leg-dot" style="background:#ffaa44"></div><span style="color:#ffaa44">Attinidi</span></div>
-  <div class="leg-item" data-cat="unknown"><div class="leg-dot" style="background:#888"></div><span style="color:#888">Proprietà ignote</span></div>
-</div>
+<style>
+  #pt-grid .el{height:52px;border-radius:6px}
+  #pt-grid .el .sym{font-size:16px}
+  #pt-grid .el .num{font-size:9px}
+</style>
 
 <div id="main">
   <div id="sidebar">
-    <div id="ab-tabs">
-      <button class="ab-tab active" id="tab-a" onclick="switchActiveViewer('A')">Atomo A</button>
-      <button class="ab-tab" id="tab-b" onclick="switchActiveViewer('B')">Atomo B</button>
-    </div>
     <div id="atom-info">
       <div id="atom-info-header">⊙ L'ATOMO</div>
       <div id="atom-symbol-big">H</div>
@@ -207,26 +192,10 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
 
   <div id="canvas-area">
     <div id="viewers-wrapper">
-      <div id="pane-a" class="viewer-pane"><canvas id="c"></canvas><div class="pane-label pane-label-active" id="pane-label-a" style="display:none" onclick="switchActiveViewer('A')">A</div></div>
-      <div id="split-divider"></div>
-      <div id="pane-b" class="viewer-pane" style="display:none"><canvas id="c2"></canvas><div class="pane-label" id="pane-label-b" onclick="switchActiveViewer('B')">B</div></div>
-      <div class="pane-label" id="rotate-toggle-btn" style="top:44px" onclick="toggleRotation()">Stop</div>
+      <div id="pane-a" class="viewer-pane"><canvas id="c"></canvas></div>
+      <div class="pane-label" id="rotate-toggle-btn" onclick="toggleRotation()">Stop</div>
     </div>
-    <div id="view-toggle">
-      <button class="view-btn" data-view-mode="bohr" onclick="setView('bohr')">Bohr</button>
-      <button class="view-btn active" data-view-mode="lines" onclick="setView('lines')">Linee</button>
-      <button class="view-btn" data-view-mode="cloud" onclick="setView('cloud')">Nuvola</button>
-      <button class="view-btn" id="compare-btn" onclick="toggleCompare()" style="margin-left:8px;border-radius:20px">⇄ Confronta</button>
-      <button class="view-btn" id="legame-btn" onclick="toggleBond()" style="margin-left:8px;border-radius:20px;display:none">⚛ Legame</button>
-      <button class="view-btn" id="style-btn" onclick="toggleStyle()" style="margin-left:8px;border-radius:20px">🎨 Stile Flat</button>
-    </div>
-    <div id="cloud-controls">
-      <div class="ctrl-label"><span>Grandezza punti</span><span id="size-val">0.3</span></div>
-      <input type="range" class="ctrl-slider" id="size-slider" min="0.1" max="2" step="0.1" value="0.3">
-      <div class="ctrl-label"><span>Intensità</span><span id="int-val">2.90</span></div>
-      <input type="range" class="ctrl-slider" id="int-slider" min="0.5" max="9" step="0.1" value="2.9">
-    </div>
-    <div id="bg-swatches">
+    <div id="bg-swatches" class="show">
       <div id="bg-swatches-label">SFONDO</div>
     </div>
     <div id="loading-msg">Caricamento orbitali...</div>
@@ -245,116 +214,6 @@ const ELEMENTS = [
   {n:6,sym:'C',name:'Carbonio',cat:'nonmetal',group:14,period:2},
   {n:7,sym:'N',name:'Azoto',cat:'nonmetal',group:15,period:2},
   {n:8,sym:'O',name:'Ossigeno',cat:'nonmetal',group:16,period:2},
-  {n:9,sym:'F',name:'Fluoro',cat:'halogen',group:17,period:2},
-  {n:10,sym:'Ne',name:'Neon',cat:'noble',group:18,period:2},
-  {n:11,sym:'Na',name:'Sodio',cat:'alkali',group:1,period:3},
-  {n:12,sym:'Mg',name:'Magnesio',cat:'alkaline',group:2,period:3},
-  {n:13,sym:'Al',name:'Alluminio',cat:'post',group:13,period:3},
-  {n:14,sym:'Si',name:'Silicio',cat:'metalloid',group:14,period:3},
-  {n:15,sym:'P',name:'Fosforo',cat:'nonmetal',group:15,period:3},
-  {n:16,sym:'S',name:'Zolfo',cat:'nonmetal',group:16,period:3},
-  {n:17,sym:'Cl',name:'Cloro',cat:'halogen',group:17,period:3},
-  {n:18,sym:'Ar',name:'Argon',cat:'noble',group:18,period:3},
-  {n:19,sym:'K',name:'Potassio',cat:'alkali',group:1,period:4},
-  {n:20,sym:'Ca',name:'Calcio',cat:'alkaline',group:2,period:4},
-  {n:21,sym:'Sc',name:'Scandio',cat:'transition',group:3,period:4},
-  {n:22,sym:'Ti',name:'Titanio',cat:'transition',group:4,period:4},
-  {n:23,sym:'V',name:'Vanadio',cat:'transition',group:5,period:4},
-  {n:24,sym:'Cr',name:'Cromo',cat:'transition',group:6,period:4},
-  {n:25,sym:'Mn',name:'Manganese',cat:'transition',group:7,period:4},
-  {n:26,sym:'Fe',name:'Ferro',cat:'transition',group:8,period:4},
-  {n:27,sym:'Co',name:'Cobalto',cat:'transition',group:9,period:4},
-  {n:28,sym:'Ni',name:'Nichel',cat:'transition',group:10,period:4},
-  {n:29,sym:'Cu',name:'Rame',cat:'transition',group:11,period:4},
-  {n:30,sym:'Zn',name:'Zinco',cat:'transition',group:12,period:4},
-  {n:31,sym:'Ga',name:'Gallio',cat:'post',group:13,period:4},
-  {n:32,sym:'Ge',name:'Germanio',cat:'metalloid',group:14,period:4},
-  {n:33,sym:'As',name:'Arsenico',cat:'metalloid',group:15,period:4},
-  {n:34,sym:'Se',name:'Selenio',cat:'nonmetal',group:16,period:4},
-  {n:35,sym:'Br',name:'Bromo',cat:'halogen',group:17,period:4},
-  {n:36,sym:'Kr',name:'Kripton',cat:'noble',group:18,period:4},
-  {n:37,sym:'Rb',name:'Rubidio',cat:'alkali',group:1,period:5},
-  {n:38,sym:'Sr',name:'Stronzio',cat:'alkaline',group:2,period:5},
-  {n:39,sym:'Y',name:'Ittrio',cat:'transition',group:3,period:5},
-  {n:40,sym:'Zr',name:'Zirconio',cat:'transition',group:4,period:5},
-  {n:41,sym:'Nb',name:'Niobio',cat:'transition',group:5,period:5},
-  {n:42,sym:'Mo',name:'Molibdeno',cat:'transition',group:6,period:5},
-  {n:43,sym:'Tc',name:'Tecnezio',cat:'transition',group:7,period:5},
-  {n:44,sym:'Ru',name:'Rutenio',cat:'transition',group:8,period:5},
-  {n:45,sym:'Rh',name:'Rodio',cat:'transition',group:9,period:5},
-  {n:46,sym:'Pd',name:'Palladio',cat:'transition',group:10,period:5},
-  {n:47,sym:'Ag',name:'Argento',cat:'transition',group:11,period:5},
-  {n:48,sym:'Cd',name:'Cadmio',cat:'transition',group:12,period:5},
-  {n:49,sym:'In',name:'Indio',cat:'post',group:13,period:5},
-  {n:50,sym:'Sn',name:'Stagno',cat:'post',group:14,period:5},
-  {n:51,sym:'Sb',name:'Antimonio',cat:'metalloid',group:15,period:5},
-  {n:52,sym:'Te',name:'Tellurio',cat:'metalloid',group:16,period:5},
-  {n:53,sym:'I',name:'Iodio',cat:'halogen',group:17,period:5},
-  {n:54,sym:'Xe',name:'Xenon',cat:'noble',group:18,period:5},
-  {n:55,sym:'Cs',name:'Cesio',cat:'alkali',group:1,period:6},
-  {n:56,sym:'Ba',name:'Bario',cat:'alkaline',group:2,period:6},
-  {n:57,sym:'La',name:'Lantanio',cat:'lanthanide',group:3,period:6},
-  {n:58,sym:'Ce',name:'Cerio',cat:'lanthanide',group:null,period:6},
-  {n:59,sym:'Pr',name:'Praseodimio',cat:'lanthanide',group:null,period:6},
-  {n:60,sym:'Nd',name:'Neodimio',cat:'lanthanide',group:null,period:6},
-  {n:61,sym:'Pm',name:'Promezio',cat:'lanthanide',group:null,period:6},
-  {n:62,sym:'Sm',name:'Samario',cat:'lanthanide',group:null,period:6},
-  {n:63,sym:'Eu',name:'Europio',cat:'lanthanide',group:null,period:6},
-  {n:64,sym:'Gd',name:'Gadolinio',cat:'lanthanide',group:null,period:6},
-  {n:65,sym:'Tb',name:'Terbio',cat:'lanthanide',group:null,period:6},
-  {n:66,sym:'Dy',name:'Disprosio',cat:'lanthanide',group:null,period:6},
-  {n:67,sym:'Ho',name:'Olmio',cat:'lanthanide',group:null,period:6},
-  {n:68,sym:'Er',name:'Erbio',cat:'lanthanide',group:null,period:6},
-  {n:69,sym:'Tm',name:'Tulio',cat:'lanthanide',group:null,period:6},
-  {n:70,sym:'Yb',name:'Itterbio',cat:'lanthanide',group:null,period:6},
-  {n:71,sym:'Lu',name:'Lutezio',cat:'lanthanide',group:null,period:6},
-  {n:72,sym:'Hf',name:'Afnio',cat:'transition',group:4,period:6},
-  {n:73,sym:'Ta',name:'Tantalio',cat:'transition',group:5,period:6},
-  {n:74,sym:'W',name:'Tungsteno',cat:'transition',group:6,period:6},
-  {n:75,sym:'Re',name:'Renio',cat:'transition',group:7,period:6},
-  {n:76,sym:'Os',name:'Osmio',cat:'transition',group:8,period:6},
-  {n:77,sym:'Ir',name:'Iridio',cat:'transition',group:9,period:6},
-  {n:78,sym:'Pt',name:'Platino',cat:'transition',group:10,period:6},
-  {n:79,sym:'Au',name:'Oro',cat:'transition',group:11,period:6},
-  {n:80,sym:'Hg',name:'Mercurio',cat:'transition',group:12,period:6},
-  {n:81,sym:'Tl',name:'Tallio',cat:'post',group:13,period:6},
-  {n:82,sym:'Pb',name:'Piombo',cat:'post',group:14,period:6},
-  {n:83,sym:'Bi',name:'Bismuto',cat:'post',group:15,period:6},
-  {n:84,sym:'Po',name:'Polonio',cat:'post',group:16,period:6},
-  {n:85,sym:'At',name:'Astato',cat:'halogen',group:17,period:6},
-  {n:86,sym:'Rn',name:'Radon',cat:'noble',group:18,period:6},
-  {n:87,sym:'Fr',name:'Francio',cat:'alkali',group:1,period:7},
-  {n:88,sym:'Ra',name:'Radio',cat:'alkaline',group:2,period:7},
-  {n:89,sym:'Ac',name:'Attinio',cat:'actinide',group:3,period:7},
-  {n:90,sym:'Th',name:'Torio',cat:'actinide',group:null,period:7},
-  {n:91,sym:'Pa',name:'Protoattinio',cat:'actinide',group:null,period:7},
-  {n:92,sym:'U',name:'Uranio',cat:'actinide',group:null,period:7},
-  {n:93,sym:'Np',name:'Nettunio',cat:'actinide',group:null,period:7},
-  {n:94,sym:'Pu',name:'Plutonio',cat:'actinide',group:null,period:7},
-  {n:95,sym:'Am',name:'Americio',cat:'actinide',group:null,period:7},
-  {n:96,sym:'Cm',name:'Curio',cat:'actinide',group:null,period:7},
-  {n:97,sym:'Bk',name:'Berkelio',cat:'actinide',group:null,period:7},
-  {n:98,sym:'Cf',name:'Californio',cat:'actinide',group:null,period:7},
-  {n:99,sym:'Es',name:'Einsteinio',cat:'actinide',group:null,period:7},
-  {n:100,sym:'Fm',name:'Fermio',cat:'actinide',group:null,period:7},
-  {n:101,sym:'Md',name:'Mendelevio',cat:'actinide',group:null,period:7},
-  {n:102,sym:'No',name:'Nobelio',cat:'actinide',group:null,period:7},
-  {n:103,sym:'Lr',name:'Laurenzio',cat:'actinide',group:null,period:7},
-  {n:104,sym:'Rf',name:'Rutherfordio',cat:'transition',group:4,period:7},
-  {n:105,sym:'Db',name:'Dubnio',cat:'transition',group:5,period:7},
-  {n:106,sym:'Sg',name:'Seaborgio',cat:'transition',group:6,period:7},
-  {n:107,sym:'Bh',name:'Bohrio',cat:'transition',group:7,period:7},
-  {n:108,sym:'Hs',name:'Hassio',cat:'transition',group:8,period:7},
-  {n:109,sym:'Mt',name:'Meitnerio',cat:'unknown',group:9,period:7},
-  {n:110,sym:'Ds',name:'Darmstadtio',cat:'unknown',group:10,period:7},
-  {n:111,sym:'Rg',name:'Roentgenio',cat:'unknown',group:11,period:7},
-  {n:112,sym:'Cn',name:'Copernicio',cat:'transition',group:12,period:7},
-  {n:113,sym:'Nh',name:'Nihonio',cat:'unknown',group:13,period:7},
-  {n:114,sym:'Fl',name:'Flerovio',cat:'unknown',group:14,period:7},
-  {n:115,sym:'Mc',name:'Moscovio',cat:'unknown',group:15,period:7},
-  {n:116,sym:'Lv',name:'Livermorio',cat:'unknown',group:16,period:7},
-  {n:117,sym:'Ts',name:'Tennesso',cat:'unknown',group:17,period:7},
-  {n:118,sym:'Og',name:'Oganessone',cat:'unknown',group:18,period:7},
 ];
 
 // Electron configurations
@@ -459,66 +318,24 @@ const catClass={alkali:'cat-alkali',alkaline:'cat-alkaline',transition:'cat-tran
   halogen:'cat-halogen',noble:'cat-noble',lanthanide:'cat-lanthanide',
   actinide:'cat-actinide',unknown:'cat-unknown'};
 
-// ── REUSABLE: PERIODIC TABLE BUILDER ─────────────────────────────────────────
-// Renders the full periodic table (main grid + lanthanide/actinide row) into
-// the given container elements, using the shared ELEMENTS data and catClass
-// map above. Takes no dependency on this page's specific viewers/sidebar:
-// `onSelect(atomicNumber)` is called whenever the person clicks an element,
-// so any host page can wire it up to whatever it wants to do with that pick.
-// This makes it a drop-in piece other projects can lift out as-is, together
-// with ELEMENTS/catClass and the .el/.cat-*/.pt-grid CSS rules above.
-function buildPeriodicTable(gridEl, gridLanaEl, onSelect){
-  const cells=Array(7).fill(null).map(()=>Array(18).fill(null));
-  const lana=[], acta=[];
+// ── SIMPLE ELEMENT ROW (this project only shows H through O) ────────────────
+// A lightweight cousin of the full periodic-table builder used elsewhere in
+// Chemverse: same per-category coloring and `.el` cell styling, just laid
+// out as a single row instead of the full 18-column grid with spacers.
+function buildElementRow(gridEl, onSelect){
   for(let el of ELEMENTS){
-    if(el.cat==='lanthanide'&&el.n!==57){lana.push(el);continue;}
-    if(el.cat==='actinide'&&el.n!==89){acta.push(el);continue;}
-    if(el.group&&el.period){
-      cells[el.period-1][el.group-1]=el;
-    }
-  }
-  for(let r=0;r<7;r++){
-    for(let c=0;c<18;c++){
-      const el=cells[r][c];
-      const div=document.createElement('div');
-      if(el){
-        div.className='el '+catClass[el.cat];
-        div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
-        div.title=el.name;
-        div.dataset.n=el.n;
-        div.onclick=()=>onSelect(el.n);
-      } else {
-        if(r===5&&c===2){
-          div.className='el cat-lanthanide';
-          div.style.opacity='0.4';
-          div.innerHTML='<span class="sym" style="font-size:6px">La-Lu</span><span class="num">57-71</span>';
-        } else if(r===6&&c===2){
-          div.className='el cat-actinide';
-          div.style.opacity='0.4';
-          div.innerHTML='<span class="sym" style="font-size:6px">Ac-Lr</span><span class="num">89-103</span>';
-        } else {
-          div.className='spacer el';
-          div.style.visibility='hidden';
-        }
-      }
-      gridEl.appendChild(div);
-    }
-  }
-  const lans=ELEMENTS.filter(e=>e.cat==='lanthanide');
-  const acts=ELEMENTS.filter(e=>e.cat==='actinide');
-  for(let el of [...lans, ...acts]){
     const div=document.createElement('div');
     div.className='el '+catClass[el.cat];
     div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
-    div.title=el.name; div.dataset.n=el.n;
+    div.title=el.name;
+    div.dataset.n=el.n;
     div.onclick=()=>onSelect(el.n);
-    gridLanaEl.appendChild(div);
+    gridEl.appendChild(div);
   }
 }
 
-buildPeriodicTable(
+buildElementRow(
   document.getElementById('pt-grid'),
-  document.getElementById('pt-grid-lana'),
   (n)=>activeViewer.selectElement(n)
 );
 
@@ -553,7 +370,7 @@ const D_SUB_COLORS={xy:0xff4444, yz:0x4488ff, xz:0x44cc44, x2y2:0xffaa00, z2:0xa
 const P_SUBS=['x','y','z'];
 
 // Current display mode ('lines' or 'cloud') — shared by both viewers.
-let viewMode='lines';
+let viewMode='bohr'; // this project only ever shows the Bohr view
 
 // Global point-cloud density multiplier (controlled by the "Intensità" slider).
 // 1.0 = the baseline density the shapes were originally tuned for.
@@ -1270,10 +1087,6 @@ function regenerateCloudDensity(){
   updateCloudParams(); // the newly-rebuilt points start at their default size — reapply the person's actual size/opacity settings
 }
 
-document.getElementById('size-slider').addEventListener('input', updateCloudParams);
-document.getElementById('int-slider').addEventListener('input', updateCloudParams);
-document.getElementById('int-slider').addEventListener('change', regenerateCloudDensity);
-
 // ── VIEWER FACTORY ───────────────────────────────────────────────────────────
 // Everything needed to display ONE independent atom: its own renderer, scene,
 // camera, mouse-drag rotation, atom layers, and the currently-selected element.
@@ -1853,28 +1666,6 @@ function resizeBothSoon(){
   });
 }
 
-(function initDivider(){
-  const divider=document.getElementById('split-divider');
-  let dragging=false;
-  divider.addEventListener('mousedown', e=>{
-    dragging=true;
-    divider.classList.add('dragging');
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', e=>{
-    if(!dragging) return;
-    const wrapper=document.getElementById('viewers-wrapper');
-    const rect=wrapper.getBoundingClientRect();
-    let ratio=(e.clientX-rect.left)/rect.width;
-    ratio=Math.max(0.15,Math.min(0.85,ratio));
-    splitRatio=ratio;
-    applySplit();
-  });
-  window.addEventListener('mouseup', ()=>{
-    if(dragging){ dragging=false; divider.classList.remove('dragging'); }
-  });
-})();
-
 function toggleCompare(){
   compareMode=!compareMode;
   document.getElementById('compare-btn').classList.toggle('active', compareMode);
@@ -1985,12 +1776,11 @@ function animateAll(){
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.body.classList.add('theme-flat');
-document.getElementById('style-btn').classList.add('active');
 document.getElementById('bg-swatches').classList.add('show');
 viewerA=createViewer(document.getElementById('c'), document.getElementById('pane-a'));
 activeViewer=viewerA;
 animateAll();
-viewerA.selectElement(19); // Potassium, matches the original reference view
+viewerA.selectElement(1); // Hydrogen — the classic ground/excited-state example
 
 // ── REUSABLE PUBLIC API ───────────────────────────────────────────────────────
 // The atom viewer and the periodic table are self-contained enough to lift
@@ -2001,8 +1791,8 @@ viewerA.selectElement(19); // Potassium, matches the original reference view
 //  Chemverse.catClass               → category → CSS class name map (needs the .cat-* rules from <style>)
 //  Chemverse.getConfig(Z)           → electron configuration object for atomic number Z, e.g. {1s:2,2s:2,2p:2}
 //  Chemverse.computeShellCounts(cfg)→ groups a config into per-shell totals, e.g. {1:2,2:4}
-//  Chemverse.buildPeriodicTable(gridEl, gridLanaEl, onSelect) → renders the table into two container
-//                                      elements (main grid + lanthanide/actinide row); onSelect(n) fires on click
+//  Chemverse.buildElementRow(gridEl, onSelect) → renders a simple row of elements into
+//                                      a container; onSelect(n) fires on click
 //  Chemverse.createViewer(canvasEl, paneEl) → a full standalone 3D atom viewer bound to a <canvas> +
 //                                      its sizing container. Key methods on the returned viewer object:
 //                                        viewer.selectElement(n)         – load a new atom by atomic number
@@ -2020,7 +1810,7 @@ viewerA.selectElement(19); // Potassium, matches the original reference view
 window.Chemverse={
   ELEMENTS, catClass,
   getConfig, computeShellCounts,
-  buildPeriodicTable, createViewer
+  buildElementRow, createViewer
 };
 
 

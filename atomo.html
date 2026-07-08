@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Atomo — Chemverse</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 24px 40px;
+    font-family: 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+  }
+  .back {
+    align-self: flex-start;
+    margin-bottom: 28px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #2dd4c4;
+    text-decoration: none;
+    border: 1px solid #2dd4c4;
+    border-radius: 20px;
+    padding: 6px 14px;
+  }
+  .back:hover { background: rgba(45,212,196,0.12); }
+
+  .title {
+    letter-spacing: 0.22em;
+    font-size: clamp(30px, 6vw, 44px);
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .subtitle {
+    margin-bottom: 52px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    color: #777;
+    text-align: center;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 140px);
+    gap: 32px 28px;
+    justify-content: center;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    text-decoration: none;
+  }
+  .icon-box {
+    width: 140px;
+    height: 140px;
+    border-radius: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover .icon-box {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.5);
+  }
+  .card:focus-visible .icon-box {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+  .icon-box svg { width: 86px; height: 86px; display: block; }
+  .label {
+    color: #fff;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.01em;
+    max-width: 130px;
+  }
+
+  .card.empty { cursor: default; }
+  .card.empty .icon-box {
+    background: #141414 !important;
+    border: 2px dashed #2a2a2a;
+  }
+  .card.empty:hover .icon-box { transform: none; box-shadow: none; }
+  .card.empty .label { color: #444; }
+
+  .footer {
+    margin-top: 48px;
+    border-top: 1px solid #2a2a2a;
+    width: 100%;
+    max-width: 680px;
+    padding-top: 16px;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: #555;
+    font-family: Arial, sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 620px) {
+    .grid { grid-template-columns: repeat(2, 140px); }
+  }
+</style>
+</head>
+<body>
+
+<a class="back" href="index.html">← Chemverse</a>
+
+<div class="title">Atomo</div>
+<div class="subtitle">SCEGLI COSA ESPLORARE</div>
+
+<div class="grid" id="card-grid"></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="dropShadow" x="-30%" y="-30%" width="170%" height="170%">
+      <feDropShadow dx="2.5" dy="4" stdDeviation="0.8" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="footer">Chemverse — Atomo</div>
+
+<script>
+const SECTIONS = [
+  {
+    label: 'Atomo',
+    href: 'chemverse-orbital.html',
+    bg: '#1a9e8f',
+    svg: `<g fill="none" filter="url(#dropShadow)">
+      <ellipse cx="43" cy="43" rx="34" ry="13" stroke="#f5c518" stroke-width="4" transform="rotate(-20 43 43)"/>
+      <ellipse cx="43" cy="43" rx="34" ry="13" stroke="#ef4444" stroke-width="4" transform="rotate(40 43 43)"/>
+      <ellipse cx="43" cy="43" rx="34" ry="13" stroke="#22c55e" stroke-width="4" transform="rotate(100 43 43)"/>
+      <circle cx="43" cy="43" r="9" fill="#ec4899"/>
+      <circle cx="43" cy="43" r="4" fill="#fff" opacity="0.8"/>
+      <circle cx="72" cy="34" r="4.5" fill="#f5c518"/>
+      <circle cx="18" cy="52" r="4" fill="#ef4444"/>
+    </g>`
+  },
+  {
+    label: 'Gli stati',
+    href: 'stati.html',
+    bg: '#7c3aed',
+    svg: `<g filter="url(#dropShadow)">
+      <circle cx="43" cy="60" r="26" fill="none" stroke="#c4b5fd" stroke-width="2.5" opacity="0.55"/>
+      <circle cx="43" cy="60" r="13" fill="none" stroke="#fff" stroke-width="3"/>
+      <circle cx="43" cy="73" r="4.5" fill="#fff"/>
+      <g stroke="#f5c518" stroke-width="3.2" stroke-linecap="round">
+        <line x1="43" y1="46" x2="43" y2="24"/>
+      </g>
+      <path d="M35 30 L43 18 L51 30 Z" fill="#f5c518"/>
+      <circle cx="43" cy="34" r="5" fill="#f5c518"/>
+    </g>`
+  },
+  { label: '', href: null, empty: true },
+  { label: '', href: null, empty: true }
+];
+
+const grid = document.getElementById('card-grid');
+for (const s of SECTIONS) {
+  if (s.empty) {
+    const card = document.createElement('div');
+    card.className = 'card empty';
+    card.innerHTML = `
+      <div class="icon-box" style="background:#141414"></div>
+      <div class="label">Presto</div>
+    `;
+    grid.appendChild(card);
+    continue;
+  }
+  const card = document.createElement('a');
+  card.className = 'card';
+  card.href = s.href;
+  card.innerHTML = `
+    <div class="icon-box" style="background:${s.bg}">
+      <svg viewBox="0 0 86 86" xmlns="http://www.w3.org/2000/svg">${s.svg}</svg>
+    </div>
+    <div class="label">${s.label}</div>
+  `;
+  grid.appendChild(card);
+}
+</script>
+
+</body>
+</html>
