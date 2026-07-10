@@ -11,7 +11,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#000;color:#fff;font-family:'Manrope',sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column}
 #topbar{display:flex;align-items:center;justify-content:space-between;padding:26px 24px;background:#0a0a0a;border-bottom:1px solid #222;flex-shrink:0}
-#back-btn{background:#1a1a2e;border:1px solid #444;color:#0ff;padding:3px 10px;font-size:11px;cursor:pointer;border-radius:3px;font-family:'Manrope',sans-serif;letter-spacing:0.04em}
+#back-btn{background:#1a1a2e;border:1px solid #444;color:#0ff;padding:5px 12px;font-size:14px;cursor:pointer;border-radius:3px;font-family:'Manrope',sans-serif;letter-spacing:0.04em}
 #back-btn:hover{background:#222}
 #pt-title{color:#ddd;font-size:24px;letter-spacing:0.02em;font-weight:700;font-family:'Unbounded',sans-serif}
 #synth-label{font-size:10px;color:#555;letter-spacing:0.1em}
@@ -50,21 +50,21 @@ body{background:#000;color:#fff;font-family:'Manrope',sans-serif;font-weight:400
 .ab-tab.active{background:#0a3a3a;color:#0ff;border-color:#0ff}
 #atom-info{background:#111;border:1px solid #222;border-radius:3px;padding:8px;margin-bottom:8px}
 #atom-info-header{display:flex;align-items:center;gap:4px;font-size:9px;color:#555;margin-bottom:6px;letter-spacing:0.1em;font-family:'Manrope',sans-serif}
-#atom-symbol-big{font-size:32px;font-weight:700;color:#fff;line-height:1;font-family:'Manrope',sans-serif;letter-spacing:0.01em}
-#atom-name{font-size:13px;color:#aaa}
-#atom-config{font-size:10px;color:#777;margin-top:6px;line-height:1.6;display:flex;flex-wrap:wrap;gap:3px 9px;font-family:'Manrope',sans-serif;font-weight:600}
+#atom-symbol-big{font-size:44px;font-weight:700;color:#fff;line-height:1;font-family:'Manrope',sans-serif;letter-spacing:0.01em}
+#atom-name{font-size:19px;color:#aaa}
+#atom-config{font-size:15px;color:#777;margin-top:6px;line-height:1.6;display:flex;flex-wrap:wrap;gap:3px 9px;font-family:'Manrope',sans-serif;font-weight:600}
 .cfg-term{white-space:nowrap}
-#orbitals-label{font-size:9px;color:#555;letter-spacing:0.1em;margin-bottom:6px;font-family:'Manrope',sans-serif}
+#orbitals-label{font-size:13px;color:#555;letter-spacing:0.1em;margin-bottom:6px;font-family:'Manrope',sans-serif}
 #orbital-filter{display:flex;gap:4px;margin-bottom:8px}
-.filter-btn{flex:1;padding:4px 2px;font-size:10px;border:1px solid #333;background:#111;color:#888;cursor:pointer;border-radius:2px;font-family:'Manrope',sans-serif;letter-spacing:0.03em;transition:all 0.15s}
+.filter-btn{flex:1;padding:6px 2px;font-size:14px;border:1px solid #333;background:#111;color:#888;cursor:pointer;border-radius:2px;font-family:'Manrope',sans-serif;letter-spacing:0.03em;transition:all 0.15s}
 .filter-btn.active{background:#0a3a3a;color:#0ff;border-color:#0ff}
 #orbital-list{display:flex;flex-direction:column;gap:2px}
 .orb-row{display:flex;align-items:center;gap:6px;padding:4px 4px;border-radius:2px}
 .orb-row:hover{background:#111}
 .orb-check{width:14px;height:14px;accent-color:#0ff;cursor:pointer;flex-shrink:0}
 .orb-color{width:11px;height:11px;border-radius:50%;flex-shrink:0}
-.orb-name{font-size:14px;color:#f2f2f2;font-weight:600;flex:1}
-.orb-electrons{font-size:13px;color:#b8b8b8;font-weight:600;margin-left:auto}
+.orb-name{font-size:18px;color:#f2f2f2;font-weight:600;flex:1}
+.orb-electrons{font-size:17px;color:#b8b8b8;font-weight:600;margin-left:auto}
 .orb-sub{padding-left:18px}
 .orb-sub .orb-name{font-size:13px;color:#d5d5d5;font-weight:500}
 #canvas-area{flex:1;min-width:0;min-height:0;position:relative;background:#000;overflow:hidden}
@@ -159,14 +159,34 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
 <body>
 
 <div id="topbar">
-  <a id="back-btn" href="atomo.html" style="text-decoration:none">← Atomo</a>
+  <button id="back-btn" onclick="handleBackButton()">← Torna</button>
   <span id="pt-title">STATO FONDAMENTALE E STATO ECCITATO</span>
   <span id="synth-label">• atomo</span>
 </div>
 
 <div id="periodic-section" class="seq-hidden">
+  <div id="choose-element-title">Scegli un elemento</div>
   <div class="pt-grid" id="pt-grid" style="grid-template-columns:repeat(10,1fr);max-width:calc(10 * 62px);gap:6px;margin:0 auto"></div>
+  <div id="energy-panel">
+    <div id="energy-control">
+      <div id="energy-label">ENERGIA<br>DEL FOTONE</div>
+      <input type="range" id="energy-slider" min="1" max="10" value="5" step="1">
+      <button id="fire-btn" onclick="fireEnergyAtAtom()">⚡ Spara</button>
+    </div>
+  </div>
 </div>
+<style>
+  #choose-element-title{text-align:center;font-family:'Unbounded',sans-serif;font-weight:700;font-size:19px;color:var(--flat-text,#ddd);margin-bottom:16px}
+  #energy-panel{max-width:560px;margin:20px auto 0;display:flex;flex-direction:column;align-items:center;gap:8px}
+  #energy-label{font-family:'Manrope',sans-serif;font-weight:800;font-size:11px;letter-spacing:0.1em;line-height:1.4;color:var(--flat-text,#ddd);white-space:nowrap}
+  #energy-control{display:flex;align-items:center;gap:16px;width:100%}
+  #energy-slider{flex:1;-webkit-appearance:none;appearance:none;height:10px;border-radius:6px;background:linear-gradient(90deg,#ff3b3b,#ff9d3b,#ffe33b,#3bff6e,#3bcaff,#8f3bff);outline:none;cursor:pointer}
+  #energy-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--flat-thumb,#fff);border:3px solid var(--flat-thumb-border,#222);cursor:pointer}
+  #energy-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--flat-thumb,#fff);border:3px solid var(--flat-thumb-border,#222);cursor:pointer}
+  #fire-btn{font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;color:#0a0a0a;background:#ffd700;border:none;border-radius:10px;padding:11px 18px;cursor:pointer;white-space:nowrap}
+  #fire-btn:hover{background:#ffe340}
+  #fire-btn:disabled{opacity:0.5;cursor:default}
+</style>
 <style>
   #pt-grid .el{height:52px;border-radius:6px}
   #pt-grid .el .sym{font-size:16px}
@@ -174,6 +194,7 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
   .seq-hidden{display:none !important}
   #seq-column{width:340px;flex-shrink:0;padding:40px 20px 0;overflow:hidden}
   #seq-boxes{display:flex;flex-direction:column;gap:14px}
+  #seq-box5-wrap{display:flex;flex-direction:column;gap:14px}
   .seq-box{position:relative;max-width:300px;padding:16px 40px 16px 18px;border-radius:12px;font-family:'Manrope',sans-serif;font-weight:700;font-size:20px;line-height:1.4;color:#0a0a0a;opacity:0;transition:opacity 1.3s ease,transform 1.3s ease}
   #seq-box1{transform:translateY(-160px)}
   #seq-box1.show{opacity:1;transform:translateY(0)}
@@ -183,13 +204,34 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
   #seq-box3.show{opacity:1;transform:translateY(0)}
   #seq-box4{transform:translateY(160px)}
   #seq-box4.show{opacity:1;transform:translateY(0)}
-  #seq-box5{transform:translateY(160px)}
+  #seq-box5{transform:translateY(-160px)}
   #seq-box5.show{opacity:1;transform:translateY(0)}
+  #seq-box6{transform:translateY(160px)}
+  #seq-box6.show{opacity:1;transform:translateY(0)}
+  #seq-box7{transform:translateY(160px)}
+  #seq-box7.show{opacity:1;transform:translateY(0)}
+  #seq-box8{transform:translateY(160px)}
+  #seq-box8.show{opacity:1;transform:translateY(0)}
+  #seq-box9{transform:translateY(160px)}
+  #seq-box9.show{opacity:1;transform:translateY(0)}
   .seq-ok-btn{position:absolute;bottom:10px;right:10px;background:#fff;color:#0a0a0a;border:none;border-radius:7px;padding:5px 14px;font-family:'Manrope',sans-serif;font-weight:700;font-size:12px;cursor:pointer}
   .seq-ok-btn:hover{background:#f0f0f0}
   .seq-back-btn{position:absolute;bottom:10px;right:60px;background:rgba(255,255,255,0.35);color:#0a0a0a;border:none;border-radius:7px;width:28px;height:24px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .seq-back-btn:hover{background:rgba(255,255,255,0.55)}
+  #seq-end-screen{position:fixed;top:80px;bottom:0;left:0;width:340px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:26px;padding:0 20px;z-index:15}
+  .seq-end-card{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;background:none;border:none;padding:0;font:inherit}
+  .seq-end-iconbox{width:108px;height:108px;border-radius:22px;display:flex;align-items:center;justify-content:center;transition:transform 0.15s ease,box-shadow 0.15s ease}
+  .seq-end-card:hover .seq-end-iconbox{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.45)}
+  .seq-end-iconbox svg{width:62px;height:62px;display:block}
+  .seq-end-label{color:var(--flat-text,#fff);font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;text-align:center;letter-spacing:0.01em;max-width:180px}
 </style>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="seqIconShadow" x="-30%" y="-30%" width="170%" height="170%">
+      <feDropShadow dx="2" dy="3" stdDeviation="0.7" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+</svg>
 
 <div id="main">
   <div id="seq-column">
@@ -211,17 +253,66 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
         <button class="seq-back-btn" id="seq-box4-back" onclick="backFromBox4()" title="Indietro">↩</button>
         <button class="seq-ok-btn" id="seq-box4-ok" onclick="advanceToBox5()">OK</button>
       </div>
+    </div>
+    <div id="seq-box5-wrap" class="seq-hidden">
       <div class="seq-box" id="seq-box5">
         <div class="seq-box-text" id="seq-box5-text"></div>
         <button class="seq-back-btn" id="seq-box5-back" onclick="backFromBox5()" title="Indietro">↩</button>
-        <button class="seq-ok-btn" id="seq-box5-ok" onclick="advanceToBox6()">OK</button>
+        <button class="seq-ok-btn" id="seq-box5-ok" onclick="skipToExcitedState()">OK</button>
+      </div>
+      <div class="seq-box" id="seq-box6">
+        <div class="seq-box-text" id="seq-box6-text"></div>
+        <button class="seq-back-btn" id="seq-box6-back" onclick="backFromBox6()" title="Indietro">↩</button>
+        <button class="seq-ok-btn" id="seq-box6-ok" onclick="advanceToBox7()">OK</button>
+      </div>
+      <div class="seq-box" id="seq-box7">
+        <div class="seq-box-text" id="seq-box7-text"></div>
+      </div>
+      <div class="seq-box" id="seq-box8">
+        <div class="seq-box-text" id="seq-box8-text"></div>
+        <button class="seq-back-btn" id="seq-box8-back" onclick="backFromBox8()" title="Indietro">↩</button>
+        <button class="seq-ok-btn" id="seq-box8-ok" onclick="skipToReleaseEnergy()">OK</button>
+      </div>
+      <div class="seq-box" id="seq-box9">
+        <div class="seq-box-text" id="seq-box9-text"></div>
+        <button class="seq-back-btn" id="seq-box9-back" onclick="backFromBox9()" title="Indietro">↩</button>
+        <button class="seq-ok-btn" id="seq-box9-ok" onclick="showEndScreen()">OK</button>
+      </div>
+      <div id="seq-end-screen" class="seq-hidden">
+        <button class="seq-end-card" id="seq-end-btn1" onclick="restartFromBeginning()">
+          <div class="seq-end-iconbox">
+            <svg viewBox="0 0 86 86" filter="url(#seqIconShadow)">
+              <path d="M20 43a23 23 0 1 1 7.5 17" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+              <path d="M14 34 L20 43 L29 39Z" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="seq-end-label">RIVEDI DALL'INIZIO</div>
+        </button>
+        <button class="seq-end-card" id="seq-end-btn2" onclick="goToChooseElements()">
+          <div class="seq-end-iconbox">
+            <svg viewBox="0 0 86 86" filter="url(#seqIconShadow)">
+              <circle cx="43" cy="43" r="26" fill="none" stroke="#fff" stroke-width="5" opacity="0.55"/>
+              <path d="M35 27 L60 43 L35 59 Z" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="seq-end-label">ORA PROVA</div>
+        </button>
+        <button class="seq-end-card" id="seq-end-btn3" onclick="advanceAfterStory()">
+          <div class="seq-end-iconbox">
+            <svg viewBox="0 0 86 86" filter="url(#seqIconShadow)">
+              <circle cx="43" cy="43" r="27" fill="none" stroke="#fff" stroke-width="5"/>
+              <path d="M31 44 L40 53 L57 34" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="seq-end-label">TUTTO CHIARO<br>ANDIAMO AI COLORI</div>
+        </button>
       </div>
     </div>
   </div>
 
   <div id="sidebar" class="seq-hidden">
     <div id="atom-info">
-      <div id="atom-info-header">⊙ L'ATOMO</div>
+      
       <div id="atom-symbol-big">H</div>
       <div id="atom-name">Idrogeno <span style="font-size:10px;color:#555">Z=1</span></div>
       <div id="atom-config">1s¹</div>
@@ -249,7 +340,43 @@ body.theme-flat #ctrl-label,body.theme-flat .ctrl-label{color:var(--flat-text-di
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+/* ============================================================================
+   CHEMVERSE ENGINE — shared atom-rendering core
+   ============================================================================
+   Used by every Chemverse sub-project (Atomo, Gli stati, Legami, and future
+   ones). This file has no page-specific UI wiring in it — each project's own
+   HTML supplies the canvas, sidebar, buttons, etc. and calls into this.
+
+   Expects THREE.js (r128) to already be loaded before this script.
+
+   REQUIRED GLOBALS — declare these in the host page BEFORE calling anything
+   below (a minimal example is at the bottom of this comment):
+     let visualStyle = 'flat';        // 'realistic' | 'flat'
+     let bondMode = false;            // true while the Legame feature is active
+     let viewerA, viewerB = null, activeViewer;  // set viewerA = createViewer(...)
+     let electronsFrozen = false;     // true to pause all orbital motion
+
+   OPTIONAL GLOBALS (only needed if you use the matching feature):
+     let freeChoiceMode = false;      // true → p sub-orbitals get distinct
+                                       // colors (SUB_COLORS) instead of one
+                                       // shared color per orbital (ORB_COLORS)
+
+   Minimal setup in a host page (SCRIPT-TAG here stands in for the literal
+   script tag, spelled out to avoid accidentally closing this comment's own
+   surrounding script block when this file is inlined into an HTML page):
+     SCRIPT-TAG src="chemverse-engine.js" END-SCRIPT-TAG
+     SCRIPT-TAG
+       let visualStyle='flat', bondMode=false, electronsFrozen=false;
+       let viewerA=createViewer(document.getElementById('canvas'), document.getElementById('pane'));
+       let viewerB=null, activeViewer=viewerA;
+       viewerA.selectElement(1); // Hydrogen
+       (function loop(){ requestAnimationFrame(loop); viewerA.render(); })();
+     END-SCRIPT-TAG
+   ============================================================================ */
+
 // ── ELEMENT DATA ──────────────────────────────────────────────────────────────
+
+
 const ELEMENTS = [
   {n:1,sym:'H',name:'Idrogeno',cat:'nonmetal',group:1,period:1},
   {n:2,sym:'He',name:'Elio',cat:'noble',group:18,period:1},
@@ -261,9 +388,117 @@ const ELEMENTS = [
   {n:8,sym:'O',name:'Ossigeno',cat:'nonmetal',group:16,period:2},
   {n:9,sym:'F',name:'Fluoro',cat:'halogen',group:17,period:2},
   {n:10,sym:'Ne',name:'Neon',cat:'noble',group:18,period:2},
+  {n:11,sym:'Na',name:'Sodio',cat:'alkali',group:1,period:3},
+  {n:12,sym:'Mg',name:'Magnesio',cat:'alkaline',group:2,period:3},
+  {n:13,sym:'Al',name:'Alluminio',cat:'post',group:13,period:3},
+  {n:14,sym:'Si',name:'Silicio',cat:'metalloid',group:14,period:3},
+  {n:15,sym:'P',name:'Fosforo',cat:'nonmetal',group:15,period:3},
+  {n:16,sym:'S',name:'Zolfo',cat:'nonmetal',group:16,period:3},
+  {n:17,sym:'Cl',name:'Cloro',cat:'halogen',group:17,period:3},
+  {n:18,sym:'Ar',name:'Argon',cat:'noble',group:18,period:3},
+  {n:19,sym:'K',name:'Potassio',cat:'alkali',group:1,period:4},
+  {n:20,sym:'Ca',name:'Calcio',cat:'alkaline',group:2,period:4},
+  {n:21,sym:'Sc',name:'Scandio',cat:'transition',group:3,period:4},
+  {n:22,sym:'Ti',name:'Titanio',cat:'transition',group:4,period:4},
+  {n:23,sym:'V',name:'Vanadio',cat:'transition',group:5,period:4},
+  {n:24,sym:'Cr',name:'Cromo',cat:'transition',group:6,period:4},
+  {n:25,sym:'Mn',name:'Manganese',cat:'transition',group:7,period:4},
+  {n:26,sym:'Fe',name:'Ferro',cat:'transition',group:8,period:4},
+  {n:27,sym:'Co',name:'Cobalto',cat:'transition',group:9,period:4},
+  {n:28,sym:'Ni',name:'Nichel',cat:'transition',group:10,period:4},
+  {n:29,sym:'Cu',name:'Rame',cat:'transition',group:11,period:4},
+  {n:30,sym:'Zn',name:'Zinco',cat:'transition',group:12,period:4},
+  {n:31,sym:'Ga',name:'Gallio',cat:'post',group:13,period:4},
+  {n:32,sym:'Ge',name:'Germanio',cat:'metalloid',group:14,period:4},
+  {n:33,sym:'As',name:'Arsenico',cat:'metalloid',group:15,period:4},
+  {n:34,sym:'Se',name:'Selenio',cat:'nonmetal',group:16,period:4},
+  {n:35,sym:'Br',name:'Bromo',cat:'halogen',group:17,period:4},
+  {n:36,sym:'Kr',name:'Kripton',cat:'noble',group:18,period:4},
+  {n:37,sym:'Rb',name:'Rubidio',cat:'alkali',group:1,period:5},
+  {n:38,sym:'Sr',name:'Stronzio',cat:'alkaline',group:2,period:5},
+  {n:39,sym:'Y',name:'Ittrio',cat:'transition',group:3,period:5},
+  {n:40,sym:'Zr',name:'Zirconio',cat:'transition',group:4,period:5},
+  {n:41,sym:'Nb',name:'Niobio',cat:'transition',group:5,period:5},
+  {n:42,sym:'Mo',name:'Molibdeno',cat:'transition',group:6,period:5},
+  {n:43,sym:'Tc',name:'Tecnezio',cat:'transition',group:7,period:5},
+  {n:44,sym:'Ru',name:'Rutenio',cat:'transition',group:8,period:5},
+  {n:45,sym:'Rh',name:'Rodio',cat:'transition',group:9,period:5},
+  {n:46,sym:'Pd',name:'Palladio',cat:'transition',group:10,period:5},
+  {n:47,sym:'Ag',name:'Argento',cat:'transition',group:11,period:5},
+  {n:48,sym:'Cd',name:'Cadmio',cat:'transition',group:12,period:5},
+  {n:49,sym:'In',name:'Indio',cat:'post',group:13,period:5},
+  {n:50,sym:'Sn',name:'Stagno',cat:'post',group:14,period:5},
+  {n:51,sym:'Sb',name:'Antimonio',cat:'metalloid',group:15,period:5},
+  {n:52,sym:'Te',name:'Tellurio',cat:'metalloid',group:16,period:5},
+  {n:53,sym:'I',name:'Iodio',cat:'halogen',group:17,period:5},
+  {n:54,sym:'Xe',name:'Xenon',cat:'noble',group:18,period:5},
+  {n:55,sym:'Cs',name:'Cesio',cat:'alkali',group:1,period:6},
+  {n:56,sym:'Ba',name:'Bario',cat:'alkaline',group:2,period:6},
+  {n:57,sym:'La',name:'Lantanio',cat:'lanthanide',group:3,period:6},
+  {n:58,sym:'Ce',name:'Cerio',cat:'lanthanide',group:null,period:6},
+  {n:59,sym:'Pr',name:'Praseodimio',cat:'lanthanide',group:null,period:6},
+  {n:60,sym:'Nd',name:'Neodimio',cat:'lanthanide',group:null,period:6},
+  {n:61,sym:'Pm',name:'Promezio',cat:'lanthanide',group:null,period:6},
+  {n:62,sym:'Sm',name:'Samario',cat:'lanthanide',group:null,period:6},
+  {n:63,sym:'Eu',name:'Europio',cat:'lanthanide',group:null,period:6},
+  {n:64,sym:'Gd',name:'Gadolinio',cat:'lanthanide',group:null,period:6},
+  {n:65,sym:'Tb',name:'Terbio',cat:'lanthanide',group:null,period:6},
+  {n:66,sym:'Dy',name:'Disprosio',cat:'lanthanide',group:null,period:6},
+  {n:67,sym:'Ho',name:'Olmio',cat:'lanthanide',group:null,period:6},
+  {n:68,sym:'Er',name:'Erbio',cat:'lanthanide',group:null,period:6},
+  {n:69,sym:'Tm',name:'Tulio',cat:'lanthanide',group:null,period:6},
+  {n:70,sym:'Yb',name:'Itterbio',cat:'lanthanide',group:null,period:6},
+  {n:71,sym:'Lu',name:'Lutezio',cat:'lanthanide',group:null,period:6},
+  {n:72,sym:'Hf',name:'Afnio',cat:'transition',group:4,period:6},
+  {n:73,sym:'Ta',name:'Tantalio',cat:'transition',group:5,period:6},
+  {n:74,sym:'W',name:'Tungsteno',cat:'transition',group:6,period:6},
+  {n:75,sym:'Re',name:'Renio',cat:'transition',group:7,period:6},
+  {n:76,sym:'Os',name:'Osmio',cat:'transition',group:8,period:6},
+  {n:77,sym:'Ir',name:'Iridio',cat:'transition',group:9,period:6},
+  {n:78,sym:'Pt',name:'Platino',cat:'transition',group:10,period:6},
+  {n:79,sym:'Au',name:'Oro',cat:'transition',group:11,period:6},
+  {n:80,sym:'Hg',name:'Mercurio',cat:'transition',group:12,period:6},
+  {n:81,sym:'Tl',name:'Tallio',cat:'post',group:13,period:6},
+  {n:82,sym:'Pb',name:'Piombo',cat:'post',group:14,period:6},
+  {n:83,sym:'Bi',name:'Bismuto',cat:'post',group:15,period:6},
+  {n:84,sym:'Po',name:'Polonio',cat:'post',group:16,period:6},
+  {n:85,sym:'At',name:'Astato',cat:'halogen',group:17,period:6},
+  {n:86,sym:'Rn',name:'Radon',cat:'noble',group:18,period:6},
+  {n:87,sym:'Fr',name:'Francio',cat:'alkali',group:1,period:7},
+  {n:88,sym:'Ra',name:'Radio',cat:'alkaline',group:2,period:7},
+  {n:89,sym:'Ac',name:'Attinio',cat:'actinide',group:3,period:7},
+  {n:90,sym:'Th',name:'Torio',cat:'actinide',group:null,period:7},
+  {n:91,sym:'Pa',name:'Protoattinio',cat:'actinide',group:null,period:7},
+  {n:92,sym:'U',name:'Uranio',cat:'actinide',group:null,period:7},
+  {n:93,sym:'Np',name:'Nettunio',cat:'actinide',group:null,period:7},
+  {n:94,sym:'Pu',name:'Plutonio',cat:'actinide',group:null,period:7},
+  {n:95,sym:'Am',name:'Americio',cat:'actinide',group:null,period:7},
+  {n:96,sym:'Cm',name:'Curio',cat:'actinide',group:null,period:7},
+  {n:97,sym:'Bk',name:'Berkelio',cat:'actinide',group:null,period:7},
+  {n:98,sym:'Cf',name:'Californio',cat:'actinide',group:null,period:7},
+  {n:99,sym:'Es',name:'Einsteinio',cat:'actinide',group:null,period:7},
+  {n:100,sym:'Fm',name:'Fermio',cat:'actinide',group:null,period:7},
+  {n:101,sym:'Md',name:'Mendelevio',cat:'actinide',group:null,period:7},
+  {n:102,sym:'No',name:'Nobelio',cat:'actinide',group:null,period:7},
+  {n:103,sym:'Lr',name:'Laurenzio',cat:'actinide',group:null,period:7},
+  {n:104,sym:'Rf',name:'Rutherfordio',cat:'transition',group:4,period:7},
+  {n:105,sym:'Db',name:'Dubnio',cat:'transition',group:5,period:7},
+  {n:106,sym:'Sg',name:'Seaborgio',cat:'transition',group:6,period:7},
+  {n:107,sym:'Bh',name:'Bohrio',cat:'transition',group:7,period:7},
+  {n:108,sym:'Hs',name:'Hassio',cat:'transition',group:8,period:7},
+  {n:109,sym:'Mt',name:'Meitnerio',cat:'unknown',group:9,period:7},
+  {n:110,sym:'Ds',name:'Darmstadtio',cat:'unknown',group:10,period:7},
+  {n:111,sym:'Rg',name:'Roentgenio',cat:'unknown',group:11,period:7},
+  {n:112,sym:'Cn',name:'Copernicio',cat:'transition',group:12,period:7},
+  {n:113,sym:'Nh',name:'Nihonio',cat:'unknown',group:13,period:7},
+  {n:114,sym:'Fl',name:'Flerovio',cat:'unknown',group:14,period:7},
+  {n:115,sym:'Mc',name:'Moscovio',cat:'unknown',group:15,period:7},
+  {n:116,sym:'Lv',name:'Livermorio',cat:'unknown',group:16,period:7},
+  {n:117,sym:'Ts',name:'Tennesso',cat:'unknown',group:17,period:7},
+  {n:118,sym:'Og',name:'Oganessone',cat:'unknown',group:18,period:7},
 ];
 
-// Electron configurations
+
 function getConfig(Z){
   const order=['1s','2s','2p','3s','3p','4s','3d','4p','5s','4d','5p','6s','4f','5d','6p','7s','5f','6d','7p'];
   const max={s:2,p:6,d:10,f:14};
@@ -283,9 +518,6 @@ function configStr(cfg){
   return Object.entries(cfg).map(([o,n])=>o+sup[n]).join(' ');
 }
 
-// Groups a per-orbital electron config into per-shell (principal quantum
-// number n) totals — e.g. {1s:2,2s:2,2p:4} → {1:2, 2:6} — used by the
-// classic Bohr-model view, which shows shells rather than sublevels.
 function computeShellCounts(cfg){
   const shells={};
   for(let orb of Object.keys(cfg)){
@@ -296,26 +528,13 @@ function computeShellCounts(cfg){
   return shells;
 }
 
-// A "part key" is an orbital string ("3p") or orbital sub-level ("3p|x",
-// "4d|xy") — this extracts its shell (principal quantum number). The
-// 'bohr:' prefix check is legacy/defensive: Bohr view now uses these same
-// keys, but nothing generates the old shell-only format anymore.
 function keyShellNumber(key){
   return key.startsWith('bohr:') ? parseInt(key.slice(5)) : parseInt(key[0]);
 }
 
+
 // ── SIMPLIFIED OCTET-RULE BONDING (for the "Legame" feature) ────────────────
-// This is a deliberately simplified, pedagogical model — not a full
-// valence-bond-theory engine — meant to give a reasonable yes/no answer for
-// whether two atoms' outer shells can complete each other's octet (or duet,
-// for shell 1). It covers the two most common textbook cases:
-//   - covalent: both atoms need to GAIN the same number of electrons, so
-//     that many shared pairs satisfy both at once (e.g. H+H, O+O, H+Cl).
-//   - ionic: one atom needs to LOSE exactly what the other needs to GAIN
-//     (e.g. Na+Cl), assuming (as is true for main-group elements) that the
-//     shell below is already complete once the outer shell is emptied.
-// Noble gases (already at capacity) never bond. This is intentionally scoped
-// to exactly two atoms for now.
+
 function bondingProfile(cfg){
   const shells=computeShellCounts(cfg);
   const ns=Object.keys(shells).map(Number);
@@ -344,10 +563,6 @@ function canFormBond(cfgA, cfgB){
   return null;
 }
 
-// Outlines every periodic-table cell whose element would actually satisfy
-// the octet rule together with refCfg (same check used to decide whether
-// Legame fuses the two outer shells) — only meaningful while Legame is
-// active. Pass null to just clear it.
 function updateCompatibleHighlight(refCfg){
   document.querySelectorAll('.el.bond-compatible').forEach(e=>e.classList.remove('bond-compatible'));
   if(!bondMode || !refCfg) return;
@@ -359,18 +574,65 @@ function updateCompatibleHighlight(refCfg){
   }
 }
 
-// ── PERIODIC TABLE LAYOUT ─────────────────────────────────────────────────────
+
+// ── PERIODIC TABLE ─────────────────────────────────────────────────────────
+
 const catClass={alkali:'cat-alkali',alkaline:'cat-alkaline',transition:'cat-transition',
   post:'cat-post',metalloid:'cat-metalloid',nonmetal:'cat-nonmetal',
   halogen:'cat-halogen',noble:'cat-noble',lanthanide:'cat-lanthanide',
   actinide:'cat-actinide',unknown:'cat-unknown'};
 
-// ── SIMPLE ELEMENT ROW (this project only shows H through O) ────────────────
-// A lightweight cousin of the full periodic-table builder used elsewhere in
-// Chemverse: same per-category coloring and `.el` cell styling, just laid
-// out as a single row instead of the full 18-column grid with spacers.
-function buildElementRow(gridEl, onSelect){
+function buildPeriodicTable(gridEl, gridLanaEl, onSelect){
+  const cells=Array(7).fill(null).map(()=>Array(18).fill(null));
+  const lana=[], acta=[];
   for(let el of ELEMENTS){
+    if(el.cat==='lanthanide'&&el.n!==57){lana.push(el);continue;}
+    if(el.cat==='actinide'&&el.n!==89){acta.push(el);continue;}
+    if(el.group&&el.period){
+      cells[el.period-1][el.group-1]=el;
+    }
+  }
+  for(let r=0;r<7;r++){
+    for(let c=0;c<18;c++){
+      const el=cells[r][c];
+      const div=document.createElement('div');
+      if(el){
+        div.className='el '+catClass[el.cat];
+        div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
+        div.title=el.name;
+        div.dataset.n=el.n;
+        div.onclick=()=>onSelect(el.n);
+      } else {
+        if(r===5&&c===2){
+          div.className='el cat-lanthanide';
+          div.style.opacity='0.4';
+          div.innerHTML='<span class="sym" style="font-size:6px">La-Lu</span><span class="num">57-71</span>';
+        } else if(r===6&&c===2){
+          div.className='el cat-actinide';
+          div.style.opacity='0.4';
+          div.innerHTML='<span class="sym" style="font-size:6px">Ac-Lr</span><span class="num">89-103</span>';
+        } else {
+          div.className='spacer el';
+          div.style.visibility='hidden';
+        }
+      }
+      gridEl.appendChild(div);
+    }
+  }
+  const lans=ELEMENTS.filter(e=>e.cat==='lanthanide');
+  const acts=ELEMENTS.filter(e=>e.cat==='actinide');
+  for(let el of [...lans, ...acts]){
+    const div=document.createElement('div');
+    div.className='el '+catClass[el.cat];
+    div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
+    div.title=el.name; div.dataset.n=el.n;
+    div.onclick=()=>onSelect(el.n);
+    gridLanaEl.appendChild(div);
+  }
+}
+
+function buildElementRow(gridEl, elementsList, onSelect){
+  for(let el of elementsList){
     const div=document.createElement('div');
     div.className='el '+catClass[el.cat];
     div.innerHTML=`<span class="sym">${el.sym}</span><span class="num">${el.n}</span>`;
@@ -381,17 +643,9 @@ function buildElementRow(gridEl, onSelect){
   }
 }
 
-buildElementRow(
-  document.getElementById('pt-grid'),
-  (n)=>activeViewer.selectElement(n)
-);
 
-// Renderer/camera/mouse-controls/resize are created per-viewer inside
-// createViewer() further below, so that two independent atoms (A and B) can
-// be shown side by side when compare mode is active.
+// ── COLOR SYSTEM ──────────────────────────────────────────────────────────
 
-
-// Orbital colors
 const ORB_COLORS={
   '1s':0x00ffff,'2s':0xff4488,'2p':0xffaa00,
   '3s':0x00ff88,'3p':0xff6600,'3d':0x4488ff,
@@ -401,10 +655,8 @@ const ORB_COLORS={
   '7s':0xff44aa,'7p':0xaaffaa
 };
 
-// p sub-orbital colors (x,y,z)
 const SUB_COLORS={ x:0xff4444, y:0x4488ff, z:0x44cc44 };
 
-// d sub-orbital definitions, labels and colors
 const D_SUB_DEFS=[
   {key:'xy', v1:[1,0,0], v2:[0,1,0]},
   {key:'yz', v1:[0,1,0], v2:[0,0,1]},
@@ -412,16 +664,15 @@ const D_SUB_DEFS=[
   {key:'x2y2', v1:[1,0,0], v2:[0,1,0], alongAxis:true},
   {key:'z2', special:'z2'},
 ];
+
 const D_SUB_LABELS={xy:'xy', yz:'yz', xz:'xz', x2y2:'x²-y²', z2:'z²'};
+
 const D_SUB_COLORS={xy:0xff4444, yz:0x4488ff, xz:0x44cc44, x2y2:0xffaa00, z2:0xaa44ff};
+
 const P_SUBS=['x','y','z'];
 
-// Current display mode ('lines' or 'cloud') — shared by both viewers.
-let viewMode='bohr'; // this project only ever shows the Bohr view
 
-// Global point-cloud density multiplier (controlled by the "Intensità" slider).
-// 1.0 = the baseline density the shapes were originally tuned for.
-let cloudDensity=1.0;
+// ── LINES / CLOUD RENDERING PRIMITIVES ────────────────────────────────────
 
 function makeWireSphereGrid(radius, color, opacity=0.32, latLines=9, lonLines=14, segPerLine=40){
   const group=new THREE.Group();
@@ -449,23 +700,20 @@ function makeWireSphereGrid(radius, color, opacity=0.32, latLines=9, lonLines=14
   return group;
 }
 
-// Radial profile of a lobe: rounded off at BOTH the near end (t=0, close to the
-// nucleus) and the far end (t=1) — no sharp cusp/point at either end — while the
-// bulge is still biased toward the outer part of the lobe, so it "widens
-// progressively" moving away from the nucleus rather than being a symmetric blob.
 function rawLobeProfile(t){
   return Math.sqrt(Math.max(0,t*(1-t)))*(1+0.6*t);
 }
+
 const LOBE_PROFILE_MAX=(()=>{
   let max=0;
   for(let i=0;i<=200;i++){ const v=rawLobeProfile(i/200); if(v>max) max=v; }
   return max;
 })();
+
 function teardropProfile(t){
   return rawLobeProfile(t)/LOBE_PROFILE_MAX;
 }
 
-// Teardrop-shaped wire lobe, detached from the nucleus, widening progressively.
 function makeTeardropWire(axis, sign, r, color, opacity=0.32, levels=14, meridians=10, segPerRing=28){
   const group=new THREE.Group();
   const mat=new THREE.LineBasicMaterial({color, transparent:true, opacity, linewidth:2});
@@ -500,7 +748,6 @@ function makeTeardropWire(axis, sign, r, color, opacity=0.32, levels=14, meridia
   return group;
 }
 
-// Electron dot on orbit
 function makeElectron(color){
   const size=visualStyle==='flat'?0.1:0.06;
   const geo=new THREE.SphereGeometry(size,10,10);
@@ -508,29 +755,10 @@ function makeElectron(color){
   return new THREE.Mesh(geo,mat);
 }
 
-// Line/wire opacity is boosted for the Flat style, so shapes read as bold and
-// solid-feeling rather than delicate technical wireframes.
 function lineOpacity(base){
   return visualStyle==='flat' ? Math.min(1, base+0.45) : base;
 }
 
-// Current cloud dot size/opacity, read straight from the sliders (falling
-// back to their default position if not yet in the DOM). Used both to build
-// brand-new cloud points AND to live-update existing ones — a single source
-// of truth, so no rebuild path can ever reset points back to a stale default.
-function currentCloudSize(){
-  const el=document.getElementById('size-slider');
-  const sz=el?parseFloat(el.value):0.3;
-  return sz*(visualStyle==='flat'?0.2:0.13); // calibrated so the slider's default (0.3) gives a reasonably small starting dot size
-}
-function currentCloudOpacity(){
-  const el=document.getElementById('int-slider');
-  const intens=el?parseFloat(el.value):2.9;
-  return Math.min(1, intens*0.16);
-}
-
-// Cloud points for a spherical shell (s orbitals / fallback) — denser near the
-// inner edge of the shell band, fading out toward the outer edge.
 function makeCloudShell(radius, color, count=800, spread=0.55){
   const positions=[];
   const rMin=radius*(1-spread/2), rMax=radius*(1+spread/2);
@@ -547,8 +775,6 @@ function makeCloudShell(radius, color, count=800, spread=0.55){
   return new THREE.Points(geo,mat);
 }
 
-// Teardrop-shaped point cloud — constant point density per slice ALONG the axis,
-// so the wide part of the drop (bigger cross-section) naturally looks sparser.
 function makeTeardropCloud(axis, sign, r, color, count){
   const positions=[];
   const gap=r*0.14, length=r-gap, maxR=r*0.42;
@@ -569,7 +795,6 @@ function makeTeardropCloud(axis, sign, r, color, count){
   return new THREE.Points(geo,mat);
 }
 
-// Cloud points scattered in a torus (dz² equatorial ring)
 function makeTorusCloud(radius, color, count){
   const positions=[];
   for(let i=0;i<count;i++){
@@ -623,34 +848,18 @@ function buildDShapeCloud(def, r, color, ptCount){
   return group;
 }
 
-// The real chemistry electron-filling order (Aufbau). This is the single
-// source of truth for "how far out" an orbital sits, used both here (for
-// Linee/Nuvola radii) and later for the Bohr view's ring slots — so within
-// a shell, p is always drawn bigger than the s before it, 3d bigger than
-// the 4s that fills before it, etc., matching the real configuration order
-// rather than just shell number.
 const AUFBAU_ORDER=['1s','2s','2p','3s','3p','4s','3d','4p','5s','4d','5p','6s','4f','5d','6p','7s','5f','6d','7p'];
 
-// Orbital radii for Linee/Nuvola, increasing monotonically along AUFBAU_ORDER.
 const RADII={};
-AUFBAU_ORDER.forEach((orb,i)=>{ RADII[orb]=1.0+i*0.5; });
 
 function getRadius(orb){return (RADII[orb]||parseFloat(orb[0])*1.2)*0.85;}
 
-// In cloud mode, a fixed point count spread over an ever-larger spherical
-// shell (as the shell radius grows for outer orbitals) looks progressively
-// sparser and less defined — surface area grows with r², point count didn't.
-// In Flat style specifically (where the shapes are meant to read as bold and
-// clear) we compensate by scaling the point count with r², using the
-// innermost s-shell (1s) as the "already well-defined" reference density —
-// and slightly beyond r² so bigger shells end up looking at least as crisp.
 function sphericalCloudCount(base, r){
   if(visualStyle!=='flat') return Math.floor(base);
   const refR=getRadius('1s');
   const scale=Math.pow(r/refR, 2); // area-based: keeps dot-to-dot spacing constant as the shell grows
   return Math.min(45000, Math.floor(base*scale));
 }
-
 
 function removePart(layer, key){
   const rec=layer.rendered[key];
@@ -668,26 +877,19 @@ function removePart(layer, key){
   delete layer.rendered[key];
 }
 
-// Builds one classic-Bohr-model shell: a flat circular ring (lying in the
-// XY-plane, like Saturn's rings) plus its electrons evenly spaced around it,
-// orbiting in that same plane.
+
+// ── BOHR-MODEL GEOMETRY ───────────────────────────────────────────────────
+
 const BOHR_RADII={1:1.3,2:2.3,3:3.3,4:4.3,5:5.3,6:6.3,7:7.3};
 
-// Ring radius is based on each orbital's position in the real chemistry
-// filling order (Aufbau), NOT on shell number + type. This matters because
-// shell number alone doesn't reflect energy order: 3d sits AFTER 4s, 4d
-// sits AFTER 5s, 4f sits AFTER 6s but BEFORE 5d, etc. A shell-based radius
-// (like the old model) inevitably makes some higher-shell orbital collide
-// with a lower-shell one that's actually drawn further out. Giving every
-// orbital in this sequence its own well-separated "slot" guarantees no two
-// orbitals ever overlap, matching how electron shells actually fill.
 const BOHR_SLOT_INDEX={};
-AUFBAU_ORDER.forEach((orb,i)=>{ BOHR_SLOT_INDEX[orb]=i; });
+
 const BOHR_SLOT_BASE=1.0;
+
 const BOHR_SLOT_SPACING=0.95;
+
 const BOHR_SUB_SPACING={p:0.2, d:0.2}; // how tightly a p/d orbital's own sub-levels cluster within its slot
 
-// Radius for one Bohr-view ring, given a part key ("3s", "3p|x", "4d|xy"...).
 function bohrKeyRadius(key){
   const [orb,sub]=key.split('|');
   const type=orb[1];
@@ -698,14 +900,6 @@ function bohrKeyRadius(key){
   return center + (idx-(subsList.length-1)/2)*BOHR_SUB_SPACING[type];
 }
 
-// Bohr-view rendering for one orbital/sub-level key: always a plain flat
-// ring (never the lobed p/d shapes used in Linee/Nuvola) — all sub-levels of
-// the SAME orbital share that orbital's one color, so "3p_x/y/z" all render
-// in the same hue rather than three different ones.
-// A point on a figure-8 (lemniscate of Bernoulli), lying flat. `gap` pushes
-// every point radially outward a little, so the curve's natural pinch at the
-// center opens into a small clearance instead of passing right over the
-// nucleus.
 function lemniscatePoint(t, a, gap){
   const angle=t*Math.PI*2;
   const denom=1+Math.sin(angle)*Math.sin(angle);
@@ -737,6 +931,7 @@ function addBohrOrbitalRing(layer, key, cfg){
     // than nested identical eights, and a small gap at the crossing keeps
     // the nucleus fully visible instead of being covered by the curve.
     const idx=P_SUBS.indexOf(sub);
+    const pColor=(typeof freeChoiceMode!=='undefined' && freeChoiceMode && sub && SUB_COLORS[sub]!==undefined) ? SUB_COLORS[sub] : color;
     const rot=idx*(Math.PI/3);
     const a=r; // full radius — the lobe tip must reach further out than the preceding s orbital
     const gap=Math.max(0.1, r*0.07);
@@ -749,13 +944,13 @@ function addBohrOrbitalRing(layer, key, cfg){
     }
     const curve=new THREE.CatmullRomCurve3(pts, true);
     const tubeGeo=new THREE.TubeGeometry(curve, 160, tube, 8, true);
-    const ringMat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:lineOpacity(0.5)});
+    const ringMat=new THREE.MeshBasicMaterial({color:pColor, transparent:true, opacity:lineOpacity(0.5)});
     const ring=new THREE.Mesh(tubeGeo, ringMat);
     layer.group.add(ring);
     rec.meshes.push(ring);
 
     for(let i=0;i<count;i++){
-      const e=makeElectron(color);
+      const e=makeElectron(pColor);
       layer.group.add(e);
       const ed={mesh:e, orb:key, a, gap, rot, t:i/count, speed:0.14+0.05*Math.random(), type:'bohr8'};
       layer.electronObjects.push(ed);
@@ -780,17 +975,12 @@ function addBohrOrbitalRing(layer, key, cfg){
   }
 }
 
-// ── "LEGAME" BOND SCENE ──────────────────────────────────────────────────────
-// A standalone, self-contained scene (independent from the per-viewer atom
-// layer system above) that draws two atoms side by side, close together, in
-// the classic Bohr style — and, if their outer shells satisfy the octet rule
-// together, replaces their outer rings with one shared ring encircling both.
-// Electrons here are tracked in the flat `bondElectrons` array and animated
-// each frame from animateAll(), rather than through a viewer's layer system.
-let bondElectrons=[];
 
-// Builds a nucleus instantly (no fly-in animation — this is a quick derived
-// view, not a fresh atom "formation" moment).
+// ── "LEGAME" BOND SCENE ──────────────────────────────────────────────────────
+let bondElectrons=[];
+let bondLayerGroup=null;
+let bondAnim=null;
+
 function buildStaticNucleus(Z, parentGroup){
   const N=getNeutronCount(Z);
   const total=Z+N;
@@ -812,7 +1002,6 @@ function buildStaticNucleus(Z, parentGroup){
   }
 }
 
-// One individual (non-fused) shell ring, local to a single atom's sub-group.
 function addStaticBohrRing(parentGroup, key, cfg){
   const [orb,sub]=key.split('|');
   const color=ORB_COLORS[orb]||0xffffff;
@@ -857,10 +1046,6 @@ function addStaticBohrRing(parentGroup, key, cfg){
   };
 }
 
-// All the orbital/sub-level part keys for a given electron config — the same
-// set the sidebar list would show (main s/f orbitals, plus individual p/d
-// sub-levels). Used by the bond scene so it preserves the exact same detail
-// level as the main Bohr view.
 function allBohrKeysForCfg(cfg){
   const keys=[];
   for(let orb of Object.keys(cfg)){
@@ -879,30 +1064,16 @@ function allBohrKeysForCfg(cfg){
   return keys;
 }
 
-// A point on the fused ring's smooth elliptical outline. The ellipse is
-// sized so its horizontal extent reaches just past each atom's own leftover
-// content (capA on the left, capB on the right) — its center therefore
-// isn't necessarily at the midpoint between the two nuclei if the atoms are
-// different sizes, and its vertical extent clears whichever atom is taller.
-// t goes from 0 to 1 around the whole closed loop.
 function fusedEllipsePoint(t, cx, a, b){
   const ang=t*Math.PI*2;
   return {x:cx+a*Math.cos(ang), y:b*Math.sin(ang)};
 }
 
-// The radius of the largest orbital an atom keeps individually visible once
-// bonded (i.e. everything except the outer shell, which fades into the
-// fused ring) — used to size the fused ellipse so it clears each atom's own
-// remaining shells without engulfing the OTHER atom's much smaller (or
-// larger) leftover shells too.
 function maxRadiusOfKeys(keys){
   if(keys.length===0) return 0.5; // nothing left individually visible (e.g. H, He) — just clear the nucleus
   return Math.max(...keys.map(k=>bohrKeyRadius(k)));
 }
 
-// The shared elliptical ring that encircles both nuclei (and whatever inner
-// shells they kept) once bonded — one smooth oval, sized to comfortably
-// contain each atom's own actual size on its own side.
 function addFusedRing(parentGroup, cx, a, b, totalCount){
   const color=0xffd700; // a neutral gold, distinct from either atom's own shell colors
   const segs=100;
@@ -933,18 +1104,6 @@ function addFusedRing(parentGroup, cx, a, b, totalCount){
   };
 }
 
-// Rebuilds the whole bond scene from scratch inside viewerA's atomGroup,
-// using whatever elements are currently selected in A and B. Sets up an
-// animated approach (see bondAnim / updateBondAnimation): the atoms always
-// start apart and glide together, settling at the same "just adjacent, never
-// overlapping" distance whether they end up bonding or not. If bonding is
-// possible, once they arrive the outer orbital(s) — sub-levels included —
-// cross-fade into a single shared belt that hugs each atom's own remaining
-// shells individually; inner orbitals always keep their full sub-level
-// detail. The whole scene is then uniformly scaled down if needed so it
-// comfortably fits the view regardless of atom size.
-let bondLayerGroup=null;
-let bondAnim=null;
 function buildBondLayer(){
   const elA=viewerA.currentElement, elB=viewerB && viewerB.currentElement;
   if(!elA||!elB) return;
@@ -1025,8 +1184,6 @@ function buildBondLayer(){
   };
 }
 
-// Advances the approach + (if bonding) crossfade animation. Called every
-// frame from animateAll() while a bond scene exists and is still animating.
 function updateBondAnimation(){
   if(!bondAnim) return;
   const anim=bondAnim; // keep a local reference — bondAnim may be nulled out below, but we still need to apply this frame's position
@@ -1057,9 +1214,9 @@ function updateBondAnimation(){
   anim.groupB.position.x=offset;
 }
 
-// cfg is the config object of the atom this layer belongs to (electron counts
-// per orbital) — passed explicitly rather than read off a global, since two
-// independent atoms (A/B) may be on screen at once.
+
+// ── PART DISPATCH ─────────────────────────────────────────────────────────
+
 function addPart(layer, key, mode, cfg){
   if(mode==='bohr'){
     addBohrOrbitalRing(layer, key, cfg);
@@ -1146,50 +1303,9 @@ function addPart(layer, key, mode, cfg){
   }
 }
 
-// Update cloud point sizes/opacity across every viewer (cheap — live on 'input')
-function updateCloudParams(){
-  const sz=parseFloat(document.getElementById('size-slider').value);
-  const intens=parseFloat(document.getElementById('int-slider').value);
-  document.getElementById('size-val').textContent=sz.toFixed(1);
-  document.getElementById('int-val').textContent=intens.toFixed(2);
-  const size=currentCloudSize(), opacity=currentCloudOpacity();
-  for(let v of [viewerA, viewerB]){
-    if(!v) continue;
-    for(let layer of v.layers){
-      for(let o of layer.orbitalObjects){
-        o.traverse(c=>{
-          if(c.isPoints){
-            c.material.size=size;
-            c.material.opacity=opacity;
-          }
-        });
-      }
-    }
-  }
-}
-
-// Actually regenerate the point clouds with more/fewer points (real density,
-// not just opacity). Expensive-ish, so only triggered when the slider drag ends,
-// and only meaningful in cloud view mode.
-function regenerateCloudDensity(){
-  if(viewMode!=='cloud') return;
-  const intens=parseFloat(document.getElementById('int-slider').value);
-  cloudDensity=0.75+(intens/9)*0.55; // gentle density range — enough to feel "fuller" at high intensity without reading as a size change
-  for(let v of [viewerA, viewerB]){
-    if(!v || !v.currentLayer) continue;
-    const layer=v.currentLayer;
-    const keys=Object.keys(layer.rendered);
-    if(keys.length===0) continue;
-    for(let k of keys) removePart(layer,k);
-    for(let k of keys) addPart(layer,k,'cloud',v.currentCfg);
-  }
-  updateCloudParams(); // the newly-rebuilt points start at their default size — reapply the person's actual size/opacity settings
-}
 
 // ── VIEWER FACTORY ───────────────────────────────────────────────────────────
-// Everything needed to display ONE independent atom: its own renderer, scene,
-// camera, mouse-drag rotation, atom layers, and the currently-selected element.
-// Two of these (viewerA / viewerB) can exist at once for side-by-side compare.
+
 function createViewer(canvasEl, paneEl){
   const renderer=new THREE.WebGLRenderer({canvas:canvasEl,antialias:true,alpha:true});
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -1289,6 +1405,7 @@ function createViewer(canvasEl, paneEl){
       if(idx>=queue.length) return;
       const type=queue[idx++];
       const mesh=new THREE.Mesh(nucleonGeo, type==='p'?pMat:nMat);
+      mesh.userData.nucleonType=type;
 
       const rr=nucRadius*0.85*Math.cbrt(Math.random());
       const theta=Math.random()*Math.PI*2, phi=Math.acos(2*Math.random()-1);
@@ -1386,7 +1503,7 @@ function createViewer(canvasEl, paneEl){
 
   // Rebuilds this viewer's atom from scratch (new nucleus-formation animation)
   // using the CURRENT visual style, restoring exactly the orbitals that were
-  // visible before — used when switching between Realistico/Flat.
+  // visible before — kept for cases that do want a full replay.
   viewer.rebuildWithCurrentStyle=function(){
     if(!viewer.currentElement) return;
     const keep=renderedKeysOf(viewer);
@@ -1395,6 +1512,71 @@ function createViewer(canvasEl, paneEl){
     layer.restoreKeys=keep;
     if(bondMode && (viewer===viewerA||viewer===viewerB)) layer.group.visible=false;
     viewer.buildNucleus(n, layer);
+  };
+
+  // Switches Realistico ⇄ Flat instantly, in place — same nucleus, same
+  // orbitals, same electrons, just resized/recolored to match the new
+  // style. No fly-in, no re-formation animation.
+  viewer.restyleInPlace=function(){
+    const layer=viewer.currentLayer;
+    if(!layer || !viewer.currentElement) return;
+
+    if(layer.nucleus){
+      const nucleonGeo=new THREE.SphereGeometry(visualStyle==='flat'?0.075:0.05,9,9);
+      const pMat=new THREE.MeshBasicMaterial({color:visualStyle==='flat'?0xff2e88:0xff4444});
+      const nMat=new THREE.MeshBasicMaterial({color:visualStyle==='flat'?0x2ec4ff:0x4488ff});
+      for(const child of layer.nucleus.children){
+        if(child.userData && child.userData.nucleonType){
+          child.geometry.dispose();
+          child.geometry=nucleonGeo;
+          child.material=child.userData.nucleonType==='p'?pMat:nMat;
+        } else {
+          // the halo sphere
+          child.material.opacity=visualStyle==='flat'?0.05:0.1;
+        }
+      }
+    }
+
+    const tube=visualStyle==='flat'?0.03:0.015;
+    for(const key of Object.keys(layer.rendered)){
+      const rec=layer.rendered[key];
+      const [orb,sub]=key.split('|');
+      const color=(typeof freeChoiceMode!=='undefined' && freeChoiceMode && sub && SUB_COLORS[sub]!==undefined) ? SUB_COLORS[sub] : (ORB_COLORS[orb]||0xffffff);
+      const ring=rec.meshes[0];
+      // Only Bohr-mode rings are torus/tube shapes that need regeometrizing
+      // for the new tube thickness — Lines/Cloud shapes (wire spheres,
+      // teardrops, point clouds) don't change shape between styles, only
+      // their opacity, which is updated below regardless of mode.
+      if(ring && viewMode==='bohr'){
+        let newGeo;
+        if(orb[1]==='p' && sub){
+          const idx=P_SUBS.indexOf(sub);
+          const r=bohrKeyRadius(key);
+          const rot=idx*(Math.PI/3);
+          const a=r, gap=Math.max(0.1, r*0.07);
+          const cosr=Math.cos(rot), sinr=Math.sin(rot);
+          const segs=120, pts=[];
+          for(let i=0;i<=segs;i++){
+            const p=lemniscatePoint(i/segs, a, gap);
+            pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+          }
+          const curve=new THREE.CatmullRomCurve3(pts, true);
+          newGeo=new THREE.TubeGeometry(curve, 160, tube, 8, true);
+        } else {
+          const r=bohrKeyRadius(key);
+          newGeo=new THREE.TorusGeometry(r, tube, 8, 64);
+        }
+        ring.geometry.dispose();
+        ring.geometry=newGeo;
+        ring.material.opacity=lineOpacity(0.5);
+      }
+      const eSize=visualStyle==='flat'?0.1:0.06;
+      for(const ed of rec.electrons){
+        ed.mesh.geometry.dispose();
+        ed.mesh.geometry=new THREE.SphereGeometry(eSize,10,10);
+        ed.mesh.material.color.set(color);
+      }
+    }
   };
 
 
@@ -1447,6 +1629,12 @@ function createViewer(canvasEl, paneEl){
           const cosr=Math.cos(ed.rot), sinr=Math.sin(ed.rot);
           ed.mesh.position.set(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0);
         }
+        if(ed.pulsing){
+          const amp=ed.pulseAmp!==undefined?ed.pulseAmp:0.35;
+          const base=ed.pulseBase!==undefined?ed.pulseBase:1;
+          const s=base+amp*Math.sin(performance.now()*0.011);
+          ed.mesh.scale.setScalar(s);
+        }
       }
     }
     viewer.renderer.render(viewer.scene, viewer.camera);
@@ -1455,13 +1643,993 @@ function createViewer(canvasEl, paneEl){
   return viewer;
 }
 
-// Approximate neutron count for a schematic nucleus (illustrative, not an isotope table):
-// the neutron/proton ratio grows roughly from 1.0 (light elements) to ~1.6 (heavy elements).
 function getNeutronCount(Z){
   if(Z===1) return 0; // protium, the common case, has no neutron
   const ratio=1.0+0.6*(Z/118);
   return Math.round(Z*ratio);
 }
+
+
+// ── COLOR / CONTRAST UTILITIES ────────────────────────────────────────────
+
+function hexToRgb(hex){
+  const v=parseInt(hex.slice(1),16);
+  return [(v>>16)&255,(v>>8)&255,v&255];
+}
+
+function rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
+}
+
+function shadeColor(hex, amt){
+  const [r,g,b]=hexToRgb(hex);
+  return rgbToHex(r+amt,g+amt,b+amt);
+}
+
+function relLuminance(hex){
+  const [r,g,b]=hexToRgb(hex).map(v=>v/255);
+  const lin=c=> c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4);
+  return 0.2126*lin(r)+0.7152*lin(g)+0.0722*lin(b);
+}
+
+function hexToHsl(hex){
+  const r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h=0,s=0,l=(max+min)/2;
+  if(max!==min){
+    const d=max-min;
+    s=l>0.5 ? d/(2-max-min) : d/(max+min);
+    if(max===r) h=(g-b)/d+(g<b?6:0);
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60;
+  }
+  return [h,s,l];
+}
+
+function hslToHex(h,s,l){
+  h=((h%360)+360)%360/360;
+  let r,g,b;
+  if(s===0){ r=g=b=l; }
+  else{
+    const hue2rgb=(p,q,t)=>{
+      if(t<0)t+=1; if(t>1)t-=1;
+      if(t<1/6) return p+(q-p)*6*t;
+      if(t<1/2) return q;
+      if(t<2/3) return p+(q-p)*(2/3-t)*6;
+      return p;
+    };
+    const q=l<0.5?l*(1+s):l+s-l*s;
+    const p=2*l-q;
+    r=hue2rgb(p,q,h+1/3); g=hue2rgb(p,q,h); b=hue2rgb(p,q,h-1/3);
+  }
+  const toHex=x=>Math.round(Math.max(0,Math.min(1,x))*255).toString(16).padStart(2,'0');
+  return '#'+toHex(r)+toHex(g)+toHex(b);
+}
+
+function nearestPaletteColor(targetHue, exclude){
+  let best=null, bestDiff=Infinity;
+  for(const hex of BG_PALETTE){
+    if(hex==='#ffffff'||hex==='#000000') continue;
+    if(exclude && exclude.includes(hex)) continue;
+    const [h]=hexToHsl(hex);
+    let diff=Math.abs(h-targetHue); diff=Math.min(diff,360-diff);
+    if(diff<bestDiff){ bestDiff=diff; best=hex; }
+  }
+  return best;
+}
+
+function muteColor(hex){
+  const [h,s,l]=hexToHsl(hex);
+  return hslToHex(h, s*0.7, Math.min(0.75, l*0.75+0.22));
+}
+
+// Picks a gray that reads clearly against whatever background is currently
+// active. Rather than two fixed options, this computes a gray lightness
+// meaningfully offset from the background's own — dark backgrounds get a
+// near-white gray, light backgrounds get a near-black one, and anything in
+// between gets whatever offset (in the right direction) keeps a solid gap.
+// Reads --flat-bg from the document, so it works on any page using the
+// shared applyBgColor() theme system.
+function contrastingGrayColor(){
+  const bgHex=(getComputedStyle(document.documentElement).getPropertyValue('--flat-bg')||'#0e6b78').trim();
+  const [,,l]=hexToHsl(bgHex);
+  const targetL = l>0.5 ? Math.max(0.05, l-0.6) : Math.min(0.95, l+0.6);
+  const grayHex=hslToHex(0, 0, targetL);
+  return parseInt(grayHex.slice(1), 16);
+}
+
+const BG_PALETTE=['#0e6b78','#c69595','#c6b595','#97b9ad','#95a0c6','#baa0ba','#92bbad','#96bbc1','#a297c4','#c398ae','#c5ab96','#ffffff','#000000'];
+
+// Applies a flat-style theme color: sets the CSS custom properties every
+// themed page reads from (--flat-bg/-panel/-border/-text/-text-dim), updates
+// which swatch (if any, matching the .bg-swatch convention) shows as
+// selected, and remembers the choice in localStorage under the given key so
+// a page reload (e.g. a "start over" button) can restore it instead of
+// always resetting to the default.
+function applyBgColor(hex, storageKey){
+  const light=relLuminance(hex)>0.55;
+  const panel=shadeColor(hex, light?18:26);
+  const border=shadeColor(hex, light?-30:38);
+  const root=document.documentElement.style;
+  root.setProperty('--flat-bg', hex);
+  root.setProperty('--flat-panel', light ? shadeColor(hex,-10) : panel);
+  root.setProperty('--flat-border', border);
+  root.setProperty('--flat-text', light ? '#1a2b2e' : '#ffffff');
+  root.setProperty('--flat-text-dim', light ? '#3d5052' : '#dffcff');
+  root.setProperty('--flat-thumb', light ? '#000000' : '#ffffff');
+  root.setProperty('--flat-thumb-border', light ? '#ffffff' : '#000000');
+  document.querySelectorAll('.bg-swatch').forEach(sw=>{
+    sw.classList.toggle('bg-swatch-selected', sw.dataset.hex.toLowerCase()===hex.toLowerCase());
+  });
+  if(storageKey){
+    try{ localStorage.setItem(storageKey, hex); }catch(e){}
+  }
+}
+
+// Builds the row of clickable background swatches into containerEl (from
+// BG_PALETTE), wires each to applyBgColor, and restores the last-chosen
+// color from localStorage if present — otherwise falls back to defaultHex.
+function buildBgSwatches(containerEl, storageKey, defaultHex){
+  for(let hex of BG_PALETTE){
+    const sw=document.createElement('div');
+    sw.className='bg-swatch';
+    sw.style.background=hex;
+    sw.dataset.hex=hex;
+    sw.title=hex;
+    sw.onclick=()=>applyBgColor(hex, storageKey);
+    containerEl.appendChild(sw);
+  }
+  let savedHex=null;
+  try{ savedHex=localStorage.getItem(storageKey); }catch(e){}
+  applyBgColor(savedHex && BG_PALETTE.includes(savedHex) ? savedHex : (defaultHex||BG_PALETTE[0]), storageKey);
+}
+
+
+// ── ANIMATION HELPERS ─────────────────────────────────────────────────────
+
+function fadeMaterialsOpacity(mats, from, to, duration, onDone){
+  const start=performance.now();
+  (function step(){
+    const now=performance.now();
+    const t=Math.min(1,(now-start)/duration);
+    const val=from+(to-from)*t;
+    for(const m of mats) m.opacity=val;
+    if(t<1) requestAnimationFrame(step);
+    else if(onDone) onDone();
+  })();
+}
+
+function blinkMaterialsTwice(mats, finalOpacity, onDone){
+  const steps=[
+    {to:1, dur:180},
+    {to:0.15, dur:150},
+    {to:1, dur:180},
+    {to:0.15, dur:150},
+    {to:finalOpacity, dur:400}
+  ];
+  let i=0;
+  (function next(){
+    if(i>=steps.length){ if(onDone) onDone(); return; }
+    const step=steps[i++];
+    const from=mats.length?mats[0].opacity:0;
+    fadeMaterialsOpacity(mats, from, step.to, step.dur, next);
+  })();
+}
+
+
+// ── LIGHT RAY (dashed, moving, genuinely thick) ──────────────────────────────
+// WebGL ignores line-width entirely on native THREE.Line, so real 3D tube
+// segments are the only reliable way to get genuine thickness. Rebuilding
+// the small dash segments every frame with a shifting phase gives the
+// "marching" moving-dash look on top of that real thickness.
+// Relies on a global `viewerA` (see file header).
+
+const RAY_RADIUS=0.06, RAY_DASH_LEN=0.18, RAY_GAP_LEN=0.13, RAY_PHASE_SPEED=0.05;
+const OUT_RAY_LEN=4.5, OUT_RAY_GROW_MS=1300, OUT_RAY_DETACH_SPEED=1.5, OUT_RAY_LIFETIME_MS=3200;
+
+function makeRayGroup(radius){
+  const layer=viewerA.currentLayer;
+  const group=new THREE.Group();
+  layer.group.add(group);
+  return {group, opacity:0, phase:0, radius:radius||RAY_RADIUS};
+}
+
+function setRayGeometry(rec, startPos, endPos){
+  for(const child of rec.group.children.slice()){
+    child.geometry.dispose();
+    rec.group.remove(child);
+  }
+  const totalLen=startPos.distanceTo(endPos);
+  if(totalLen<0.02) return;
+  const dir=endPos.clone().sub(startPos).normalize();
+  const period=RAY_DASH_LEN+RAY_GAP_LEN;
+  const offset=((rec.phase%period)+period)%period;
+  let pos=-offset, on=true;
+  while(pos<totalLen){
+    const segLen=on?RAY_DASH_LEN:RAY_GAP_LEN;
+    const segEnd=pos+segLen;
+    if(on){
+      const clampedStart=Math.max(0,pos), clampedEnd=Math.min(totalLen,segEnd);
+      if(clampedEnd>clampedStart+0.005){
+        const p0=startPos.clone().addScaledVector(dir, clampedStart);
+        const p1=startPos.clone().addScaledVector(dir, clampedEnd);
+        const geo=new THREE.TubeGeometry(new THREE.LineCurve3(p0,p1), 2, rec.radius, 8, false);
+        const mat=new THREE.MeshBasicMaterial({color:0xffd700, transparent:true, opacity:rec.opacity});
+        rec.group.add(new THREE.Mesh(geo,mat));
+      }
+    }
+    pos=segEnd; on=!on;
+  }
+}
+
+function removeRayRec(rec){
+  if(!rec) return;
+  const layer=viewerA.currentLayer;
+  for(const child of rec.group.children.slice()) child.geometry.dispose();
+  if(layer) layer.group.remove(rec.group);
+}
+
+function fadeRayOpacity(rec, from, to, duration, onDone){
+  const start=performance.now();
+  rec.opacity=from;
+  (function step(){
+    const now=performance.now();
+    const t=Math.min(1,(now-start)/duration);
+    rec.opacity=from+(to-from)*t;
+    for(const child of rec.group.children) child.material.opacity=rec.opacity;
+    if(t<1) requestAnimationFrame(step);
+    else if(onDone) onDone();
+  })();
+}
+
+function hideLightRayInstant(){
+  removeRayRec(incomingRayRec); incomingRayRec=null; incomingRayState=null;
+  removeRayRec(outgoingRayRec); outgoingRayRec=null; outgoingRayState=null;
+}
+
+function showLightRayTo(targetPos, onArrive, radius){
+  const dir=new THREE.Vector3(Math.cos(Math.PI/4), Math.sin(Math.PI/4), 0);
+  const startPos=targetPos.clone().add(dir.clone().multiplyScalar(4.2));
+  incomingRayRec=makeRayGroup(radius);
+  incomingRayState={startPos, targetPos, growStart:performance.now(), onArrive, arrived:false};
+  fadeRayOpacity(incomingRayRec, 0, 0.95, 300);
+}
+
+function showOutwardRayFrom(originPos, radius){
+  const dir=originPos.clone().normalize();
+  const rec=makeRayGroup(radius);
+  outgoingRayRec=rec;
+  outgoingRayState={anchor:originPos.clone(), dir, growStart:performance.now(), stage:'growing', lastTime:performance.now()};
+  fadeRayOpacity(rec, 0, 0.95, 300);
+
+  // Manages its own full visible lifetime — grows, flies free, then fades
+  // and removes itself — independent of whatever the electron does next, so
+  // it never gets cut short right as the electron happens to land somewhere.
+  setTimeout(()=>{
+    if(outgoingRayRec!==rec) return; // a newer ray has already replaced this one
+    fadeRayOpacity(rec, rec.opacity, 0, 500, ()=>{
+      if(outgoingRayRec===rec){
+        removeRayRec(rec);
+        outgoingRayRec=null; outgoingRayState=null;
+      }
+    });
+  }, OUT_RAY_LIFETIME_MS);
+}
+
+function updateLightRayTracking(){
+  const now=performance.now();
+
+  if(incomingRayRec && incomingRayState){
+    incomingRayRec.phase=(incomingRayRec.phase||0)+RAY_PHASE_SPEED;
+    const s=incomingRayState;
+    if(!s.arrived){
+      const t=Math.min(1,(now-s.growStart)/1300);
+      const tip=s.startPos.clone().lerp(s.targetPos, t);
+      setRayGeometry(incomingRayRec, s.startPos, tip);
+      if(t>=1){
+        s.arrived=true;
+        if(s.onArrive) s.onArrive();
+      }
+    } else {
+      setRayGeometry(incomingRayRec, s.startPos, s.targetPos);
+    }
+  }
+
+  if(outgoingRayRec && outgoingRayState){
+    outgoingRayRec.phase=(outgoingRayRec.phase||0)+RAY_PHASE_SPEED;
+    const s=outgoingRayState;
+    if(s.stage==='growing'){
+      const t=Math.min(1, (now-s.growStart)/OUT_RAY_GROW_MS);
+      const tip=s.anchor.clone().add(s.dir.clone().multiplyScalar(OUT_RAY_LEN*t));
+      setRayGeometry(outgoingRayRec, s.anchor, tip);
+      if(t>=1){ s.stage='detached'; s.lastTime=now; }
+    } else {
+      const dt=Math.min(0.05, (now-s.lastTime)/1000);
+      s.lastTime=now;
+      s.anchor.addScaledVector(s.dir, OUT_RAY_DETACH_SPEED*dt);
+      const tip=s.anchor.clone().add(s.dir.clone().multiplyScalar(OUT_RAY_LEN));
+      setRayGeometry(outgoingRayRec, s.anchor, tip);
+    }
+  }
+}
+
+</script>
+<script>
+// ELEMENTS now comes from chemverse-engine.js (the full 118-element table);
+// this project filters it down to H–Ne itself, see STATI_ELEMENTS below.
+
+// Electron configurations
+
+
+// Groups a per-orbital electron config into per-shell (principal quantum
+// number n) totals — e.g. {1s:2,2s:2,2p:4} → {1:2, 2:6} — used by the
+// classic Bohr-model view, which shows shells rather than sublevels.
+
+// A "part key" is an orbital string ("3p") or orbital sub-level ("3p|x",
+// "4d|xy") — this extracts its shell (principal quantum number). The
+// 'bohr:' prefix check is legacy/defensive: Bohr view now uses these same
+// keys, but nothing generates the old shell-only format anymore.
+
+// ── SIMPLIFIED OCTET-RULE BONDING (for the "Legame" feature) ────────────────
+// This is a deliberately simplified, pedagogical model — not a full
+// valence-bond-theory engine — meant to give a reasonable yes/no answer for
+// whether two atoms' outer shells can complete each other's octet (or duet,
+// for shell 1). It covers the two most common textbook cases:
+//   - covalent: both atoms need to GAIN the same number of electrons, so
+//     that many shared pairs satisfy both at once (e.g. H+H, O+O, H+Cl).
+//   - ionic: one atom needs to LOSE exactly what the other needs to GAIN
+//     (e.g. Na+Cl), assuming (as is true for main-group elements) that the
+//     shell below is already complete once the outer shell is emptied.
+// Noble gases (already at capacity) never bond. This is intentionally scoped
+// to exactly two atoms for now.
+
+
+// Outlines every periodic-table cell whose element would actually satisfy
+// the octet rule together with refCfg (same check used to decide whether
+// Legame fuses the two outer shells) — only meaningful while Legame is
+// active. Pass null to just clear it.
+
+// catClass now comes from chemverse-engine.js too.
+
+// This project only shows H through Ne — filtered from the shared full
+// ELEMENTS list defined in chemverse-engine.js.
+const STATI_ELEMENTS = ELEMENTS.filter(e=>e.n<=10);
+
+buildElementRow(
+  document.getElementById('pt-grid'),
+  STATI_ELEMENTS,
+  (n)=>selectElementWithEmptyOrbitals(n)
+);
+
+// ── EMPTY ORBITAL PREVIEW (free-choice picker) ───────────────────────────────
+// Whenever someone picks an element from the row, this also shows — in gray,
+// dashed — whichever orbitals aren't part of that element's ground-state
+// configuration but would come next: any unfilled sub-orbitals within the
+// outermost occupied p, plus the entirely-empty orbital slot right after it.
+let emptyOrbitals=[];
+
+function hideEmptyOrbitals(){
+  for(const o of emptyOrbitals){
+    if(o.group) o.group.remove(o.mesh);
+  }
+  emptyOrbitals=[];
+}
+
+// Picks a gray that reads clearly against whatever background is currently
+// active. Rather than two fixed options, this computes a gray lightness
+// meaningfully offset from the background's own — dark backgrounds get a
+// near-white gray, light backgrounds get a near-black one, and anything in
+// between gets whatever offset (in the right direction) keeps a solid gap.
+
+function buildEmptyPOrbital(layer, orb, subIdx, color){
+  const sub=P_SUBS[subIdx];
+  const key=orb+'|'+sub;
+  const r=bohrKeyRadius(key);
+  const rot=subIdx*(Math.PI/3);
+  const a=r, gap=Math.max(0.1, r*0.07);
+  const cosr=Math.cos(rot), sinr=Math.sin(rot);
+  const segs=120, pts=[];
+  for(let j=0;j<=segs;j++){
+    const p=lemniscatePoint(j/segs, a, gap);
+    pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineDashedMaterial({color, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
+  const line=new THREE.Line(geo, mat);
+  line.computeLineDistances();
+  layer.group.add(line);
+  return {mesh:line, mat, group:layer.group, key, type:'p', subIdx, a, gap, rot};
+}
+
+function buildEmptySOrbital(layer, orb, color){
+  const r=bohrKeyRadius(orb);
+  const segs=80, pts=[];
+  for(let j=0;j<=segs;j++){
+    const t=j/segs*Math.PI*2;
+    pts.push(new THREE.Vector3(r*Math.cos(t), r*Math.sin(t), 0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineDashedMaterial({color, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
+  const line=new THREE.Line(geo, mat);
+  line.computeLineDistances();
+  layer.group.add(line);
+  return {mesh:line, mat, group:layer.group, key:orb, type:'s', r};
+}
+
+function showEmptyOrbitalsForCurrentElement(){
+  const layer=activeViewer.currentLayer;
+  if(!layer) return;
+  hideEmptyOrbitals();
+  const cfg=activeViewer.currentCfg;
+  const color=contrastingGrayColor();
+  const mats=[];
+
+  const occupied=Object.keys(cfg).filter(o=>cfg[o]>0);
+  let lastOrb=null, lastIdx=-1;
+  for(const orb of occupied){
+    const idx=AUFBAU_ORDER.indexOf(orb);
+    if(idx>lastIdx){ lastIdx=idx; lastOrb=orb; }
+  }
+
+  // Unfilled sub-orbitals within the outermost occupied p orbital.
+  if(lastOrb && lastOrb[1]==='p'){
+    const nShow=Math.min(3, cfg[lastOrb]);
+    for(let i=nShow;i<3;i++){
+      const e=buildEmptyPOrbital(layer, lastOrb, i, color);
+      e.stepDistance=0;
+      emptyOrbitals.push(e); mats.push(e.mat);
+    }
+  }
+
+  // The next few entirely-empty orbital slots — not just the very next one,
+  // so e.g. Helium shows 2s, 2p AND 3s rather than stopping at 2s.
+  const NEXT_SLOTS_TO_SHOW=3;
+  for(let step=1; step<=NEXT_SLOTS_TO_SHOW; step++){
+    const idx=lastIdx+step;
+    if(idx<0 || idx>=AUFBAU_ORDER.length) break;
+    const nextOrb=AUFBAU_ORDER[idx];
+    if(nextOrb[1]==='s'){
+      const e=buildEmptySOrbital(layer, nextOrb, color);
+      e.stepDistance=step;
+      emptyOrbitals.push(e); mats.push(e.mat);
+    } else if(nextOrb[1]==='p'){
+      for(let i=0;i<3;i++){
+        const e=buildEmptyPOrbital(layer, nextOrb, i, color);
+        e.stepDistance=step;
+        emptyOrbitals.push(e); mats.push(e.mat);
+      }
+    }
+    // d/f slots are skipped — this element range (H–Ne) never actually needs them.
+  }
+
+  fadeMaterialsOpacity(mats, 0, 0.85, 800);
+}
+
+// selectElement's own nucleus-formation + orbital-stagger animation is
+// asynchronous with no completion callback exposed, so this just waits a
+// generous fixed time (comfortably longer than the animation takes for any
+// element in this range) before drawing the empty orbitals.
+function selectElementWithEmptyOrbitals(n){
+  hideEmptyOrbitals();
+  if(currentlyExcited && currentlyExcited.returnTimeout) clearTimeout(currentlyExcited.returnTimeout);
+  currentlyExcited=null;
+  lastFiredOriginKey=null;
+  lastFiredTargetKey=null;
+  fireInProgress=false;
+  hideLightRayInstant();
+  const btn=document.getElementById('fire-btn');
+  if(btn) btn.disabled=false;
+  activeViewer.selectElement(n);
+  setTimeout(showEmptyOrbitalsForCurrentElement, 2000);
+}
+
+// ── ENERGY SLIDER + FIRE BUTTON ───────────────────────────────────────────────
+// Gathers electrons to possibly excite from the outermost two occupied
+// orbitals that still have electrons (not just the very outermost one) —
+// a single orbital sometimes only has one electron in it, which would give
+// no variety at all to choose from.
+function findExcitableElectronPool(layer, cfg){
+  const occupied=Object.keys(cfg).filter(o=>cfg[o]>0)
+    .map(orb=>({orb, idx:AUFBAU_ORDER.indexOf(orb)}))
+    .sort((a,b)=>b.idx-a.idx);
+
+  const pool=[];
+  let orbitalsIncluded=0;
+  for(const {orb} of occupied){
+    let foundAny=false;
+    if(orb[1]==='s'){
+      if(layer.rendered[orb] && layer.rendered[orb].electrons.length){
+        for(const ed of layer.rendered[orb].electrons) pool.push({key:orb, ed});
+        foundAny=true;
+      }
+    } else {
+      for(const sub of P_SUBS){
+        const k=orb+'|'+sub;
+        if(layer.rendered[k] && layer.rendered[k].electrons.length){
+          for(const ed of layer.rendered[k].electrons) pool.push({key:k, ed});
+          foundAny=true;
+        }
+      }
+    }
+    if(foundAny) orbitalsIncluded++;
+    if(orbitalsIncluded>=2) break;
+  }
+  return pool;
+}
+
+function positionOfElectron(ed){
+  if(ed.type==='bohr'){
+    return new THREE.Vector3(ed.r*Math.cos(ed.theta), ed.r*Math.sin(ed.theta), 0);
+  }
+  const cosr=Math.cos(ed.rot), sinr=Math.sin(ed.rot);
+  const p=lemniscatePoint(((ed.t%1)+1)%1, ed.a, ed.gap);
+  return new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0);
+}
+
+let fireInProgress=false;
+let currentlyExcited=null; // {key, ed, returnTimeout} — the most recently promoted electron, if still resting
+let lastFiredOriginKey=null, lastFiredTargetKey=null; // avoid immediately repeating the same visible orbital when alternatives exist
+const FIRE_ENERGY_THRESHOLD=6;
+
+// Maps the energy slider to how far the electron should jump: low energy
+// reaches only the nearest empty orbital, high energy reaches all the way
+// to the furthest one currently shown (e.g. 3s).
+function pickTargetForEnergy(energy){
+  if(!emptyOrbitals.length) return null;
+  let desiredStep;
+  if(energy<=3) desiredStep=0;
+  else if(energy<=6) desiredStep=1;
+  else if(energy<=8) desiredStep=2;
+  else desiredStep=3;
+  let bestDiff=Infinity;
+  for(const o of emptyOrbitals){
+    const diff=Math.abs((o.stepDistance||0)-desiredStep);
+    if(diff<bestDiff) bestDiff=diff;
+  }
+  let candidates=emptyOrbitals.filter(o=>Math.abs((o.stepDistance||0)-desiredStep)===bestDiff);
+  if(candidates.length>1){
+    const filtered=candidates.filter(o=>o.key!==lastFiredTargetKey);
+    if(filtered.length) candidates=filtered;
+  }
+  return candidates[Math.floor(Math.random()*candidates.length)];
+}
+
+function fireEnergyAtAtom(){
+  if(fireInProgress) return;
+  const layer=activeViewer.currentLayer;
+  if(!layer) return;
+  const cfg=activeViewer.currentCfg;
+  const energy=parseInt(document.getElementById('energy-slider').value, 10);
+
+  const hasCurrentlyExcited=currentlyExcited && layer.rendered[currentlyExcited.key] && layer.rendered[currentlyExcited.key].electrons.includes(currentlyExcited.ed);
+  const pool=findExcitableElectronPool(layer, cfg);
+
+  let originKey, ed, trueOrigin;
+  if(hasCurrentlyExcited && (pool.length===0 || Math.random()<0.5)){
+    // push the already-excited electron further, about half the time
+    originKey=currentlyExcited.key;
+    ed=currentlyExcited.ed;
+    trueOrigin=currentlyExcited.trueOrigin;
+    if(currentlyExcited.returnTimeout) clearTimeout(currentlyExcited.returnTimeout);
+    currentlyExcited=null;
+  } else if(pool.length){
+    // otherwise excite a fresh electron. Sibling electrons in the same
+    // orbital look identical, so prefer a candidate from a DIFFERENT
+    // orbital than last time — that's the variety that's actually visible —
+    // and only fall back to the same orbital if nothing else is available.
+    let candidates=pool;
+    const differentOrbital=pool.filter(p=>p.key!==lastFiredOriginKey);
+    if(differentOrbital.length) candidates=differentOrbital;
+    const pick=candidates[Math.floor(Math.random()*candidates.length)];
+    originKey=pick.key;
+    ed=pick.ed;
+    trueOrigin=originKey;
+  } else {
+    return;
+  }
+  if(!ed) return;
+
+  const target=pickTargetForEnergy(energy);
+  if(!target || target.key===originKey) return;
+
+  lastFiredOriginKey=originKey;
+  lastFiredTargetKey=target.key;
+
+  fireInProgress=true;
+  document.getElementById('fire-btn').disabled=true;
+  const wasFrozen=electronsFrozen;
+  electronsFrozen=true;
+  const originPos=positionOfElectron(ed);
+  const rayRadius=RAY_RADIUS*(0.6+energy/10*0.9); // thicker beam for higher energy
+
+  showLightRayTo(originPos, ()=>{
+    promoteAnyElectron(layer, originKey, ed, originPos, wasFrozen, target, trueOrigin, energy);
+  }, rayRadius);
+}
+
+function promoteAnyElectron(layer, originKey, ed, originPos, wasFrozen, target, trueOrigin, energy){
+  hideLightRayInstant();
+
+  const idxLE=layer.electronObjects.indexOf(ed);
+  if(idxLE>=0) layer.electronObjects.splice(idxLE,1);
+  const rec=layer.rendered[originKey];
+  if(rec){
+    const idxRec=rec.electrons.indexOf(ed);
+    if(idxRec>=0) rec.electrons.splice(idxRec,1);
+  }
+  ed.pulsing=false;
+  ed.mesh.scale.setScalar(1);
+
+  const originAngle=Math.atan2(originPos.y, originPos.x);
+  const targetPos = target.type==='s'
+    ? new THREE.Vector3(target.r*Math.cos(originAngle), target.r*Math.sin(originAngle), 0)
+    : (()=>{ const p=lemniscatePoint(0, target.a, target.gap);
+        const cosr=Math.cos(target.rot), sinr=Math.sin(target.rot);
+        return new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0); })();
+
+  const travelStart=performance.now(), travelDuration=1600;
+  (function travel(){
+    const now=performance.now();
+    const t=Math.min(1,(now-travelStart)/travelDuration);
+    const ease=t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    ed.mesh.position.copy(originPos.clone().lerp(targetPos, ease));
+    if(t<1){ requestAnimationFrame(travel); }
+    else onArrived();
+  })();
+
+  function onArrived(){
+    const gIdx=emptyOrbitals.indexOf(target);
+    if(gIdx>=0){ layer.group.remove(target.mesh); emptyOrbitals.splice(gIdx,1); }
+
+    const [baseOrbForColor, subForColor]=target.key.split('|');
+    const color=(freeChoiceMode && subForColor && SUB_COLORS[subForColor]!==undefined) ? SUB_COLORS[subForColor] : ORB_COLORS[baseOrbForColor];
+    let mesh, newEd;
+    if(target.type==='s'){
+      const tube=visualStyle==='flat'?0.03:0.015;
+      const ringGeo=new THREE.TorusGeometry(target.r, tube, 8, 64);
+      const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+      mesh=new THREE.Mesh(ringGeo, mat);
+      layer.group.add(mesh);
+      newEd={mesh:ed.mesh, orb:target.key, r:target.r, theta:originAngle, speed:0.35+0.15*Math.random(), type:'bohr'};
+      layer.electronObjects.push(newEd);
+      layer.rendered[target.key]={meshes:[mesh], electrons:[newEd]};
+      ed.mesh.material.color.set(color);
+      fadeMaterialsOpacity([ed.mesh.material], 0, 1, 900);
+      blinkMaterialsTwice([mat], 1, ()=>afterColorize(newEd));
+    } else {
+      const segs=120, pts=[];
+      for(let j=0;j<=segs;j++){
+        const p=lemniscatePoint(j/segs, target.a, target.gap);
+        const cosr=Math.cos(target.rot), sinr=Math.sin(target.rot);
+        pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+      }
+      const curve=new THREE.CatmullRomCurve3(pts, true);
+      const tubeGeo=new THREE.TubeGeometry(curve, 160, visualStyle==='flat'?0.03:0.015, 8, true);
+      const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+      mesh=new THREE.Mesh(tubeGeo, mat);
+      layer.group.add(mesh);
+      ed.mesh.material.color.set(color);
+      newEd={mesh:ed.mesh, orb:target.key, a:target.a, gap:target.gap, rot:target.rot, t:0, speed:0.14+0.05*Math.random(), type:'bohr8'};
+      layer.electronObjects.push(newEd);
+      layer.rendered[target.key]={meshes:[mesh], electrons:[newEd]};
+      fadeMaterialsOpacity([ed.mesh.material], 0, 1, 900);
+      blinkMaterialsTwice([mat], 1, ()=>afterColorize(newEd));
+    }
+  }
+
+  function afterColorize(newEd){
+    if(rec && rec.electrons.length===0){
+      const [baseOrb, sub]=originKey.split('|');
+      const grayColor=contrastingGrayColor();
+      let grayEntry;
+      for(const m of rec.meshes) layer.group.remove(m);
+      if(!sub){
+        grayEntry=buildEmptySOrbital(layer, baseOrb, grayColor);
+      } else {
+        const subIdx=P_SUBS.indexOf(sub);
+        grayEntry=buildEmptyPOrbital(layer, baseOrb, subIdx, grayColor);
+      }
+      delete layer.rendered[originKey];
+      emptyOrbitals.push(grayEntry);
+      fadeMaterialsOpacity([grayEntry.mat], 0, 0.85, 900, ()=>finish(newEd));
+    } else {
+      finish(newEd);
+    }
+  }
+
+  // The electron settles in bigger and visibly pulsing — a lasting sign
+  // it's excited — then automatically falls back after 10 seconds,
+  // releasing its energy as an outward ray on the way down. The fire button
+  // is freed up immediately, so it can be fired again right away — either at
+  // this same electron (pushing it further) or, once it eventually returns,
+  // at a fresh one.
+  function finish(newEd){
+    newEd.pulsing=true;
+    newEd.pulseAmp=0.5;
+    newEd.pulseBase=1.4;
+    electronsFrozen=wasFrozen;
+    fireInProgress=false;
+    const btn=document.getElementById('fire-btn');
+    if(btn) btn.disabled=false;
+    const returnTimeout=setTimeout(()=>{
+      autoReturnFiredElectron(layer, newEd, target, trueOrigin, wasFrozen, energy);
+    }, 5000);
+    currentlyExcited={key:target.key, ed:newEd, trueOrigin, returnTimeout, energy};
+  }
+}
+
+// The reverse of promoteAnyElectron: the excited electron falls back to
+// where it came from, releasing an outward ray the moment it starts moving,
+// and settles back to its normal size once it lands.
+function autoReturnFiredElectron(layer, newEd, target, originKey, wasFrozen, energy){
+  if(layer.dead) return;
+  fireInProgress=true;
+  const btn0=document.getElementById('fire-btn');
+  if(btn0) btn0.disabled=true;
+  if(currentlyExcited && currentlyExcited.ed===newEd) currentlyExcited=null;
+  electronsFrozen=true;
+  const currentPos=positionOfElectron(newEd);
+
+  const idxLE=layer.electronObjects.indexOf(newEd);
+  if(idxLE>=0) layer.electronObjects.splice(idxLE,1);
+  const trec=layer.rendered[target.key];
+  if(trec){
+    const idxRec=trec.electrons.indexOf(newEd);
+    if(idxRec>=0) trec.electrons.splice(idxRec,1);
+  }
+  newEd.pulsing=false;
+  newEd.mesh.scale.setScalar(1);
+
+  const [origBase, origSub]=originKey.split('|');
+  const origR=bohrKeyRadius(originKey);
+  const origIdx=origSub ? P_SUBS.indexOf(origSub) : -1;
+  const origRot=origSub ? origIdx*(Math.PI/3) : 0;
+  const origGap=origSub ? Math.max(0.1, origR*0.07) : 0;
+
+  let landingPos, landingAngle;
+  if(!origSub){
+    landingAngle=Math.atan2(currentPos.y, currentPos.x);
+    landingPos=new THREE.Vector3(origR*Math.cos(landingAngle), origR*Math.sin(landingAngle), 0);
+  } else {
+    const p=lemniscatePoint(0, origR, origGap);
+    const cosr=Math.cos(origRot), sinr=Math.sin(origRot);
+    landingPos=new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0);
+  }
+
+  const travelStart=performance.now(), travelDuration=1800;
+  (function travel(){
+    const now=performance.now();
+    const t=Math.min(1,(now-travelStart)/travelDuration);
+    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    const pos=currentPos.clone().lerp(landingPos, ease);
+    newEd.mesh.position.copy(pos);
+    if(t<1){ requestAnimationFrame(travel); }
+    else onLanded();
+  })();
+
+  function onLanded(){
+    const releaseRadius=RAY_RADIUS*(0.6+(energy||5)/10*0.9);
+    showOutwardRayFrom(landingPos.clone(), releaseRadius); // fires exactly at the landing spot, no earlier
+    setTimeout(()=>{
+      if(target.mesh) layer.group.remove(target.mesh);
+      delete layer.rendered[target.key];
+      const grayColor=contrastingGrayColor();
+      let grayBack;
+      if(target.type==='s'){
+        grayBack=buildEmptySOrbital(layer, target.key, grayColor);
+      } else {
+        const [tBase, tSub]=target.key.split('|');
+        grayBack=buildEmptyPOrbital(layer, tBase, P_SUBS.indexOf(tSub), grayColor);
+      }
+      grayBack.stepDistance=target.stepDistance;
+      emptyOrbitals.push(grayBack);
+      fadeMaterialsOpacity([grayBack.mat], 0, 0.85, 900);
+
+      const origColor=(freeChoiceMode && origSub && SUB_COLORS[origSub]!==undefined) ? SUB_COLORS[origSub] : ORB_COLORS[origBase];
+      let mesh2;
+      if(!origSub){
+        const tube=visualStyle==='flat'?0.03:0.015;
+        const ringGeo=new THREE.TorusGeometry(origR, tube, 8, 64);
+        const mat2=new THREE.MeshBasicMaterial({color:origColor, transparent:true, opacity:0});
+        mesh2=new THREE.Mesh(ringGeo, mat2);
+        layer.group.add(mesh2);
+        const finalEd={mesh:newEd.mesh, orb:originKey, r:origR, theta:landingAngle, speed:0.35+0.15*Math.random(), type:'bohr'};
+        layer.electronObjects.push(finalEd);
+        layer.rendered[originKey]={meshes:[mesh2], electrons:[finalEd]};
+        newEd.mesh.material.color.set(origColor);
+        fadeMaterialsOpacity([mat2, newEd.mesh.material], 0, 1, 900, finishReturn);
+      } else {
+        const segs=120, pts=[];
+        for(let j=0;j<=segs;j++){
+          const p=lemniscatePoint(j/segs, origR, origGap);
+          const cosr=Math.cos(origRot), sinr=Math.sin(origRot);
+          pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+        }
+        const curve=new THREE.CatmullRomCurve3(pts, true);
+        const tubeGeo=new THREE.TubeGeometry(curve, 160, visualStyle==='flat'?0.03:0.015, 8, true);
+        const mat2=new THREE.MeshBasicMaterial({color:origColor, transparent:true, opacity:0});
+        mesh2=new THREE.Mesh(tubeGeo, mat2);
+        layer.group.add(mesh2);
+        newEd.mesh.material.color.set(origColor);
+        const finalEd={mesh:newEd.mesh, orb:originKey, a:origR, gap:origGap, rot:origRot, t:0, speed:0.14+0.05*Math.random(), type:'bohr8'};
+        layer.electronObjects.push(finalEd);
+        layer.rendered[originKey]={meshes:[mesh2], electrons:[finalEd]};
+        fadeMaterialsOpacity([mat2, newEd.mesh.material], 0, 1, 900, finishReturn);
+      }
+
+      function finishReturn(){
+        electronsFrozen=wasFrozen;
+        fireInProgress=false;
+        const btn=document.getElementById('fire-btn');
+        if(btn) btn.disabled=false;
+      }
+    }, 2000); // the electron sits still on the gray orbital while the ray flies off, before recoloring and resuming
+  }
+}
+
+// Renderer/camera/mouse-controls/resize are created per-viewer inside
+// createViewer() further below, so that two independent atoms (A and B) can
+// be shown side by side when compare mode is active.
+
+
+// Orbital colors
+
+// p sub-orbital colors (x,y,z)
+
+// Set once "Ora prova tu" is chosen — the guided story keeps every p
+// sub-level in one shared color (already carefully tuned), but the free
+// picker gives each of x/y/z its own distinct color instead.
+let freeChoiceMode=false;
+
+// d sub-orbital definitions, labels and colors
+
+// Current display mode ('lines' or 'cloud') — shared by both viewers.
+let viewMode='bohr'; // this project only ever shows the Bohr view
+
+// Global point-cloud density multiplier (controlled by the "Intensità" slider).
+// 1.0 = the baseline density the shapes were originally tuned for.
+let cloudDensity=1.0;
+
+
+// Radial profile of a lobe: rounded off at BOTH the near end (t=0, close to the
+// nucleus) and the far end (t=1) — no sharp cusp/point at either end — while the
+// bulge is still biased toward the outer part of the lobe, so it "widens
+// progressively" moving away from the nucleus rather than being a symmetric blob.
+
+// Teardrop-shaped wire lobe, detached from the nucleus, widening progressively.
+
+// Electron dot on orbit
+
+// Line/wire opacity is boosted for the Flat style, so shapes read as bold and
+// solid-feeling rather than delicate technical wireframes.
+
+// Current cloud dot size/opacity, read straight from the sliders (falling
+// back to their default position if not yet in the DOM). Used both to build
+// brand-new cloud points AND to live-update existing ones — a single source
+// of truth, so no rebuild path can ever reset points back to a stale default.
+function currentCloudSize(){
+  const el=document.getElementById('size-slider');
+  const sz=el?parseFloat(el.value):0.3;
+  return sz*(visualStyle==='flat'?0.2:0.13); // calibrated so the slider's default (0.3) gives a reasonably small starting dot size
+}
+function currentCloudOpacity(){
+  const el=document.getElementById('int-slider');
+  const intens=el?parseFloat(el.value):2.9;
+  return Math.min(1, intens*0.16);
+}
+
+// Cloud points for a spherical shell (s orbitals / fallback) — denser near the
+// inner edge of the shell band, fading out toward the outer edge.
+
+// Teardrop-shaped point cloud — constant point density per slice ALONG the axis,
+// so the wide part of the drop (bigger cross-section) naturally looks sparser.
+
+// Cloud points scattered in a torus (dz² equatorial ring)
+
+
+
+
+// The real chemistry electron-filling order (Aufbau). This is the single
+// source of truth for "how far out" an orbital sits, used both here (for
+// Linee/Nuvola radii) and later for the Bohr view's ring slots — so within
+// a shell, p is always drawn bigger than the s before it, 3d bigger than
+// the 4s that fills before it, etc., matching the real configuration order
+// rather than just shell number.
+
+// Orbital radii for Linee/Nuvola, increasing monotonically along AUFBAU_ORDER.
+AUFBAU_ORDER.forEach((orb,i)=>{ RADII[orb]=1.0+i*0.5; });
+
+
+// In cloud mode, a fixed point count spread over an ever-larger spherical
+// shell (as the shell radius grows for outer orbitals) looks progressively
+// sparser and less defined — surface area grows with r², point count didn't.
+// In Flat style specifically (where the shapes are meant to read as bold and
+// clear) we compensate by scaling the point count with r², using the
+// innermost s-shell (1s) as the "already well-defined" reference density —
+// and slightly beyond r² so bigger shells end up looking at least as crisp.
+
+
+
+// Builds one classic-Bohr-model shell: a flat circular ring (lying in the
+// XY-plane, like Saturn's rings) plus its electrons evenly spaced around it,
+// orbiting in that same plane.
+
+// Ring radius is based on each orbital's position in the real chemistry
+// filling order (Aufbau), NOT on shell number + type. This matters because
+// shell number alone doesn't reflect energy order: 3d sits AFTER 4s, 4d
+// sits AFTER 5s, 4f sits AFTER 6s but BEFORE 5d, etc. A shell-based radius
+// (like the old model) inevitably makes some higher-shell orbital collide
+// with a lower-shell one that's actually drawn further out. Giving every
+// orbital in this sequence its own well-separated "slot" guarantees no two
+// orbitals ever overlap, matching how electron shells actually fill.
+AUFBAU_ORDER.forEach((orb,i)=>{ BOHR_SLOT_INDEX[orb]=i; });
+
+// Radius for one Bohr-view ring, given a part key ("3s", "3p|x", "4d|xy"...).
+
+// Bohr-view rendering for one orbital/sub-level key: always a plain flat
+// ring (never the lobed p/d shapes used in Linee/Nuvola) — all sub-levels of
+// the SAME orbital share that orbital's one color, so "3p_x/y/z" all render
+// in the same hue rather than three different ones.
+// A point on a figure-8 (lemniscate of Bernoulli), lying flat. `gap` pushes
+// every point radially outward a little, so the curve's natural pinch at the
+// center opens into a small clearance instead of passing right over the
+// nucleus.
+
+
+// The bond scene itself (buildBondLayer, updateBondAnimation, and its
+// supporting geometry helpers) now lives in chemverse-engine.js, along with
+// its bondElectrons/bondLayerGroup/bondAnim state — this project doesn't
+// use it, but nothing here needs to redeclare it.
+
+
+// Update cloud point sizes/opacity across every viewer (cheap — live on 'input')
+function updateCloudParams(){
+  const sz=parseFloat(document.getElementById('size-slider').value);
+  const intens=parseFloat(document.getElementById('int-slider').value);
+  document.getElementById('size-val').textContent=sz.toFixed(1);
+  document.getElementById('int-val').textContent=intens.toFixed(2);
+  const size=currentCloudSize(), opacity=currentCloudOpacity();
+  for(let v of [viewerA, viewerB]){
+    if(!v) continue;
+    for(let layer of v.layers){
+      for(let o of layer.orbitalObjects){
+        o.traverse(c=>{
+          if(c.isPoints){
+            c.material.size=size;
+            c.material.opacity=opacity;
+          }
+        });
+      }
+    }
+  }
+}
+
+// Actually regenerate the point clouds with more/fewer points (real density,
+// not just opacity). Expensive-ish, so only triggered when the slider drag ends,
+// and only meaningful in cloud view mode.
+function regenerateCloudDensity(){
+  if(viewMode!=='cloud') return;
+  const intens=parseFloat(document.getElementById('int-slider').value);
+  cloudDensity=0.75+(intens/9)*0.55; // gentle density range — enough to feel "fuller" at high intensity without reading as a size change
+  for(let v of [viewerA, viewerB]){
+    if(!v || !v.currentLayer) continue;
+    const layer=v.currentLayer;
+    const keys=Object.keys(layer.rendered);
+    if(keys.length===0) continue;
+    for(let k of keys) removePart(layer,k);
+    for(let k of keys) addPart(layer,k,'cloud',v.currentCfg);
+  }
+  updateCloudParams(); // the newly-rebuilt points start at their default size — reapply the person's actual size/opacity settings
+}
+
+// ── VIEWER FACTORY ───────────────────────────────────────────────────────────
+// Everything needed to display ONE independent atom: its own renderer, scene,
+// camera, mouse-drag rotation, atom layers, and the currently-selected element.
+// Two of these (viewerA / viewerB) can exist at once for side-by-side compare.
+
+// Approximate neutron count for a schematic nucleus (illustrative, not an isotope table):
+// the neutron/proton ratio grows roughly from 1.0 (light elements) to ~1.6 (heavy elements).
 
 // ── ORBITAL CHECKBOX LIST (reflects/controls the current ACTIVE viewer) ─────
 function updateOrbitalList(cfg, renderedKeys){
@@ -1685,55 +2853,10 @@ function toggleStyle(){
 }
 
 // ── FLAT-STYLE BACKGROUND COLOR PICKER ───────────────────────────────────────
-// A deliberately small, curated palette — the same muted/mid-tone hues used
-// for the periodic table categories — plus plain white and black. No neon.
-const BG_PALETTE=['#0e6b78','#ff5b5b','#ffb020','#34d399','#6c8cff','#d16bd1','#22e0a0','#22d3ee','#a78bfa','#f472b6','#fb923c','#ffffff','#000000'];
-
-function hexToRgb(hex){
-  const v=parseInt(hex.slice(1),16);
-  return [(v>>16)&255,(v>>8)&255,v&255];
-}
-function rgbToHex(r,g,b){
-  return '#'+[r,g,b].map(x=>Math.max(0,Math.min(255,Math.round(x))).toString(16).padStart(2,'0')).join('');
-}
-function shadeColor(hex, amt){
-  const [r,g,b]=hexToRgb(hex);
-  return rgbToHex(r+amt,g+amt,b+amt);
-}
-function relLuminance(hex){
-  const [r,g,b]=hexToRgb(hex).map(v=>v/255);
-  const lin=c=> c<=0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4);
-  return 0.2126*lin(r)+0.7152*lin(g)+0.0722*lin(b);
-}
-
-function applyBgColor(hex){
-  const light=relLuminance(hex)>0.55;
-  const panel=shadeColor(hex, light?18:26);
-  const border=shadeColor(hex, light?-30:38);
-  const root=document.documentElement.style;
-  root.setProperty('--flat-bg', hex);
-  root.setProperty('--flat-panel', light ? shadeColor(hex,-10) : panel);
-  root.setProperty('--flat-border', border);
-  root.setProperty('--flat-text', light ? '#1a2b2e' : '#ffffff');
-  root.setProperty('--flat-text-dim', light ? '#3d5052' : '#dffcff');
-  document.querySelectorAll('.bg-swatch').forEach(sw=>{
-    sw.classList.toggle('bg-swatch-selected', sw.dataset.hex.toLowerCase()===hex.toLowerCase());
-  });
-}
-
-(function buildBgSwatches(){
-  const container=document.getElementById('bg-swatches');
-  for(let hex of BG_PALETTE){
-    const sw=document.createElement('div');
-    sw.className='bg-swatch';
-    sw.style.background=hex;
-    sw.dataset.hex=hex;
-    sw.title=hex;
-    sw.onclick=()=>applyBgColor(hex);
-    container.appendChild(sw);
-  }
-  applyBgColor(BG_PALETTE[0]); // default: the original teal
-})();
+// BG_PALETTE and applyBgColor now live in chemverse-engine.js — this just
+// wires up the swatch row and restores the last-chosen color for this
+// specific project (its own localStorage key).
+buildBgSwatches(document.getElementById('bg-swatches'), 'chemverse-stati-bg');
 
 function switchActiveViewer(which){
   const target=which==='A'?viewerA:viewerB;
@@ -1863,7 +2986,7 @@ function animateAll(){
   requestAnimationFrame(animateAll);
   viewerA.render();
   if(viewerB) viewerB.render();
-  updateLightRayFlow();
+  updateLightRayTracking();
   if(bondMode){
     updateBondAnimation();
     for(let be of bondElectrons){
@@ -1886,112 +3009,68 @@ function animateAll(){
 // rest under box 1; then the electrons start moving. More steps to follow.
 let electronsFrozen=true;
 
-function hexToHsl(hex){
-  const r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
-  const max=Math.max(r,g,b), min=Math.min(r,g,b);
-  let h=0,s=0,l=(max+min)/2;
-  if(max!==min){
-    const d=max-min;
-    s=l>0.5 ? d/(2-max-min) : d/(max+min);
-    if(max===r) h=(g-b)/d+(g<b?6:0);
-    else if(max===g) h=(b-r)/d+2;
-    else h=(r-g)/d+4;
-    h*=60;
-  }
-  return [h,s,l];
-}
 
-function hslToHex(h,s,l){
-  h=((h%360)+360)%360/360;
-  let r,g,b;
-  if(s===0){ r=g=b=l; }
-  else{
-    const hue2rgb=(p,q,t)=>{
-      if(t<0)t+=1; if(t>1)t-=1;
-      if(t<1/6) return p+(q-p)*6*t;
-      if(t<1/2) return q;
-      if(t<2/3) return p+(q-p)*(2/3-t)*6;
-      return p;
-    };
-    const q=l<0.5?l*(1+s):l+s-l*s;
-    const p=2*l-q;
-    r=hue2rgb(p,q,h+1/3); g=hue2rgb(p,q,h); b=hue2rgb(p,q,h-1/3);
-  }
-  const toHex=x=>Math.round(Math.max(0,Math.min(1,x))*255).toString(16).padStart(2,'0');
-  return '#'+toHex(r)+toHex(g)+toHex(b);
-}
 
 // Picks the palette swatch whose hue is closest to a target hue — used to
 // find a color that reads as "complementary" to the current background,
 // without inventing a color outside the established palette.
-function nearestPaletteColor(targetHue, exclude){
-  let best=null, bestDiff=Infinity;
-  for(const hex of BG_PALETTE){
-    if(hex==='#ffffff'||hex==='#000000') continue;
-    if(exclude && exclude.includes(hex)) continue;
-    const [h]=hexToHsl(hex);
-    let diff=Math.abs(h-targetHue); diff=Math.min(diff,360-diff);
-    if(diff<bestDiff){ bestDiff=diff; best=hex; }
-  }
-  return best;
-}
 
 // Softens a punchy palette color into something calmer for the message
 // boxes — less saturated, pulled toward a mid-light tone.
-function muteColor(hex){
-  const [h,s,l]=hexToHsl(hex);
-  return hslToHex(h, s*0.5, Math.min(0.8, l*0.7+0.32));
-}
 
-function showSequenceBox(id, text, color){
+function showSequenceBox(id, html, color){
   const box=document.getElementById(id);
-  document.getElementById(id+'-text').textContent=text;
+  document.getElementById(id+'-text').innerHTML=html;
   box.style.background=color;
   requestAnimationFrame(()=>box.classList.add('show'));
 }
 
 let seqColor1=null, seqColor2=null, seqColor3=null;
-let potentialOrbitals=[]; // {mesh, mat} — the gray dashed "unoccupied" 2p orbitals
+let potentialOrbitals=[]; // {mesh, mat, sub} — the gray dashed "unoccupied" 2p orbitals
+let grayConvertedOrbitals=[]; // orbitals converted TO gray-dashed (e.g. 2s once its electron is promoted)
+let promotedPxRef=null; // the colored 2p_x mesh+electron created by the promotion, so it can be removed if undone
 
 // Generic opacity fade for plain Three.js materials (no CSS transitions apply
 // to WebGL materials, so this drives it frame-by-frame over `duration` ms).
-function fadeMaterialsOpacity(mats, from, to, duration, onDone){
-  const start=performance.now();
-  (function step(){
-    const now=performance.now();
-    const t=Math.min(1,(now-start)/duration);
-    const val=from+(to-from)*t;
-    for(const m of mats) m.opacity=val;
-    if(t<1) requestAnimationFrame(step);
-    else if(onDone) onDone();
-  })();
+
+// Flashes materials on-off twice before settling at finalOpacity — used to
+// draw the eye to an orbital an electron just landed on.
+
+// Draws one 2p sub-orbital as a dashed gray outline with no electron on it —
+// reused both to show all three "potential" orbitals at once and to rebuild
+// just one of them if a promotion gets undone later.
+function buildOnePotentialOrbital(subIdx){
+  const layer=viewerA.currentLayer;
+  const sub=P_SUBS[subIdx];
+  const key='2p|'+sub;
+  const r=bohrKeyRadius(key);
+  const rot=subIdx*(Math.PI/3);
+  const a=r, gap=Math.max(0.1, r*0.07);
+  const cosr=Math.cos(rot), sinr=Math.sin(rot);
+  const segsN=120, pts=[];
+  for(let j=0;j<=segsN;j++){
+    const p=lemniscatePoint(j/segsN, a, gap);
+    pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineDashedMaterial({color:0x888888, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
+  const line=new THREE.Line(geo, mat);
+  line.computeLineDistances();
+  layer.group.add(line);
+  return {mesh:line, mat, sub};
 }
 
 // Draws the three 2p sub-orbitals as dashed gray outlines with no electrons
-// on them — these aren't part of Beryllium's ground-state configuration, just
+// on them — these aren't part of Lithium's ground-state configuration, just
 // shown as the "next available" orbitals nobody is occupying yet.
 function showPotentialOrbitals(){
   const layer=viewerA.currentLayer;
   if(!layer || potentialOrbitals.length) return;
   const mats=[];
   for(let i=0;i<P_SUBS.length;i++){
-    const key='2p|'+P_SUBS[i];
-    const r=bohrKeyRadius(key);
-    const rot=i*(Math.PI/3);
-    const a=r, gap=Math.max(0.1, r*0.07);
-    const cosr=Math.cos(rot), sinr=Math.sin(rot);
-    const segsN=120, pts=[];
-    for(let j=0;j<=segsN;j++){
-      const p=lemniscatePoint(j/segsN, a, gap);
-      pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
-    }
-    const geo=new THREE.BufferGeometry().setFromPoints(pts);
-    const mat=new THREE.LineDashedMaterial({color:0x888888, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
-    const line=new THREE.Line(geo, mat);
-    line.computeLineDistances();
-    layer.group.add(line);
-    potentialOrbitals.push({mesh:line, mat});
-    mats.push(mat);
+    const entry=buildOnePotentialOrbital(i);
+    potentialOrbitals.push(entry);
+    mats.push(entry.mat);
   }
   fadeMaterialsOpacity(mats, 0, 0.85, 1200);
 }
@@ -2052,8 +3131,8 @@ function backFromBox4(){
   }
 }
 
-// Freezes one specific electron's approach + the incoming light ray, once
-// box5 has been showing for 2 seconds.
+// The box5 ray sequence: 2 seconds after box5 appears (no click needed), the
+// electron freezes and the light ray arrives, making it pulse.
 let excitedStateTimeout=null;
 let excitedStateTriggered=false;
 
@@ -2062,14 +3141,13 @@ function triggerExcitedStateVisual(){
     const layer=viewerA.currentLayer;
     const ed=layer.electronObjects.find(e=>e.orb==='2s' && e.type==='bohr');
     const targetPos=new THREE.Vector3(ed.r*Math.cos(ed.theta), ed.r*Math.sin(ed.theta), 0);
-    showLightRayTo(targetPos);
+    showLightRayTo(targetPos, ()=>{
+      ed.pulsing=true; // the ray has "arrived" — the electron starts pulsing to show it's absorbing energy
+    });
   });
 }
 
-function advanceToBox5(){
-  document.getElementById('seq-box4-ok').style.visibility='hidden';
-  document.getElementById('seq-box4-back').style.visibility='hidden';
-  showSequenceBox('seq-box5', 'Se l\'atomo riceve energia, entra nello STATO ECCITATO', seqColor2);
+function startBox5RaySequence(){
   excitedStateTriggered=false;
   excitedStateTimeout=setTimeout(()=>{
     excitedStateTimeout=null;
@@ -2078,30 +3156,598 @@ function advanceToBox5(){
   }, 2000);
 }
 
-// Undoes advanceToBox5: hides box5, brings box4's buttons back, cancels the
-// pending freeze+ray timer if it hasn't fired yet, and — if it already had —
-// removes the ray and lets the electrons resume moving normally.
-function backFromBox5(){
-  document.getElementById('seq-box5').classList.remove('show');
-  document.getElementById('seq-box4-ok').style.visibility='visible';
-  document.getElementById('seq-box4-back').style.visibility='visible';
+// Undoes the box5 ray sequence: cancels the pending timer if it hasn't
+// fired yet, or — if it already had — removes the ray, stops the pulsing,
+// and lets the electron resume moving normally.
+function resetBox5RaySequence(){
   if(excitedStateTimeout){ clearTimeout(excitedStateTimeout); excitedStateTimeout=null; }
   if(excitedStateTriggered){
     excitedStateTriggered=false;
-    lightRayFlowing=false;
-    if(lightRayLine){
-      const layer=viewerA.currentLayer;
-      if(layer) layer.group.remove(lightRayLine.mesh);
-      lightRayLine=null;
+    hideLightRayInstant();
+    const layer=viewerA.currentLayer;
+    if(layer){
+      const ed=layer.electronObjects.find(e=>e.orb==='2s' && e.type==='bohr');
+      if(ed){ ed.pulsing=false; ed.mesh.scale.setScalar(1); }
     }
     electronsFrozen=false;
   }
 }
 
-// box5's own OK button — the next step isn't defined yet.
-function advanceToBox6(){
+// box4's OK button: clears the whole column and starts a fresh screen with
+// box5 sliding down from the top — same treatment box1 got at the very
+// start. The ray sequence starts automatically; box5's own OK is only for
+// moving on to box6, independent of that timing.
+function advanceToBox5(){
+  for(const id of ['seq-box1','seq-box2','seq-box3','seq-box4']){
+    document.getElementById(id).classList.add('seq-hidden');
+  }
+  document.getElementById('seq-box5-wrap').classList.remove('seq-hidden');
+  showSequenceBox('seq-box5', 'Se l\'atomo riceve energia, entra nello <b style="color:#c0392b">STATO ECCITATO</b>...', seqColor2);
+  startBox5RaySequence();
+}
+
+// Undoes advanceToBox5: hides the box5/box6 screen, brings box1-4 back
+// exactly as they were, and cancels/undoes the ray sequence.
+function backFromBox5(){
+  document.getElementById('seq-box5').classList.remove('show');
+  document.getElementById('seq-box5-wrap').classList.add('seq-hidden');
+  for(const id of ['seq-box1','seq-box2','seq-box3','seq-box4']){
+    document.getElementById(id).classList.remove('seq-hidden');
+    document.getElementById(id).classList.add('show'); // safety net — they should already be visible, but make sure
+  }
+  document.getElementById('seq-box4-ok').style.visibility='visible';
+  document.getElementById('seq-box4-back').style.visibility='visible';
+  resetBox5RaySequence();
+}
+
+// box5's own OK button — shows box6, independent of the ray's own timing.
+function skipToExcitedState(){
   document.getElementById('seq-box5-ok').style.visibility='hidden';
   document.getElementById('seq-box5-back').style.visibility='hidden';
+  showSequenceBox('seq-box6', '...e l\'elettrone più esterno, salta sull\'orbitale superiore', seqColor3);
+  startBox6SceneChanges();
+}
+
+// ── BOX 6 + the excited-electron scene change ────────────────────────────────
+let sceneChangeTimeout1=null, sceneChangeTimeout2=null;
+let rayHasDisappeared=false, orbitalsReshownAfterRay=false, hasPromoted=false;
+
+function startBox6SceneChanges(){
+  rayHasDisappeared=false; orbitalsReshownAfterRay=false; hasPromoted=false;
+
+  sceneChangeTimeout1=setTimeout(()=>{
+    sceneChangeTimeout1=null;
+    hideLightRayInstant();
+    rayHasDisappeared=true;
+    showPotentialOrbitals();
+    orbitalsReshownAfterRay=true;
+
+    sceneChangeTimeout2=setTimeout(()=>{
+      sceneChangeTimeout2=null;
+      promoteElectronToExcitedOrbital();
+      hasPromoted=true;
+      electronsFrozen=false;
+    }, 2000);
+  }, 2000);
+}
+
+// ── LIGHT RAY (dashed, moving, genuinely thick) ──────────────────────────────
+// WebGL ignores line-width entirely on native THREE.Line, so real 3D tube
+// segments are the only reliable way to get genuine thickness. Rebuilding
+// the small dash segments every frame with a shifting phase gives the
+// "marching" moving-dash look on top of that real thickness.
+
+
+
+
+
+
+// Incoming ray: grows from off-screen toward a fixed target, firing
+// onArrive once it lands, then keeps its dashes marching while it stays put.
+let incomingRayRec=null, incomingRayState=null;
+
+// Outgoing ray: grows outward from the electron's position (like a real
+// emission), then — once fully grown — detaches and keeps flying on its own.
+// Always points radially outward from the atom's center through wherever
+// the electron fired from — this reads as "the same line the electron was
+// on, heading away from the atom" even when the electron's own path (e.g.
+// returning from a p orbital) isn't perfectly radial itself.
+let outgoingRayRec=null, outgoingRayState=null;
+
+// Called every frame from animateAll — drives both rays' growth, the
+// outgoing ray's free flight, and the marching-dash phase for both.
+
+// box6's back button: undoes box6's own scene-change chain (promotion,
+// reshown orbitals), then fully replays the box5 ray scene from scratch —
+// exactly as if box5 had just appeared again.
+function backFromBox6(){
+  if(sceneChangeTimeout1){ clearTimeout(sceneChangeTimeout1); sceneChangeTimeout1=null; }
+  if(sceneChangeTimeout2){ clearTimeout(sceneChangeTimeout2); sceneChangeTimeout2=null; }
+  if(hasPromoted){ undoPromotion(); hasPromoted=false; }
+  if(orbitalsReshownAfterRay){ hidePotentialOrbitals(); orbitalsReshownAfterRay=false; }
+  rayHasDisappeared=false;
+
+  document.getElementById('seq-box6').classList.remove('show');
+  document.getElementById('seq-box5').classList.add('show'); // safety net — box5 should already be visible, but make sure
+  document.getElementById('seq-box5-ok').style.visibility='visible';
+  document.getElementById('seq-box5-back').style.visibility='visible';
+
+  resetBox5RaySequence();
+  startBox5RaySequence();
+}
+
+// ── BOX 7, 8, 9: instability and the fall back to the ground state ──────────
+let box7Timeout=null, box8Timeout=null;
+let demotionCancelled=false;
+let groundStateSRef=null; // the freshly-rebuilt colored 2s ring+electrons, once the ball returns
+
+// box6's own OK button — starts the automatic instability chain up through
+// box8; from there the person clicks OK themselves to release the energy.
+function advanceToBox7(){
+  document.getElementById('seq-box6-ok').style.visibility='hidden';
+  document.getElementById('seq-box6-back').style.visibility='hidden';
+  showSequenceBox('seq-box7', 'Ma lo stato eccitato è instabile...', seqColor1);
+
+  box7Timeout=setTimeout(()=>{
+    box7Timeout=null;
+    intensifyPulse();
+
+    box8Timeout=setTimeout(()=>{
+      box8Timeout=null;
+      showSequenceBox('seq-box8', '...e dopo poco, l\'elettrone torna al proprio stato fondamentale...', seqColor2);
+    }, 3000);
+  }, 2000);
+}
+
+// box8's own OK button — starts the return journey + releases the ray.
+function skipToReleaseEnergy(){
+  document.getElementById('seq-box8-ok').style.visibility='hidden';
+  document.getElementById('seq-box8-back').style.visibility='hidden';
+  demoteElectronToGroundOrbital();
+  showSequenceBox('seq-box9', '...E RILASCIA l\'energia che aveva ricevuto', seqColor3);
+}
+
+// box8's back button: cancels the pulse-intensify step if still pending,
+// undoes it if it already happened, and returns to box6.
+function backFromBox8(){
+  if(box7Timeout){ clearTimeout(box7Timeout); box7Timeout=null; }
+  if(box8Timeout){ clearTimeout(box8Timeout); box8Timeout=null; }
+  if(promotedPxRef){
+    const ed=promotedPxRef.electrons[0];
+    if(ed){ ed.pulseAmp=0.35; ed.pulseBase=1; }
+  }
+  document.getElementById('seq-box7').classList.remove('show');
+  document.getElementById('seq-box8').classList.remove('show');
+  document.getElementById('seq-box6-ok').style.visibility='visible';
+  document.getElementById('seq-box6-back').style.visibility='visible';
+}
+
+// Makes the excited electron's pulse more pronounced and its resting size
+// bigger, signaling growing instability before it falls back down.
+function intensifyPulse(){
+  if(!promotedPxRef) return;
+  const ed=promotedPxRef.electrons[0];
+  if(ed){ ed.pulseAmp=0.55; ed.pulseBase=1.3; }
+}
+
+// Builds one 's' orbital as a normal colored ring with its electrons — used
+// to rebuild the real 2s once the excited electron returns to it.
+function buildColoredSCircle(key, count){
+  const layer=viewerA.currentLayer;
+  const color=ORB_COLORS[key];
+  const r=bohrKeyRadius(key);
+  const tube=visualStyle==='flat'?0.03:0.015;
+  const ringGeo=new THREE.TorusGeometry(r, tube, 8, 64);
+  const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+  const mesh=new THREE.Mesh(ringGeo, mat);
+  layer.group.add(mesh);
+  const electrons=[];
+  for(let i=0;i<count;i++){
+    const e=makeElectron(color);
+    e.material.transparent=true; e.material.opacity=0;
+    layer.group.add(e);
+    const ed={mesh:e, orb:key, r, theta:(i/count)*Math.PI*2, speed:0.35+0.15*Math.random(), type:'bohr'};
+    layer.electronObjects.push(ed);
+    electrons.push(ed);
+  }
+  return {mesh, mat, electrons};
+}
+
+// The excited electron travels slowly back to 2s (visible, ~1.8s), emitting
+// an outward ray the moment it starts moving. Once it arrives, 2s turns
+// colored; only after THAT finishes does the p orbital it left turn gray.
+function demoteElectronToGroundOrbital(){
+  demotionCancelled=false;
+  const layer=viewerA.currentLayer;
+  if(!layer || !promotedPxRef) return;
+  const ed=promotedPxRef.electrons[0];
+  if(!ed) return;
+
+  electronsFrozen=true; // stop all rotation first — everything settles wherever it currently is
+
+  const cosr=Math.cos(ed.rot), sinr=Math.sin(ed.rot);
+  const p=lemniscatePoint(((ed.t%1)+1)%1, ed.a, ed.gap);
+  const startPos=new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0);
+
+  const idxLE=layer.electronObjects.indexOf(ed);
+  if(idxLE>=0) layer.electronObjects.splice(idxLE,1);
+  ed.pulsing=false;
+  ed.mesh.scale.setScalar(1);
+  travelingBallMesh=ed.mesh;
+
+  const r2s=bohrKeyRadius('2s');
+  const returnAngle=Math.atan2(startPos.y, startPos.x); // land at the closest point — same direction, smaller radius
+  const targetPos=new THREE.Vector3(r2s*Math.cos(returnAngle), r2s*Math.sin(returnAngle), 0);
+
+  const travelStart=performance.now(), travelDuration=1800;
+  (function travel(){
+    if(demotionCancelled) return;
+    const now=performance.now();
+    const t=Math.min(1,(now-travelStart)/travelDuration);
+    const ease=t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    const pos=startPos.clone().lerp(targetPos, ease);
+    ed.mesh.position.copy(pos);
+    if(t<1){ requestAnimationFrame(travel); }
+    else onReturned();
+  })();
+
+  function onReturned(){
+    if(demotionCancelled) return;
+    showOutwardRayFrom(targetPos.clone()); // fires exactly at the landing spot, no earlier
+    setTimeout(()=>{
+      if(demotionCancelled) return;
+      electronsFrozen=false; // only now does rotation resume
+      if(promotedPxRef){ layer.group.remove(promotedPxRef.mesh); promotedPxRef=null; }
+      for(const g of grayConvertedOrbitals) layer.group.remove(g.mesh);
+      grayConvertedOrbitals=[];
+
+      const count=viewerA.currentCfg['2s'];
+      const color=ORB_COLORS['2s'];
+      const tube=visualStyle==='flat'?0.03:0.015;
+      const ringGeo=new THREE.TorusGeometry(r2s, tube, 8, 64);
+      const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+      const mesh=new THREE.Mesh(ringGeo, mat);
+      layer.group.add(mesh);
+
+      // The returning electron resumes exactly where it landed — reuse its
+      // own mesh rather than discarding it for a fresh one at a default angle.
+      const electrons=[];
+      travelingBallMesh.material.color.set(color);
+      const firstEd={mesh:travelingBallMesh, orb:'2s', r:r2s, theta:returnAngle, speed:0.35+0.15*Math.random(), type:'bohr'};
+      layer.electronObjects.push(firstEd);
+      electrons.push(firstEd);
+      travelingBallMesh=null; // no longer "traveling" — now a normal tracked electron
+
+      for(let i=1;i<count;i++){
+        const e=makeElectron(color);
+        e.material.transparent=true; e.material.opacity=0;
+        layer.group.add(e);
+        const ed={mesh:e, orb:'2s', r:r2s, theta:returnAngle+(i/count)*Math.PI*2, speed:0.35+0.15*Math.random(), type:'bohr'};
+        layer.electronObjects.push(ed);
+        electrons.push(ed);
+      }
+
+      groundStateSRef={mesh, mat, electrons};
+      layer.rendered['2s']={meshes:[mesh], electrons};
+
+      const mats=[mat, ...electrons.map(e=>e.mesh.material)];
+      fadeMaterialsOpacity(mats, 0, 1, 900, ()=>{
+        if(demotionCancelled) return;
+        const grayP=buildOnePotentialOrbital(P_SUBS.indexOf(EXCITED_TARGET_SUB));
+        potentialOrbitals.push(grayP);
+        fadeMaterialsOpacity([grayP.mat], 0, 0.85, 1000);
+      });
+    }, 2000); // the electron sits still on the gray orbital while the ray flies off, before recoloring and resuming
+  }
+}
+
+// Instantly rebuilds whatever the box6 "just arrived, excited" state looked
+// like, regardless of how far the box7-8-9 chain had progressed — removes
+// any ground-state rebuild or in-flight ball, and reconstructs the colored,
+// pulsing p orbital and gray 2s if they're missing.
+function instantRestorePromotedState(){
+  const layer=viewerA.currentLayer;
+  if(!layer) return;
+  electronsFrozen=false;
+
+  if(groundStateSRef){
+    layer.group.remove(groundStateSRef.mesh);
+    for(const ed of groundStateSRef.electrons){
+      layer.group.remove(ed.mesh);
+      const idx=layer.electronObjects.indexOf(ed);
+      if(idx>=0) layer.electronObjects.splice(idx,1);
+    }
+    groundStateSRef=null;
+  }
+  if(travelingBallMesh){ layer.group.remove(travelingBallMesh); travelingBallMesh=null; }
+
+  const gpIdx=potentialOrbitals.findIndex(o=>o.sub===EXCITED_TARGET_SUB);
+  if(gpIdx>=0){
+    layer.group.remove(potentialOrbitals[gpIdx].mesh);
+    potentialOrbitals.splice(gpIdx,1);
+  }
+
+  if(!grayConvertedOrbitals.length){
+    const grayS=buildGrayDashedCircle(bohrKeyRadius('2s'));
+    grayS.mat.opacity=0.85;
+    grayConvertedOrbitals.push(grayS);
+  }
+
+  if(!promotedPxRef){
+    const targetIdx=P_SUBS.indexOf(EXCITED_TARGET_SUB);
+    const key='2p|'+EXCITED_TARGET_SUB;
+    const r=bohrKeyRadius(key);
+    const rot=targetIdx*(Math.PI/3);
+    const a=r, gap=Math.max(0.1, r*0.07);
+    const cosr=Math.cos(rot), sinr=Math.sin(rot);
+    const segs=120, pts=[];
+    for(let j=0;j<=segs;j++){
+      const p=lemniscatePoint(j/segs, a, gap);
+      pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+    }
+    const curve=new THREE.CatmullRomCurve3(pts, true);
+    const tubeGeo=new THREE.TubeGeometry(curve, 160, visualStyle==='flat'?0.03:0.015, 8, true);
+    const color=ORB_COLORS['2p'];
+    const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:1});
+    const mesh=new THREE.Mesh(tubeGeo, mat);
+    layer.group.add(mesh);
+    const e=makeElectron(color);
+    layer.group.add(e);
+    const newEd={mesh:e, orb:key, a, gap, rot, t:0, speed:0.14+0.05*Math.random(), type:'bohr8', pulsing:true, pulseAmp:0.35, pulseBase:1};
+    layer.electronObjects.push(newEd);
+    promotedPxRef={mesh, mat, electrons:[newEd]};
+  } else {
+    const ed=promotedPxRef.electrons[0];
+    if(ed){ ed.pulsing=true; ed.pulseAmp=0.35; ed.pulseBase=1; ed.mesh.scale.setScalar(1); ed.mesh.material.opacity=1; }
+    promotedPxRef.mat.opacity=1;
+  }
+
+  hideLightRayInstant();
+}
+
+// box9's back button: cancels the whole box7-8-9 chain, instantly restores
+// the excited state exactly as box6 left it, and returns to box6.
+function backFromBox9(){
+  demotionCancelled=true;
+
+  instantRestorePromotedState();
+  // box8's own state includes the pulse-intensify step from box7 — reapply it
+  if(promotedPxRef){
+    const ed=promotedPxRef.electrons[0];
+    if(ed){ ed.pulseAmp=0.55; ed.pulseBase=1.3; }
+  }
+
+  document.getElementById('seq-box9').classList.remove('show');
+  document.getElementById('seq-box8-ok').style.visibility='visible';
+  document.getElementById('seq-box8-back').style.visibility='visible';
+}
+
+// box9's own OK button — the guided story is over. Offers to replay it, or
+// to switch to the free element-picker interface underneath (present in the
+// page the whole time, just kept hidden throughout the scripted sequence).
+function showEndScreen(){
+  document.getElementById('seq-boxes').classList.add('seq-hidden');
+  for(const id of ['seq-box5','seq-box6','seq-box7','seq-box8','seq-box9']){
+    document.getElementById(id).classList.add('seq-hidden');
+  }
+  document.querySelector('#seq-end-btn1 .seq-end-iconbox').style.background=seqColor1;
+  document.querySelector('#seq-end-btn2 .seq-end-iconbox').style.background=seqColor2;
+  document.querySelector('#seq-end-btn3 .seq-end-iconbox').style.background=seqColor3;
+  document.getElementById('seq-end-screen').classList.remove('seq-hidden');
+}
+
+// Simplest fully-reliable reset: this sequence accumulates a lot of
+// interdependent Three.js state (promoted orbitals, traveling balls, rays,
+// timers...) — reloading the page resets all of it cleanly in one step
+// rather than risking an incomplete manual rewind.
+function restartFromBeginning(){
+  location.reload();
+}
+
+function goToChooseElements(){
+  document.getElementById('seq-end-screen').classList.add('seq-hidden');
+  document.getElementById('seq-column').classList.add('seq-hidden');
+  document.getElementById('periodic-section').classList.remove('seq-hidden');
+  document.getElementById('sidebar').classList.remove('seq-hidden');
+  freeChoiceMode=true;
+  if(!emptyOrbitals.length) showEmptyOrbitalsForCurrentElement();
+}
+
+// The topbar's "← Torna" button: once inside the free-choice picker, it
+// steps back to the three-button screen instead of leaving the page.
+// Before that point (still in the guided story), it leaves as before.
+function handleBackButton(){
+  if(freeChoiceMode){
+    document.getElementById('periodic-section').classList.add('seq-hidden');
+    document.getElementById('sidebar').classList.add('seq-hidden');
+    document.getElementById('seq-column').classList.remove('seq-hidden');
+    document.getElementById('seq-end-screen').classList.remove('seq-hidden');
+  } else {
+    window.location.href='atomo.html';
+  }
+}
+
+// "TUTTO CHIARO, ANDIAMO AVANTI" — the next step isn't defined yet.
+function advanceAfterStory(){
+}
+
+// Draws one 's' orbital as a plain gray dashed circle, no electrons — the
+// same "unoccupied" visual language as the potential p orbitals.
+function buildGrayDashedCircle(r){
+  const layer=viewerA.currentLayer;
+  const segs=80, pts=[];
+  for(let j=0;j<=segs;j++){
+    const t=j/segs*Math.PI*2;
+    pts.push(new THREE.Vector3(r*Math.cos(t), r*Math.sin(t), 0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineDashedMaterial({color:0x888888, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
+  const line=new THREE.Line(geo, mat);
+  line.computeLineDistances();
+  layer.group.add(line);
+  return {mesh:line, mat};
+}
+
+// Draws one colored, solid p-orbital lemniscate with its own electron(s) —
+// built the same way addBohrOrbitalRing's 'p' branch does, just reusable
+// standalone since Lithium's own configuration has no 2p to draw from.
+function buildColoredLemniscate(key, electronCount){
+  const layer=viewerA.currentLayer;
+  const [orb,sub]=key.split('|');
+  const color=ORB_COLORS[orb];
+  const r=bohrKeyRadius(key);
+  const idx=P_SUBS.indexOf(sub);
+  const rot=idx*(Math.PI/3);
+  const a=r, gap=Math.max(0.1, r*0.07);
+  const cosr=Math.cos(rot), sinr=Math.sin(rot);
+  const segs=120, pts=[];
+  for(let j=0;j<=segs;j++){
+    const p=lemniscatePoint(j/segs, a, gap);
+    pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+  }
+  const curve=new THREE.CatmullRomCurve3(pts, true);
+  const tubeGeo=new THREE.TubeGeometry(curve, 160, visualStyle==='flat'?0.03:0.015, 8, true);
+  const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+  const mesh=new THREE.Mesh(tubeGeo, mat);
+  layer.group.add(mesh);
+  const electrons=[];
+  for(let i=0;i<electronCount;i++){
+    const e=makeElectron(color);
+    e.material.transparent=true; e.material.opacity=0;
+    layer.group.add(e);
+    const ed={mesh:e, orb:key, a, gap, rot, t:i/electronCount, speed:0.14+0.05*Math.random(), type:'bohr8'};
+    layer.electronObjects.push(ed);
+    electrons.push(ed);
+  }
+  return {mesh, mat, electrons};
+}
+
+// The excited electron settles into 2p_y — the "diagonal toward the right"
+// orbital, not the horizontal 2p_x — via a visible traveling ball: it moves
+// from its old position to the new orbital first; only once it arrives does
+// that orbital turn colored; only once THAT finishes does the old 2s ring
+// turn gray. Each step waits for the previous one to visually complete.
+const EXCITED_TARGET_SUB='y';
+let travelingBallMesh=null;
+let promotionCancelled=false;
+
+function promoteElectronToExcitedOrbital(){
+  promotionCancelled=false;
+  const layer=viewerA.currentLayer;
+  if(!layer) return;
+
+  const rec2s=layer.rendered['2s'];
+  const ed2s=layer.electronObjects.find(e=>e.orb==='2s' && e.type==='bohr');
+  if(!ed2s) return;
+
+  const startPos=new THREE.Vector3(ed2s.r*Math.cos(ed2s.theta), ed2s.r*Math.sin(ed2s.theta), 0);
+
+  // Detach this one electron from the normal 2s bookkeeping — its mesh keeps
+  // existing (we're about to drive it manually), but it stops being "one of
+  // 2s's electrons" so later cleanup doesn't remove or move it unexpectedly.
+  const idxLE=layer.electronObjects.indexOf(ed2s);
+  if(idxLE>=0) layer.electronObjects.splice(idxLE,1);
+  if(rec2s){
+    const idxRec=rec2s.electrons.indexOf(ed2s);
+    if(idxRec>=0) rec2s.electrons.splice(idxRec,1);
+  }
+  ed2s.pulsing=false;
+  ed2s.mesh.scale.setScalar(1);
+  travelingBallMesh=ed2s.mesh;
+
+  const targetIdx=P_SUBS.indexOf(EXCITED_TARGET_SUB);
+  const key='2p|'+EXCITED_TARGET_SUB;
+  const r=bohrKeyRadius(key);
+  const rot=targetIdx*(Math.PI/3);
+  const a=r, gap=Math.max(0.1, r*0.07);
+  const cosr=Math.cos(rot), sinr=Math.sin(rot);
+  const p0=lemniscatePoint(0, a, gap);
+  const targetPos=new THREE.Vector3(p0.x*cosr-p0.y*sinr, p0.x*sinr+p0.y*cosr, 0);
+
+  const travelStart=performance.now(), travelDuration=1800;
+  (function travel(){
+    if(promotionCancelled) return;
+    const now=performance.now();
+    const t=Math.min(1,(now-travelStart)/travelDuration);
+    const ease=t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; // ease-in-out, so it starts and ends gently
+    ed2s.mesh.position.copy(startPos.clone().lerp(targetPos, ease));
+    if(t<1){ requestAnimationFrame(travel); }
+    else onArrived();
+  })();
+
+  function onArrived(){
+    if(promotionCancelled) return;
+    travelingBallMesh=null;
+
+    const pIdx=potentialOrbitals.findIndex(o=>o.sub===EXCITED_TARGET_SUB);
+    if(pIdx>=0){
+      layer.group.remove(potentialOrbitals[pIdx].mesh);
+      potentialOrbitals.splice(pIdx,1);
+    }
+
+    const segs=120, pts=[];
+    for(let j=0;j<=segs;j++){
+      const p=lemniscatePoint(j/segs, a, gap);
+      pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+    }
+    const curve=new THREE.CatmullRomCurve3(pts, true);
+    const tubeGeo=new THREE.TubeGeometry(curve, 160, visualStyle==='flat'?0.03:0.015, 8, true);
+    const color=ORB_COLORS['2p'];
+    const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+    const mesh=new THREE.Mesh(tubeGeo, mat);
+    layer.group.add(mesh);
+
+    ed2s.mesh.material.color.set(color); // the ball itself takes on its new orbital's color
+    const newEd={mesh:ed2s.mesh, orb:key, a, gap, rot, t:0, speed:0.14+0.05*Math.random(), type:'bohr8', pulsing:true, pulseAmp:0.35, pulseBase:1};
+    layer.electronObjects.push(newEd);
+    promotedPxRef={mesh, mat, electrons:[newEd]};
+
+    fadeMaterialsOpacity([mat], 0, 1, 900, ()=>{
+      if(promotionCancelled) return;
+      removePart(layer, '2s'); // only the ring + the one remaining original electron now
+      const grayS=buildGrayDashedCircle(bohrKeyRadius('2s'));
+      grayConvertedOrbitals.push(grayS);
+      fadeMaterialsOpacity([grayS.mat], 0, 0.85, 1000);
+    });
+  }
+}
+
+// Fully undoes promoteElectronToExcitedOrbital, however far it got: cancels
+// an in-flight ball, removes the colored target orbital, rebuilds the real
+// 2s ring, and makes sure the target's gray "potential" version exists again
+// (so the wider rewind's hidePotentialOrbitals call fades it out along with
+// the other two, rather than leaving it missing).
+function undoPromotion(){
+  promotionCancelled=true;
+  const layer=viewerA.currentLayer;
+  if(!layer) return;
+
+  if(travelingBallMesh){
+    layer.group.remove(travelingBallMesh);
+    travelingBallMesh=null;
+  }
+
+  for(const g of grayConvertedOrbitals) layer.group.remove(g.mesh);
+  grayConvertedOrbitals=[];
+  if(!layer.rendered['2s']){
+    addBohrOrbitalRing(layer, '2s', viewerA.currentCfg);
+  }
+
+  if(promotedPxRef){
+    layer.group.remove(promotedPxRef.mesh);
+    for(const ed of promotedPxRef.electrons){
+      layer.group.remove(ed.mesh);
+      const idx=layer.electronObjects.indexOf(ed);
+      if(idx>=0) layer.electronObjects.splice(idx,1);
+    }
+    promotedPxRef=null;
+  }
+
+  if(!potentialOrbitals.find(o=>o.sub===EXCITED_TARGET_SUB)){
+    const entry=buildOnePotentialOrbital(P_SUBS.indexOf(EXCITED_TARGET_SUB));
+    entry.mat.opacity=potentialOrbitals.length ? potentialOrbitals[0].mat.opacity : 0.85;
+    potentialOrbitals.push(entry);
+  }
 }
 
 // Smoothly rotates one specific electron to a target angle (shortest way
@@ -2128,45 +3774,6 @@ function freezeWithElectronAt(orbKey, targetAngle, duration, onDone){
   })();
 }
 
-// A traveling dashed beam of light (yellow, dashes = photons) flying in from
-// the upper right and hitting the given world-space target point.
-let lightRayLine=null;
-let lightRayFlowing=false;
-let lightRayOffset=0;
-function showLightRayTo(targetPos){
-  const layer=viewerA.currentLayer;
-  if(!layer) return;
-  const dir=new THREE.Vector3(Math.cos(Math.PI/4), Math.sin(Math.PI/4), 0);
-  const startPos=targetPos.clone().add(dir.clone().multiplyScalar(4.2));
-  const pts=[startPos, targetPos];
-  const geo=new THREE.BufferGeometry().setFromPoints(pts);
-  const mat=new THREE.LineDashedMaterial({color:0xffd700, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
-  const line=new THREE.Line(geo, mat);
-  line.computeLineDistances();
-  const distAttr=geo.attributes.lineDistance;
-  const baseDistances=Float32Array.from(distAttr.array);
-  layer.group.add(line);
-  lightRayOffset=0;
-  lightRayLine={mesh:line, mat, distAttr, baseDistances};
-  fadeMaterialsOpacity([mat], 0, 0.9, 500);
-  lightRayFlowing=true;
-}
-
-// Called every frame (from animateAll) while the beam is active — shifts the
-// line's own distance-along-path values, which the dashed shader reads to
-// decide where the dashes fall. That makes the dashes genuinely travel
-// toward the electron, without depending on a dashOffset property that this
-// Three.js build's dashed-line shader doesn't actually use.
-function updateLightRayFlow(){
-  if(!lightRayFlowing || !lightRayLine) return;
-  lightRayOffset+=0.045;
-  const {distAttr, baseDistances}=lightRayLine;
-  for(let i=0;i<baseDistances.length;i++){
-    distAttr.array[i]=baseDistances[i]-lightRayOffset;
-  }
-  distAttr.needsUpdate=true;
-}
-
 function runIntroSequence(){
   const bgHex=(getComputedStyle(document.documentElement).getPropertyValue('--flat-bg')||BG_PALETTE[0]).trim();
   const [bgHue]=hexToHsl(bgHex);
@@ -2182,7 +3789,7 @@ function runIntroSequence(){
 
     setTimeout(()=>{
       document.getElementById('canvas-area').classList.remove('seq-hidden');
-      viewerA.selectElement(4); // Beryllium — sidebar config stays hidden for now, electrons stay frozen until OK is clicked
+      viewerA.selectElement(3); // Lithium — sidebar config stays hidden for now, electrons stay frozen until OK is clicked
     }, 2000);
   }, 2000);
 }
@@ -2194,37 +3801,6 @@ viewerA=createViewer(document.getElementById('c'), document.getElementById('pane
 activeViewer=viewerA;
 animateAll();
 runIntroSequence();
-
-// ── REUSABLE PUBLIC API ───────────────────────────────────────────────────────
-// The atom viewer and the periodic table are self-contained enough to lift
-// into another project as-is. This namespace is the intended entry point;
-// everything else in this file is this page's own UI wiring around them.
-//
-//  Chemverse.ELEMENTS               → the 118-element data array {n,sym,name,cat,group,period}
-//  Chemverse.catClass               → category → CSS class name map (needs the .cat-* rules from <style>)
-//  Chemverse.getConfig(Z)           → electron configuration object for atomic number Z, e.g. {1s:2,2s:2,2p:2}
-//  Chemverse.computeShellCounts(cfg)→ groups a config into per-shell totals, e.g. {1:2,2:4}
-//  Chemverse.buildElementRow(gridEl, onSelect) → renders a simple row of elements into
-//                                      a container; onSelect(n) fires on click
-//  Chemverse.createViewer(canvasEl, paneEl) → a full standalone 3D atom viewer bound to a <canvas> +
-//                                      its sizing container. Key methods on the returned viewer object:
-//                                        viewer.selectElement(n)         – load a new atom by atomic number
-//                                        viewer.applyPartsSet(keysSet)   – show exactly this set of orbital/
-//                                                                          shell keys, with no DOM dependency
-//                                        viewer.rebuildWithCurrentStyle()– replays formation in the current
-//                                                                          realistic/flat visual style
-//                                        viewer.render()                 – call once per animation frame
-//                                        viewer.resize()                 – call after the pane's size changes
-//                                      A minimal host page only needs: create a <canvas> inside a sized
-//                                      container, call createViewer(canvas, container), call
-//                                      viewer.selectElement(1), and drive requestAnimationFrame(viewer.render).
-//                                      No dependency on this page's sidebar/checkboxes is required —
-//                                      applyPartsSet() takes an explicit Set of keys instead.
-window.Chemverse={
-  ELEMENTS, catClass,
-  getConfig, computeShellCounts,
-  buildElementRow, createViewer
-};
 
 
 </script>
