@@ -13,6 +13,7 @@
      let bondMode = false;            // true while the Legame feature is active
      let viewerA, viewerB = null, activeViewer;  // set viewerA = createViewer(...)
      let electronsFrozen = false;     // true to pause all orbital motion
+     let autoRotate = false;          // true to slowly spin the whole atom each frame
 
    OPTIONAL GLOBALS (only needed if you use the matching feature):
      let freeChoiceMode = false;      // true → p sub-orbitals get distinct
@@ -24,7 +25,7 @@
    surrounding script block when this file is inlined into an HTML page):
      SCRIPT-TAG src="chemverse-engine.js" END-SCRIPT-TAG
      SCRIPT-TAG
-       let visualStyle='flat', bondMode=false, electronsFrozen=false;
+       let visualStyle='flat', bondMode=false, electronsFrozen=false, autoRotate=false;
        let viewerA=createViewer(document.getElementById('canvas'), document.getElementById('pane'));
        let viewerB=null, activeViewer=viewerA;
        viewerA.selectElement(1); // Hydrogen
@@ -509,6 +510,7 @@ function buildDShapeCloud(def, r, color, ptCount){
 const AUFBAU_ORDER=['1s','2s','2p','3s','3p','4s','3d','4p','5s','4d','5p','6s','4f','5d','6p','7s','5f','6d','7p'];
 
 const RADII={};
+AUFBAU_ORDER.forEach((orb,i)=>{ RADII[orb]=1.0+i*0.5; });
 
 function getRadius(orb){return (RADII[orb]||parseFloat(orb[0])*1.2)*0.85;}
 
@@ -541,6 +543,7 @@ function removePart(layer, key){
 const BOHR_RADII={1:1.3,2:2.3,3:3.3,4:4.3,5:5.3,6:6.3,7:7.3};
 
 const BOHR_SLOT_INDEX={};
+AUFBAU_ORDER.forEach((orb,i)=>{ BOHR_SLOT_INDEX[orb]=i; });
 
 const BOHR_SLOT_BASE=1.0;
 
@@ -982,13 +985,27 @@ function createViewer(canvasEl, paneEl){
   function resize(){
     const w=paneEl.clientWidth, h=paneEl.clientHeight;
     if(w<2||h<2) return;
-    renderer.setSize(w,h);
+    renderer.setSize(w,h,false);
     camera.aspect=w/h;
     camera.updateProjectionMatrix();
   }
   viewer.resize=resize;
   resize();
-  new ResizeObserver(resize).observe(paneEl);
+  // Debounced via rAF: calling resize() straight from the observer callback
+  // is what triggers the browser's "ResizeObserver loop completed with
+  // undelivered notifications" warning (and can cause a delivery to be
+  // dropped). Deferring one frame avoids that entirely.
+  let resizePending=false;
+  new ResizeObserver(()=>{
+    if(resizePending) return;
+    resizePending=true;
+    requestAnimationFrame(()=>{ resizePending=false; resize(); });
+  }).observe(paneEl);
+  // Fallback: if the pane was still hidden or unlaid-out at creation time,
+  // the calls above measured 0 and skipped. A couple of short-delay retries
+  // catch that without relying solely on a visibility change to be detected.
+  setTimeout(resize, 50);
+  setTimeout(resize, 300);
 
   canvasEl.addEventListener('mousedown', e=>{viewer.isDragging=true; viewer.prevMouse={x:e.clientX,y:e.clientY};});
   window.addEventListener('mouseup', ()=>{viewer.isDragging=false;});
@@ -1147,7 +1164,8 @@ function createViewer(canvasEl, paneEl){
       refreshSidebarInfo(viewer);
       updateOrbitalList(viewer.currentCfg, null); // null → brand-new atom, default all-checked
       document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelector('.filter-btn').classList.add('active');
+      const firstFilterBtn=document.querySelector('.filter-btn');
+      if(firstFilterBtn) firstFilterBtn.classList.add('active');
     }
 
     // Orbitals only start fading in once the nucleus has fully formed
@@ -1397,6 +1415,44 @@ function contrastingGrayColor(){
   return parseInt(grayHex.slice(1), 16);
 }
 
+// Draws one "not yet occupied" orbital as a gray dashed outline — a p
+// sub-level (figure-8, matching addBohrOrbitalRing's own shape) or a plain
+// s-type ring. Used to preview where an electron could go next.
+function buildEmptyPOrbital(layer, orb, subIdx, color){
+  const sub=P_SUBS[subIdx];
+  const key=orb+'|'+sub;
+  const r=bohrKeyRadius(key);
+  const rot=subIdx*(Math.PI/3);
+  const a=r, gap=Math.max(0.1, r*0.07);
+  const cosr=Math.cos(rot), sinr=Math.sin(rot);
+  const segs=120, pts=[];
+  for(let j=0;j<=segs;j++){
+    const p=lemniscatePoint(j/segs, a, gap);
+    pts.push(new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineDashedMaterial({color, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
+  const line=new THREE.Line(geo, mat);
+  line.computeLineDistances();
+  layer.group.add(line);
+  return {mesh:line, mat, group:layer.group, key, type:'p', subIdx, a, gap, rot};
+}
+
+function buildEmptySOrbital(layer, orb, color){
+  const r=bohrKeyRadius(orb);
+  const segs=80, pts=[];
+  for(let j=0;j<=segs;j++){
+    const t=j/segs*Math.PI*2;
+    pts.push(new THREE.Vector3(r*Math.cos(t), r*Math.sin(t), 0));
+  }
+  const geo=new THREE.BufferGeometry().setFromPoints(pts);
+  const mat=new THREE.LineDashedMaterial({color, dashSize:0.16, gapSize:0.11, transparent:true, opacity:0});
+  const line=new THREE.Line(geo, mat);
+  line.computeLineDistances();
+  layer.group.add(line);
+  return {mesh:line, mat, group:layer.group, key:orb, type:'s', r};
+}
+
 const BG_PALETTE=['#0e6b78','#c69595','#c6b595','#97b9ad','#95a0c6','#baa0ba','#92bbad','#96bbc1','#a297c4','#c398ae','#c5ab96','#ffffff','#000000'];
 
 // Applies a flat-style theme color: sets the CSS custom properties every
@@ -1475,6 +1531,26 @@ function blinkMaterialsTwice(mats, finalOpacity, onDone){
   })();
 }
 
+// Moves a mesh in a straight line from one point to another with ease-in-out
+// timing — a simpler alternative to the orbital-following electron motion
+// used elsewhere, for stylized diagrams where a literal straight path (not
+// a physically-accurate curve) tells the story better. Returns a cancel
+// function; calling it stops the motion where it currently stands.
+function animateLinearMove(mesh, fromPos, toPos, duration, onDone){
+  const start=performance.now();
+  let cancelled=false;
+  (function step(){
+    if(cancelled) return;
+    const now=performance.now();
+    const t=Math.min(1,(now-start)/duration);
+    const ease=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    mesh.position.copy(fromPos.clone().lerp(toPos, ease));
+    if(t<1) requestAnimationFrame(step);
+    else if(onDone) onDone();
+  })();
+  return ()=>{ cancelled=true; };
+}
+
 
 // ── LIGHT RAY (dashed, moving, genuinely thick) ──────────────────────────────
 // WebGL ignores line-width entirely on native THREE.Line, so real 3D tube
@@ -1485,6 +1561,8 @@ function blinkMaterialsTwice(mats, finalOpacity, onDone){
 
 const RAY_RADIUS=0.06, RAY_DASH_LEN=0.18, RAY_GAP_LEN=0.13, RAY_PHASE_SPEED=0.05;
 const OUT_RAY_LEN=4.5, OUT_RAY_GROW_MS=1300, OUT_RAY_DETACH_SPEED=1.5, OUT_RAY_LIFETIME_MS=3200;
+let incomingRayRec=null, incomingRayState=null;
+let outgoingRays=[]; // list of {rec, state} — supports multiple concurrent outward rays
 
 function makeRayGroup(radius){
   const layer=viewerA.currentLayer;
@@ -1543,33 +1621,40 @@ function fadeRayOpacity(rec, from, to, duration, onDone){
 
 function hideLightRayInstant(){
   removeRayRec(incomingRayRec); incomingRayRec=null; incomingRayState=null;
-  removeRayRec(outgoingRayRec); outgoingRayRec=null; outgoingRayState=null;
+  for(const entry of outgoingRays) removeRayRec(entry.rec);
+  outgoingRays=[];
 }
 
-function showLightRayTo(targetPos, onArrive, radius){
-  const dir=new THREE.Vector3(Math.cos(Math.PI/4), Math.sin(Math.PI/4), 0);
-  const startPos=targetPos.clone().add(dir.clone().multiplyScalar(4.2));
+function showLightRayTo(targetPos, onArrive, radius, startPos){
+  if(!startPos){
+    const dir=new THREE.Vector3(Math.cos(Math.PI/4), Math.sin(Math.PI/4), 0);
+    startPos=targetPos.clone().add(dir.clone().multiplyScalar(4.2));
+  }
   incomingRayRec=makeRayGroup(radius);
   incomingRayState={startPos, targetPos, growStart:performance.now(), onArrive, arrived:false};
   fadeRayOpacity(incomingRayRec, 0, 0.95, 300);
 }
 
-function showOutwardRayFrom(originPos, radius){
-  const dir=originPos.clone().normalize();
+function showOutwardRayFrom(originPos, radius, direction){
+  const dir=direction ? direction.clone().normalize() : originPos.clone().normalize();
   const rec=makeRayGroup(radius);
-  outgoingRayRec=rec;
-  outgoingRayState={anchor:originPos.clone(), dir, growStart:performance.now(), stage:'growing', lastTime:performance.now()};
+  const state={anchor:originPos.clone(), dir, growStart:performance.now(), stage:'growing', lastTime:performance.now()};
+  const entry={rec, state};
+  outgoingRays.push(entry);
   fadeRayOpacity(rec, 0, 0.95, 300);
 
   // Manages its own full visible lifetime — grows, flies free, then fades
   // and removes itself — independent of whatever the electron does next, so
   // it never gets cut short right as the electron happens to land somewhere.
+  // Tracked as its own list entry, so firing another ray in the meantime
+  // never causes this one to be skipped/orphaned.
   setTimeout(()=>{
-    if(outgoingRayRec!==rec) return; // a newer ray has already replaced this one
+    if(!outgoingRays.includes(entry)) return; // already cleaned up (e.g. hideLightRayInstant)
     fadeRayOpacity(rec, rec.opacity, 0, 500, ()=>{
-      if(outgoingRayRec===rec){
+      const idx=outgoingRays.indexOf(entry);
+      if(idx>=0){
         removeRayRec(rec);
-        outgoingRayRec=null; outgoingRayState=null;
+        outgoingRays.splice(idx,1);
       }
     });
   }, OUT_RAY_LIFETIME_MS);
@@ -1594,20 +1679,219 @@ function updateLightRayTracking(){
     }
   }
 
-  if(outgoingRayRec && outgoingRayState){
-    outgoingRayRec.phase=(outgoingRayRec.phase||0)+RAY_PHASE_SPEED;
-    const s=outgoingRayState;
+  for(const entry of outgoingRays){
+    const rec=entry.rec, s=entry.state;
+    rec.phase=(rec.phase||0)+RAY_PHASE_SPEED;
     if(s.stage==='growing'){
       const t=Math.min(1, (now-s.growStart)/OUT_RAY_GROW_MS);
       const tip=s.anchor.clone().add(s.dir.clone().multiplyScalar(OUT_RAY_LEN*t));
-      setRayGeometry(outgoingRayRec, s.anchor, tip);
+      setRayGeometry(rec, s.anchor, tip);
       if(t>=1){ s.stage='detached'; s.lastTime=now; }
     } else {
       const dt=Math.min(0.05, (now-s.lastTime)/1000);
       s.lastTime=now;
       s.anchor.addScaledVector(s.dir, OUT_RAY_DETACH_SPEED*dt);
       const tip=s.anchor.clone().add(s.dir.clone().multiplyScalar(OUT_RAY_LEN));
-      setRayGeometry(outgoingRayRec, s.anchor, tip);
+      setRayGeometry(rec, s.anchor, tip);
     }
   }
+}
+
+function injectFloatingLabelCSS(){
+  // Loaded here (not just linked in <head>) so any project using this gets
+  // the font automatically, without needing its own <link> tag.
+  const fontLink=document.createElement('link');
+  fontLink.rel='stylesheet';
+  fontLink.href='https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap';
+  document.head.appendChild(fontLink);
+
+  const css = `
+.floating-label{position:absolute;opacity:0;transition:opacity 0.6s ease,left 0.6s ease,top 0.6s ease;pointer-events:none;z-index:6;font-family:'Patrick Hand',cursive;font-weight:400;letter-spacing:0.02em;transform:translate(-50%,0);animation:floatBob 2.6s ease-in-out infinite}
+@keyframes floatBob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-8px)}}
+`;
+  const styleEl=document.createElement('style');
+  styleEl.textContent=css;
+  document.head.appendChild(styleEl);
+}
+
+// left/top are optional (e.g. "62%") — when given, the label also moves
+// there. If the label is already visible, the old text fades out first and
+// the new one only fades in once it's gone, so consecutive phrases never
+// overlap.
+function showFloatingLabel(id, text, color, left, top){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const bgHex=(getComputedStyle(document.documentElement).getPropertyValue('--flat-bg')||'#0e6b78').trim();
+  const [,,l]=hexToHsl(bgHex);
+  const autoColor = l>0.55 ? '#000000' : '#ffffff'; // dark background -> white text, light background -> black text
+  const apply=()=>{
+    if(text!==undefined) el.innerHTML=text;
+    el.style.color=autoColor;
+    if(left!==undefined) el.style.left=left;
+    if(top!==undefined) el.style.top=top;
+    el.style.opacity='1';
+  };
+  if(el.style.opacity==='1'){
+    el.style.opacity='0';
+    setTimeout(apply, 550);
+  } else {
+    apply();
+  }
+}
+
+function hideFloatingLabel(id){
+  const el=document.getElementById(id);
+  if(el) el.style.opacity='0';
+}
+
+// ── 2D SVG ILLUSTRATIONS ──────────────────────────────────────────────────────
+
+// Builds the "head in profile, with eye and half-visible brain" illustration
+// used by the Colori project (and reusable anywhere else that needs it) —
+// every shape and position in here was verified point-by-point to nest
+// correctly (nothing crosses an edge it shouldn't). Returns a ready-to-insert
+// SVG markup string; width/height set the rendered size, the internal
+// proportions (viewBox 0 0 400 440) stay fixed.
+function buildEyeHeadSVG(width, height){
+  width = width || 320;
+  height = height || Math.round(width*440/400);
+  return `<svg viewBox="0 0 400 440" width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <rect x="125.4" y="240" width="49.199999999999996" height="56.57999999999999" fill="#f4c9a5"/>
+    <path d="M163.8,240.0 L174.6,240.0 L174.6,296.6 L163.8,296.6 Z" fill="#dba879" opacity="0.6"/>
+    <path d="M73.4,98.8 L73.4,168.8 L60.7,168.8 Q54.7,168.8 56.2,163.0 Z" fill="#f4c9a5"/>
+    <ellipse cx="150" cy="140" rx="82" ry="115" fill="#f4c9a5"/>
+    <path d="M171.2,28.9 L176.4,31.1 L181.4,33.8 L186.3,36.9 L191.0,40.4 L195.6,44.4 L199.9,48.8 L204.1,53.5 L208.0,58.7 L211.7,64.2 L215.1,70.0 L218.2,76.1 L221.0,82.5 L223.5,89.1 L225.8,96.0 L227.6,103.0 L229.2,110.2 L230.4,117.6 L231.3,125.0 L231.8,132.5 L232.0,140.0 L231.8,147.5 L231.3,155.0 L230.4,162.4 L229.2,169.8 L227.6,177.0 L225.8,184.0 L223.5,190.9 L221.0,197.5 L218.2,203.9 L215.1,210.0 L211.7,215.8 L208.0,221.3 L204.1,226.5 L199.9,231.2 L195.6,235.6 L191.0,239.6 L186.3,243.1 L181.4,246.2 L176.4,248.9 L171.2,251.1 L171.2,251.1 L176.1,248.0 L180.7,244.5 L185.0,240.6 L189.1,236.4 L193.0,231.8 L196.6,226.9 L199.9,221.7 L203.0,216.3 L205.8,210.7 L208.3,204.8 L210.6,198.8 L212.6,192.6 L214.4,186.3 L215.9,179.9 L217.2,173.4 L218.2,166.8 L219.0,160.2 L219.5,153.5 L219.9,146.7 L220.0,140.0 L219.9,133.3 L219.5,126.5 L219.0,119.8 L218.2,113.2 L217.2,106.6 L215.9,100.1 L214.4,93.7 L212.6,87.4 L210.6,81.2 L208.3,75.2 L205.8,69.3 L203.0,63.7 L199.9,58.3 L196.6,53.1 L193.0,48.2 L189.1,43.6 L185.0,39.4 L180.7,35.5 L176.1,32.0 L171.2,28.9 Z" fill="#dba879" opacity="0.6"/>
+    <path d="M155.7,115.4 L156.9,113.2 L158.3,111.3 L159.8,109.6 L161.4,108.2 L163.2,107.2 L165.0,106.4 L166.9,106.1 L168.8,106.0 L170.7,106.4 L172.5,107.0 L174.3,108.0 L175.9,109.3 L177.5,111.0 L178.9,112.9 L180.1,115.0 L181.1,117.3 L181.9,119.8 L182.5,122.5 L182.9,125.2 L183.0,128.0 L182.9,130.8 L182.5,133.5 L181.9,136.2 L181.1,138.7 L180.1,141.0 L178.9,143.1 L177.5,145.0 L175.9,146.7 L174.3,148.0 L172.5,149.0 L170.7,149.6 L168.8,150.0 L166.9,149.9 L165.0,149.6 L163.2,148.8 L161.4,147.8 L159.8,146.4 L158.3,144.7 L156.9,142.8 L155.7,140.6 L157.8,139.2 L158.7,141.1 L159.9,142.8 L161.1,144.3 L162.5,145.5 L164.0,146.5 L165.5,147.1 L167.1,147.4 L168.7,147.5 L170.2,147.2 L171.8,146.6 L173.2,145.7 L174.6,144.5 L175.9,143.1 L177.1,141.4 L178.1,139.5 L178.9,137.5 L179.6,135.2 L180.1,132.9 L180.4,130.5 L180.5,128.0 L180.4,125.5 L180.1,123.1 L179.6,120.8 L178.9,118.5 L178.1,116.5 L177.1,114.6 L175.9,112.9 L174.6,111.5 L173.2,110.3 L171.8,109.4 L170.2,108.8 L168.7,108.5 L167.1,108.6 L165.5,108.9 L164.0,109.5 L162.5,110.5 L161.1,111.7 L159.9,113.2 L158.7,114.9 L157.8,116.8 Z" fill="#c9946b"/>
+    <path d="M161.2,121.1 L161.9,119.9 L162.6,118.8 L163.5,117.9 L164.4,117.1 L165.3,116.5 L166.4,116.1 L167.4,115.9 L168.4,115.9 L169.5,116.1 L170.5,116.5 L171.5,117.0 L172.4,117.7 L173.2,118.6 L174.0,119.7 L174.7,120.8 L175.2,122.1 L175.7,123.5 L176.0,125.0 L176.2,126.5 L176.2,128.0 L176.2,129.5 L176.0,131.0 L175.7,132.5 L175.2,133.9 L174.7,135.2 L174.0,136.3 L173.2,137.4 L172.4,138.3 L171.5,139.0 L170.5,139.5 L169.5,139.9 L168.4,140.1 L167.4,140.1 L166.4,139.9 L165.3,139.5 L164.4,138.9 L163.5,138.1 L162.6,137.2 L161.9,136.1 L161.2,134.9 L162.4,134.2 L162.9,135.2 L163.5,136.2 L164.2,137.0 L165.0,137.6 L165.8,138.2 L166.6,138.5 L167.5,138.7 L168.4,138.7 L169.2,138.6 L170.1,138.2 L170.9,137.7 L171.6,137.1 L172.3,136.3 L173.0,135.4 L173.5,134.3 L174.0,133.2 L174.4,132.0 L174.7,130.7 L174.8,129.4 L174.9,128.0 L174.8,126.6 L174.7,125.3 L174.4,124.0 L174.0,122.8 L173.5,121.7 L173.0,120.6 L172.3,119.7 L171.6,118.9 L170.9,118.3 L170.1,117.8 L169.2,117.4 L168.4,117.3 L167.5,117.3 L166.6,117.5 L165.8,117.8 L165.0,118.4 L164.2,119.0 L163.5,119.8 L162.9,120.8 L162.4,121.8 Z" fill="#c9946b"/>
+    <path d="M181.6,111.1 L182.1,111.8 L182.6,112.4 L183.1,113.1 L183.5,113.9 L183.9,114.6 L184.3,115.4 L184.7,116.2 L185.0,117.0 L185.3,117.8 L185.6,118.7 L185.9,119.6 L186.1,120.5 L186.3,121.4 L186.5,122.3 L186.6,123.2 L186.8,124.2 L186.9,125.1 L186.9,126.1 L187.0,127.0 L187.0,128.0 L187.0,129.0 L186.9,129.9 L186.9,130.9 L186.8,131.8 L186.6,132.8 L186.5,133.7 L186.3,134.6 L186.1,135.5 L185.9,136.4 L185.6,137.3 L185.3,138.2 L185.0,139.0 L184.7,139.8 L184.3,140.6 L183.9,141.4 L183.5,142.1 L183.1,142.9 L182.6,143.6 L182.1,144.2 L181.6,144.9 L181.6,144.9 L181.9,143.9 L182.1,143.0 L182.2,142.1 L182.3,141.1 L182.4,140.2 L182.4,139.3 L182.4,138.4 L182.4,137.5 L182.4,136.7 L182.4,135.8 L182.3,135.0 L182.3,134.1 L182.2,133.3 L182.2,132.5 L182.1,131.8 L182.1,131.0 L182.1,130.2 L182.0,129.5 L182.0,128.7 L182.0,128.0 L182.0,127.3 L182.0,126.5 L182.1,125.8 L182.1,125.0 L182.1,124.2 L182.2,123.5 L182.2,122.7 L182.3,121.9 L182.3,121.0 L182.4,120.2 L182.4,119.3 L182.4,118.5 L182.4,117.6 L182.4,116.7 L182.4,115.8 L182.3,114.9 L182.2,113.9 L182.1,113.0 L181.9,112.1 L181.6,111.1 Z" fill="#dba879" opacity="0.6"/>
+    <path d="M108.0,79.5 Q100.0,79.5 100.2,71.5 L100.3,74.8 L100.6,72.5 L101.1,70.1 L101.7,67.9 L102.4,65.6 L103.3,63.4 L104.3,61.2 L105.4,59.1 L106.7,57.0 L108.1,55.0 L109.5,53.0 L111.1,51.2 L112.8,49.4 L114.6,47.7 L116.5,46.1 L118.5,44.5 L120.6,43.1 L122.8,41.8 L125.0,40.5 L127.3,39.4 L129.7,38.4 L132.1,37.5 L134.5,36.7 L137.1,36.0 L139.6,35.5 L142.2,35.1 L144.8,34.7 L147.4,34.6 L150.0,34.5 L152.6,34.6 L155.2,34.7 L157.8,35.1 L160.4,35.5 L162.9,36.0 L165.5,36.7 L167.9,37.5 L170.3,38.4 L172.7,39.4 L175.0,40.5 L177.2,41.8 L179.4,43.1 L181.5,44.5 L183.5,46.1 L185.4,47.7 L187.2,49.4 L188.9,51.2 L190.5,53.0 L191.9,55.0 L193.3,57.0 L194.6,59.1 L195.7,61.2 L196.7,63.4 L197.6,65.6 L198.3,67.9 L198.9,70.1 L199.4,72.5 L199.7,74.8 L199.8,71.5 Q200.0,79.5 192.0,79.5 L108.0,79.5 Z" fill="#d9d9d9"/>
+    <circle cx="115" cy="163.81004525901287" r="20" fill="#f2a9a9"/>
+    <path d="M75.0,115 Q105,93.55 135.0,115 Q105,136.45 75.0,115 Z" fill="#ffffff"/>
+    <circle cx="105" cy="115" r="10.5" fill="#5bc8e0"/>
+    <circle cx="105" cy="115" r="4.7250000000000005" fill="#000000"/>
+    <circle cx="107.7" cy="117.7" r="2.25" fill="#ffffff"/>
+    <path d="M75.0,115 Q105,93.55 135.0,115" fill="none" stroke="#7a4a2a" stroke-width="2.5"/>
+    <path d="M79.8,111.8 L80.7,107.7" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M84.4,109.3 L85.3,105.2" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M89.0,107.3 L89.8,103.2" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M93.5,105.8 L94.4,101.7" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M98.1,104.8 L99.0,100.7" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M102.7,104.3 L103.6,100.2" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M107.3,104.3 L106.4,100.2" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M111.9,104.8 L111.0,100.7" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M116.5,105.8 L115.6,101.7" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M121.0,107.3 L120.2,103.2" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M125.6,109.3 L124.7,105.2" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M130.2,111.8 L129.3,107.7" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M75.0,115.0 L77.0,112.2 L79.0,109.6 L81.0,107.2 L83.0,105.0 L85.0,102.9 L87.0,101.1 L89.0,99.5 L91.0,98.0 L93.0,96.8 L95.0,95.7 L97.0,94.8 L99.0,94.1 L101.0,93.7 L103.0,93.4 L105.0,93.3 L107.0,93.4 L109.0,93.7 L111.0,94.1 L113.0,94.8 L115.0,95.7 L117.0,96.8 L119.0,98.0 L121.0,99.5 L123.0,101.1 L125.0,102.9 L127.0,105.0 L129.0,107.2 L131.0,109.6 L133.0,112.2 L135.0,115.0 L135.0,115.0 L133.0,113.6 L131.0,112.3 L129.0,111.1 L127.0,110.0 L125.0,109.0 L123.0,108.1 L121.0,107.3 L119.0,106.6 L117.0,106.0 L115.0,105.5 L113.0,105.0 L111.0,104.7 L109.0,104.5 L107.0,104.3 L105.0,104.3 L103.0,104.3 L101.0,104.5 L99.0,104.7 L97.0,105.0 L95.0,105.5 L93.0,106.0 L91.0,106.6 L89.0,107.3 L87.0,108.1 L85.0,109.0 L83.0,110.0 L81.0,111.1 L79.0,112.3 L77.0,113.6 L75.0,115.0 Z" fill="#dba879" opacity="0.6"/>
+    <path d="M73.4,168.8 L72.8,168.4 L72.2,167.9 L71.6,167.6 L70.9,167.2 L70.3,166.9 L69.7,166.6 L69.1,166.3 L68.4,166.1 L67.8,165.9 L67.2,165.7 L66.6,165.6 L65.9,165.5 L65.3,165.4 L64.7,165.3 L64.1,165.3 L63.4,165.3 L62.8,165.4 L62.2,165.5 L61.6,165.6 L60.9,165.7 L60.3,165.9 L59.7,166.1 L59.1,166.3 L58.4,166.6 L57.8,166.9 L57.2,167.2 L56.6,167.6 L55.9,167.9 L55.3,168.4 L54.7,168.8 L54.7,168.8 L73.4,168.8 Z" fill="#dba879" opacity="0.6"/>
+  </svg>`;
+}
+
+// ── NARRATIVE SHELL (shared page template for box-sequence projects) ────────
+
+// ── NARRATIVE PROJECT SHELL ──────────────────────────────────────────────────
+// Shared building blocks for "narrative box-sequence" pages (Stati, Colori,
+// and future projects of the same kind): a topbar, a canvas area, a
+// background-swatch picker, and a column of sequential text boxes. Each
+// project still assembles its OWN box sequence (how many boxes, how they're
+// grouped/wrapped) since that varies structurally between projects — but the
+// repetitive, error-prone parts (CSS, individual box markup, the topbar,
+// showSequenceBox) live here once.
+
+function injectNarrativeShellCSS(numBoxes){
+  let boxTransforms = '';
+  for(let i=1;i<=numBoxes;i++){
+    const dir = i===1 ? -160 : 160; // the first box slides down from above; the rest slide up from below
+    boxTransforms += `#seq-box${i}{transform:translateY(${dir}px)}#seq-box${i}.show{opacity:1;transform:translateY(0)}\n`;
+  }
+  const css = `
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000;color:#fff;font-family:'Manrope',sans-serif;font-weight:400;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:26px 24px;background:#0a0a0a;border-bottom:1px solid #222;flex-shrink:0}
+#back-btn{background:#1a1a2e;border:1px solid #444;color:#0ff;padding:5px 12px;font-size:14px;cursor:pointer;border-radius:3px;font-family:'Manrope',sans-serif;letter-spacing:0.04em}
+#back-btn:hover{background:#222}
+#pt-title{color:#ddd;font-size:24px;letter-spacing:0.02em;font-weight:700;font-family:'Unbounded',sans-serif}
+#synth-label{font-size:10px;color:#555;letter-spacing:0.1em}
+#main{display:flex;flex:1;min-height:0;overflow:hidden;position:relative}
+#canvas-area{flex:1;min-width:0;min-height:0;position:relative;background:#000;overflow:hidden}
+#viewers-wrapper{display:flex;width:100%;height:100%;min-width:0;min-height:0}
+.viewer-pane{position:relative;flex:1;min-width:0;min-height:0;height:100%;overflow:hidden}
+.viewer-pane canvas{display:block;width:100%;height:100%}
+canvas{display:block}
+#bg-swatches{position:fixed;bottom:10px;right:10px;background:#111;border:1px solid #333;border-radius:6px;padding:9px;width:160px;display:none;z-index:10;flex-wrap:wrap;gap:7px}
+#bg-swatches.show{display:flex}
+#bg-swatches-label{width:100%;font-size:9px;color:#888;letter-spacing:0.08em;margin-bottom:2px;font-family:'Manrope',sans-serif}
+.bg-swatch{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,0.25);transition:transform 0.1s,border-color 0.1s;flex-shrink:0}
+.bg-swatch:hover{transform:scale(1.15)}
+.bg-swatch.bg-swatch-selected{border-color:#0ff;box-shadow:0 0 5px #0ff}
+#loading-msg{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.8);border:1px solid #333;border-radius:20px;padding:8px 20px;font-size:11px;color:#888;pointer-events:none;opacity:0;transition:opacity 0.3s}
+#loading-msg.show{opacity:1}
+:root{
+  --flat-bg:#0e6b78;
+  --flat-panel:#0a505a;
+  --flat-border:#12808f;
+  --flat-text:#ffffff;
+  --flat-text-dim:#dffcff;
+}
+body.theme-flat{background:var(--flat-bg);color:var(--flat-text)}
+body.theme-flat #topbar{background:var(--flat-panel);border-bottom:1px solid var(--flat-border)}
+body.theme-flat #canvas-area{background:var(--flat-bg)}
+body.theme-flat #pt-title,body.theme-flat #synth-label{color:var(--flat-text-dim)}
+body.theme-flat #bg-swatches{background:var(--flat-panel);border-color:var(--flat-border)}
+.seq-hidden{display:none !important}
+#seq-column{width:clamp(340px,18vw,400px);flex-shrink:0;padding:clamp(20px,1.6vw,26px) clamp(16px,1.3vw,22px);overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+#seq-column::-webkit-scrollbar{display:none}
+#seq-boxes{display:flex;flex-direction:column;gap:10px}
+.seq-box{position:relative;max-width:clamp(280px,14vw,320px);padding:clamp(13px,1.1vw,20px) clamp(16px,1.3vw,22px);border-radius:12px;font-family:'Manrope',sans-serif;font-weight:700;font-size:clamp(17px,1.35vw,23px);line-height:1.32;color:#0a0a0a;opacity:0;transition:opacity 1.3s ease,transform 1.3s ease}
+.seq-box-buttons{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:10px}
+${boxTransforms}
+.seq-ok-btn{background:#fff;color:#0a0a0a;border:none;border-radius:7px;padding:clamp(5px,0.4vw,7px) clamp(14px,1vw,17px);font-family:'Manrope',sans-serif;font-weight:700;font-size:clamp(12px,0.75vw,13px);cursor:pointer}
+.seq-ok-btn:hover{background:#f0f0f0}
+.seq-back-btn{background:rgba(255,255,255,0.35);color:#0a0a0a;border:none;border-radius:7px;width:clamp(28px,1.8vw,32px);height:clamp(24px,1.6vw,27px);font-size:clamp(13px,0.8vw,14px);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-right:auto}
+.seq-back-btn:hover{background:rgba(255,255,255,0.55)}
+`;
+  const styleEl = document.createElement('style');
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+}
+
+function buildTopbarHTML(title){
+  return `<div id="topbar">
+  <button id="back-btn" onclick="handleBackButton()">← Torna</button>
+  <span id="pt-title">${title}</span>
+  <span id="synth-label">• atomo</span>
+</div>`;
+}
+
+function buildBgSwatchesContainerHTML(){
+  return `<div id="bg-swatches" class="show">
+  <div id="bg-swatches-label">SFONDO</div>
+</div>`;
+}
+
+// One sequence box. opts: {okHandler, backHandler} -- either can be omitted.
+function buildSeqBoxHTML(boxId, opts){
+  opts = opts || {};
+  let html = `<div class="seq-box" id="${boxId}">
+        <div class="seq-box-text" id="${boxId}-text"></div>`;
+  if(opts.backHandler || opts.okHandler){
+    html += `\n        <div class="seq-box-buttons">`;
+    if(opts.backHandler){
+      html += `\n          <button class="seq-back-btn" id="${boxId}-back" onclick="${opts.backHandler}()" title="Indietro">↩</button>`;
+    }
+    if(opts.okHandler){
+      html += `\n          <button class="seq-ok-btn" id="${boxId}-ok" onclick="${opts.okHandler}()">OK</button>`;
+    }
+    html += `\n        </div>`;
+  }
+  html += `\n      </div>`;
+  return html;
+}
+
+function showSequenceBox(id, html, color){
+  const box=document.getElementById(id);
+  document.getElementById(id+'-text').innerHTML=html;
+  box.style.background=color;
+  requestAnimationFrame(()=>box.classList.add('show'));
 }
