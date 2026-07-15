@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dagli elettroni ai colori — Chemverse</title>
+<title>Colori Assorbiti — Chemverse</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,13 +18,6 @@
 @keyframes brainPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 #fotoni-label{font-size:clamp(20px,1.8vw,28px)}
 body{min-width:900px;overflow-x:auto}
-#colori-nav-buttons{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);display:flex;gap:22px;opacity:0;pointer-events:none;transition:opacity 0.8s ease;z-index:5}
-#colori-nav-buttons.show{opacity:1;pointer-events:auto}
-.colori-nav-btn{display:flex;flex-direction:column;align-items:center;gap:10px;background:none;border:none;padding:0;cursor:pointer;font-family:'Manrope',sans-serif}
-.colori-nav-icon{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.35);transition:transform 0.15s ease}
-.colori-nav-btn:hover .colori-nav-icon{transform:translateY(-4px)}
-.colori-nav-icon svg{width:40px;height:40px}
-.colori-nav-label{color:#fff;font-weight:700;font-size:clamp(13px,1.1vw,15px);text-shadow:0 1px 4px rgba(0,0,0,0.6)}
 #final-message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:55%;max-width:600px;opacity:0;pointer-events:none;transition:opacity 1s ease;z-index:10}
 #final-message.show{opacity:1;pointer-events:auto}
 #final-message-text{position:relative;width:100%;box-sizing:border-box;padding:clamp(24px,2.4vw,40px) clamp(24px,2.4vw,40px) clamp(60px,5vw,80px);border-radius:16px;font-family:'Manrope',sans-serif;font-weight:700;font-size:clamp(18px,1.7vw,26px);line-height:1.4;text-align:center;color:#0a0a0a;box-shadow:0 10px 40px rgba(0,0,0,0.35)}
@@ -1982,7 +1975,8 @@ function showSequenceBox(id, html, color){
 }
 
 </script>
-<script>injectNarrativeShellCSS(2); injectFloatingLabelCSS();
+<script>injectNarrativeShellCSS(9); injectFloatingLabelCSS();
+document.head.insertAdjacentHTML('beforeend', '<style>#seq-box3{transform:translateY(-160px)}#seq-box4{transform:translateY(-160px)}#seq-box8{transform:translateY(-160px)}#seq-box9{transform:translateY(-160px)}</style>');
 </script>
 </head>
 <body>
@@ -1991,28 +1985,29 @@ function showSequenceBox(id, html, color){
 
 <script>
 document.getElementById('app-root').innerHTML =
-  buildTopbarHTML('DAGLI ELETTRONI AI COLORI') +
+  buildTopbarHTML('COLORI ASSORBITI') +
   '<div id="main"><div id="seq-column"><div id="seq-boxes">' +
     '<div id="seq-boxes-1to3">' +
-    buildSeqBoxHTML('seq-box1', {okHandler:'advanceToBox2'}) +
-    buildSeqBoxHTML('seq-box2', {okHandler:'advanceToBox3', backHandler:'backFromBox2'}) +
+    buildSeqBoxHTML('seq-box3', {okHandler:'advanceToBox4', backHandler:'goToColoriBox2'}) +
+    '</div>' +
+    '<div id="seq-box4-wrap" class="seq-hidden">' +
+    buildSeqBoxHTML('seq-box4', {okHandler:'advanceToBox5', backHandler:'backFromBox4'}) +
+    buildSeqBoxHTML('seq-box5', {okHandler:'finishBox5', backHandler:'backFromBox5'}) +
+    buildSeqBoxHTML('seq-box6', {okHandler:'advanceToBox7', backHandler:'backFromBox6'}) +
+    buildSeqBoxHTML('seq-box7', {okHandler:'handleBox7OK', backHandler:'backFromBox7'}) +
+    '</div>' +
+    '<div id="seq-box8-wrap" class="seq-hidden">' +
+    buildSeqBoxHTML('seq-box8', {okHandler:'advanceToBox9', backHandler:'backFromBox8'}) +
+    '</div>' +
+    '<div id="seq-box9-wrap" class="seq-hidden">' +
+    buildSeqBoxHTML('seq-box9', {okHandler:'stubBox9OK', backHandler:'backFromBox9'}) +
     '</div>' +
   '</div></div>' +
   '<div id="canvas-area"><div id="viewers-wrapper"><div id="pane-a" class="viewer-pane"><canvas id="c"></canvas></div></div>' +
   '<div id="loading-msg">Caricamento orbitali...</div>' +
   '<div id="eye-head"></div>' +
-  '<div id="colori-nav-buttons">' +
-  '<button class="colori-nav-btn" onclick="window.location.href=\'colori_emessi.html\'">' +
-    '<div class="colori-nav-icon" style="background:#c0392b"><svg viewBox="0 0 86 86"><circle cx="43" cy="43" r="9" fill="#fff"/><g stroke="#fff" stroke-width="4" stroke-linecap="round"><line x1="43" y1="18" x2="43" y2="6"/><line x1="43" y1="68" x2="43" y2="80"/><line x1="18" y1="43" x2="6" y2="43"/><line x1="68" y1="43" x2="80" y2="43"/><line x1="26" y1="26" x2="17" y2="17"/><line x1="60" y1="60" x2="69" y2="69"/><line x1="60" y1="26" x2="69" y2="17"/><line x1="26" y1="60" x2="17" y2="69"/></g></svg></div>' +
-    '<div class="colori-nav-label">Colori EMESSI</div>' +
-  '</button>' +
-  '<button class="colori-nav-btn" onclick="window.location.href=\'colori_assorbiti.html\'">' +
-    '<div class="colori-nav-icon" style="background:#2980b9"><svg viewBox="0 0 86 86"><circle cx="43" cy="43" r="9" fill="#fff"/><g stroke="#fff" stroke-width="4" stroke-linecap="round"><line x1="43" y1="6" x2="43" y2="18"/><line x1="43" y1="80" x2="43" y2="68"/><line x1="6" y1="43" x2="18" y2="43"/><line x1="80" y1="43" x2="68" y2="43"/><line x1="17" y1="17" x2="26" y2="26"/><line x1="69" y1="69" x2="60" y2="60"/><line x1="69" y1="17" x2="60" y2="26"/><line x1="17" y1="69" x2="26" y2="60"/></g></svg></div>' +
-    '<div class="colori-nav-label">Colori ASSORBITI</div>' +
-  '</button>' +
-  '</div>' +
   '<div id="final-message"><div id="final-message-text"><span id="final-message-body"></span><button id="final-message-ok" onclick="exitFinalMessage()">OK</button></div></div>' +
-  '<div id="fotoni-label" class="floating-label" style="left:60%;top:40%">...I FOTONI</div>' +
+  '<div id="fotoni-label" class="floating-label" style="left:60%;top:1%">...I FOTONI</div>' +
   '<div id="box1-label" class="floating-label" style="left:23%;top:20%;font-size:clamp(20px,1.8vw,28px);color:#fff"></div>' +
   '<div id="brain-color-label" style="position:absolute;left:80%;top:35%;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.6s ease;pointer-events:none;z-index:6;font-family:\'Patrick Hand\',cursive;font-size:clamp(24px,2.4vw,36px);color:#fff;text-shadow:0 0 5px rgba(0,0,0,0.6),0 0 5px rgba(0,0,0,0.6)"></div>' +
   '</div></div>' +
@@ -2053,7 +2048,11 @@ function animateAll(){
 }
 
 function handleBackButton(){
-  window.location.href='Index_Atomo.html';
+  window.location.href='colori.html#box2';
+}
+
+function goToColoriBox2(){
+  window.location.href='colori.html#box2';
 }
 
 document.body.classList.add('theme-flat');
@@ -2765,8 +2764,8 @@ function advanceToBox2(){
   document.getElementById('seq-box1-ok').style.visibility='hidden';
   document.getElementById('seq-box2-ok').style.visibility='hidden';
   document.getElementById('seq-box2-back').style.visibility='visible';
-  showSequenceBox('seq-box2', '…che può essere emessa solo in <b style="color:#c0392b">"PACCHETTI"</b> che si chiamano <b style="color:#c0392b">QUANTI</b>.<br><br>"I QUANTI di luce si chiamano <b style="color:#c0392b">FOTONI</b>"', seqColor2);
-  showFloatingLabel('box1-label', "l'energia viaggia divisa in tanti pacchetti...", '#fff', '45%', '8%');
+  showSequenceBox('seq-box2', '…che può essere emessa solo in <b style="color:#c0392b">"PACCHETTI"</b>, che si chiamano <b style="color:#c0392b">QUANTI</b>', seqColor2);
+  showFloatingLabel('box1-label', "l'energia viaggia divisa in tanti pacchetti...", '#fff', '38%', '8%');
   // the box1 loop keeps running for another 2 seconds after box2 appears —
   // it settles on its own, no button needed
   const t=setTimeout(()=>{
@@ -2774,8 +2773,7 @@ function advanceToBox2(){
     stopEnergyPacketStream();
     hideLightRayInstant();
     startPulsingRay(); // slower ray, dashes pulsing one at a time, from here on
-    showFloatingLabel('box1-label', "l'energia viaggia divisa in tanti pacchetti...", '#fff', '45%', '8%');
-    setTimeout(()=>{ document.getElementById('fotoni-label').style.opacity='1'; }, 1000);
+    showFloatingLabel('box1-label', "l'energia viaggia divisa in tanti pacchetti...", '#fff', '38%', '8%');
     setTimeout(()=>{ document.getElementById('seq-box2-ok').style.visibility='visible'; }, 3000);
   }, 2000);
   box2Timeouts.push(t);
@@ -2790,14 +2788,22 @@ function backFromBox2(){
   electronsFrozen=false;
   document.getElementById('seq-box2').classList.remove('show');
   document.getElementById('seq-box1-ok').style.visibility='visible';
-  document.getElementById('colori-nav-buttons').classList.remove('show');
-  document.getElementById('fotoni-label').style.opacity='0';
   startBox1Loop();
 }
 
 function advanceToBox3(){
   document.getElementById('seq-box2-ok').style.visibility='hidden';
-  document.getElementById('colori-nav-buttons').classList.add('show');
+  document.getElementById('seq-box2-back').style.visibility='hidden';
+  document.getElementById('seq-box3-ok').style.visibility='hidden';
+  document.getElementById('seq-box3-back').style.visibility='visible';
+  animateCamera(CAM_Z_ZOOMED, CAM_X_ZOOMED, 1800, ()=>{
+    showSequenceBox('seq-box3', 'L\'energia che il nostro occhio riesce a vedere è <b>LUCE</b>.<br>I pezzetti (quanti) di luce si chiamano <b style="color:#c0392b">FOTONI</b>', seqColor3);
+    document.getElementById('eye-head').style.opacity='1';
+    stopEnergyPacketStream(); // the old straight-dash burst system was never stopped here — it kept firing underneath the new pulsing ray
+    startPulsingRay(EYE_WORLD_TARGET.x); // rebuilds to span the whole distance to the eye, reaching the pupil center
+    document.getElementById('fotoni-label').style.opacity='1';
+    setTimeout(()=>{ document.getElementById('seq-box3-ok').style.visibility='visible'; }, 3000);
+  });
 }
 
 function backFromBox3(){
@@ -2823,6 +2829,7 @@ function advanceToBox4(){
   document.getElementById('seq-box4-back').style.visibility='visible';
   showSequenceBox('seq-box4', 'I fotoni sono sia un\'onda, sia una particella', seqColor1);
   hideFloatingLabel('fotoni-label');
+  hideLightRayInstant();
   stopPulsingRay();
   const r2s=bohrKeyRadius('2s');
   startWaveRay(r2s, EYE_WORLD_TARGET.x);
@@ -3732,26 +3739,19 @@ function runIntroSequence(){
   viewerA.selectElement(4); // Beryllium
   ensureBothOrbitalsShown();
 
-  if(window.location.hash==='#box2'){
-    setTimeout(()=>{
-      settleJumpAtGround();
-      showSequenceBox('seq-box1', 'La transizione elettronica rilascia <b>ENERGIA</b>…', seqColor1);
-      document.getElementById('seq-box1').classList.add('show');
-      document.getElementById('seq-box1-ok').style.visibility='hidden';
-      showSequenceBox('seq-box2', '…che può essere emessa solo in <b style="color:#c0392b">"PACCHETTI"</b> che si chiamano <b style="color:#c0392b">QUANTI</b>.<br><br>"I QUANTI di luce si chiamano <b style="color:#c0392b">FOTONI</b>"', seqColor2);
-      document.getElementById('seq-box2-ok').style.visibility='hidden';
-      stopEnergyPacketStream();
-      startPulsingRay();
-      showFloatingLabel('box1-label', "l'energia viaggia divisa in tanti pacchetti...", '#fff', '45%', '8%');
-      document.getElementById('fotoni-label').style.opacity='1';
-      document.getElementById('colori-nav-buttons').classList.add('show');
-    }, 800);
-    return;
-  }
-
   setTimeout(()=>{
-    showSequenceBox('seq-box1', 'La transizione elettronica rilascia <b>ENERGIA</b>…', seqColor1);
-    setTimeout(startBox1Loop, 2600);
+    // This file picks up exactly where colori.html's box2 leaves off — settle
+    // the atom into that same resting state, then go straight to box3.
+    settleJumpAtGround();
+    document.getElementById('seq-box3-ok').style.visibility='hidden';
+    animateCamera(CAM_Z_ZOOMED, CAM_X_ZOOMED, 1800, ()=>{
+      showSequenceBox('seq-box3', 'L\'energia che il nostro occhio riesce a vedere è <b>LUCE</b>.<br>I pezzetti (quanti) di luce si chiamano <b style="color:#c0392b">FOTONI</b>', seqColor3);
+      document.getElementById('eye-head').style.opacity='1';
+      stopEnergyPacketStream();
+      startPulsingRay(EYE_WORLD_TARGET.x);
+      document.getElementById('fotoni-label').style.opacity='1';
+      setTimeout(()=>{ document.getElementById('seq-box3-ok').style.visibility='visible'; }, 3000);
+    });
   }, 800);
 }
 

@@ -1755,6 +1755,54 @@ function hideFloatingLabel(id){
   if(el) el.style.opacity='0';
 }
 
+// ── DIRECTION ARROW LINE (electron jump indicator) ──────────────────────────
+// A row of small chevron arrows along a straight path, pointing from fromPos
+// toward toPos — used to highlight an electron's jump between orbitals.
+// Returns {group, remove(holdMs)}: call remove() once the jump is done: it
+// waits holdMs (default 1000) then fades out and disposes everything.
+function showDirectionArrowLine(parent, fromPos, toPos, color){
+  const group=new THREE.Group();
+  const dx=toPos.x-fromPos.x, dy=toPos.y-fromPos.y;
+  const dist=Math.hypot(dx,dy);
+  const angle=Math.atan2(dy,dx);
+  const chevronSpacing=0.12; // fixed — longer jumps just get more arrows, not sparser ones
+  const chevronSize=Math.min(0.09, dist*0.12);
+  const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+  const mats=[mat];
+  let d=chevronSpacing*0.5;
+  while(d<dist-chevronSpacing*0.2){
+    const cx=fromPos.x+Math.cos(angle)*d, cy=fromPos.y+Math.sin(angle)*d;
+    // a simple chevron: two short line segments forming a ">" pointing along the path
+    const shape=new THREE.Shape();
+    shape.moveTo(-chevronSize*0.5, chevronSize*0.6);
+    shape.lineTo(chevronSize*0.5, 0);
+    shape.lineTo(-chevronSize*0.5, -chevronSize*0.6);
+    shape.lineTo(-chevronSize*0.2, 0);
+    shape.closePath();
+    const geo=new THREE.ShapeGeometry(shape);
+    const mesh=new THREE.Mesh(geo, mat);
+    mesh.position.set(cx,cy,0.01);
+    mesh.rotation.z=angle;
+    group.add(mesh);
+    d+=chevronSpacing;
+  }
+  parent.add(group);
+  fadeMaterialsOpacity(mats, 0, 0.9, 300);
+
+  let removed=false;
+  function remove(holdMs){
+    if(removed) return;
+    removed=true;
+    setTimeout(()=>{
+      fadeMaterialsOpacity(mats, mat.opacity, 0, 400, ()=>{
+        parent.remove(group);
+        group.traverse(obj=>{ if(obj.geometry) obj.geometry.dispose(); });
+      });
+    }, holdMs===undefined?1000:holdMs);
+  }
+  return {group, remove};
+}
+
 // ── 2D SVG ILLUSTRATIONS ──────────────────────────────────────────────────────
 
 // Builds the "head in profile, with eye and half-visible brain" illustration
@@ -2349,8 +2397,21 @@ function fireEnergyAtAtom(){
   const hasCurrentlyExcited=currentlyExcited && layer.rendered[currentlyExcited.key] && layer.rendered[currentlyExcited.key].electrons.includes(currentlyExcited.ed);
   const pool=findExcitableElectronPool(layer, cfg);
 
+  // Can the currently-excited electron actually go any higher? If it's
+  // already on the outermost available orbital, it shouldn't be a candidate
+  // for "push further" — there's nowhere further to push it to.
+  let canPushFurther=false;
+  if(hasCurrentlyExcited){
+    const curBase=currentlyExcited.key.split('|')[0];
+    const curIdx=AUFBAU_ORDER.indexOf(curBase);
+    canPushFurther=emptyOrbitals.some(o=>{
+      const oBase=o.key.split('|')[0];
+      return AUFBAU_ORDER.indexOf(oBase)>curIdx;
+    });
+  }
+
   let originKey, ed, trueOrigin;
-  if(hasCurrentlyExcited && (pool.length===0 || Math.random()<0.5)){
+  if(hasCurrentlyExcited && canPushFurther && (pool.length===0 || Math.random()<0.5)){
     // push the already-excited electron further, about half the time
     originKey=currentlyExcited.key;
     ed=currentlyExcited.ed;
@@ -2413,6 +2474,7 @@ function promoteAnyElectron(layer, originKey, ed, originPos, wasFrozen, target, 
         return new THREE.Vector3(p.x*cosr-p.y*sinr, p.x*sinr+p.y*cosr, 0); })();
 
   const travelStart=performance.now(), travelDuration=1600;
+  const jumpArrow=showDirectionArrowLine(layer.group, originPos, targetPos, 0xffe27a);
   (function travel(){
     const now=performance.now();
     const t=Math.min(1,(now-travelStart)/travelDuration);
@@ -2423,6 +2485,7 @@ function promoteAnyElectron(layer, originKey, ed, originPos, wasFrozen, target, 
   })();
 
   function onArrived(){
+    jumpArrow.remove(1000);
     const gIdx=emptyOrbitals.indexOf(target);
     if(gIdx>=0){ layer.group.remove(target.mesh); emptyOrbitals.splice(gIdx,1); }
 
@@ -2542,6 +2605,7 @@ function autoReturnFiredElectron(layer, newEd, target, originKey, wasFrozen, ene
   }
 
   const travelStart=performance.now(), travelDuration=1800;
+  const returnArrow=showDirectionArrowLine(layer.group, currentPos, landingPos, 0xffe27a);
   (function travel(){
     const now=performance.now();
     const t=Math.min(1,(now-travelStart)/travelDuration);
@@ -2553,6 +2617,7 @@ function autoReturnFiredElectron(layer, newEd, target, originKey, wasFrozen, ene
   })();
 
   function onLanded(){
+    returnArrow.remove(1000);
     const releaseRadius=RAY_RADIUS*(0.6+(energy||5)/10*0.9);
     showOutwardRayFrom(landingPos.clone(), releaseRadius); // fires exactly at the landing spot, no earlier
     setTimeout(()=>{
@@ -3527,6 +3592,8 @@ function demoteElectronToGroundOrbital(){
   const targetPos=new THREE.Vector3(r2s*Math.cos(returnAngle), r2s*Math.sin(returnAngle), 0);
 
   const travelStart=performance.now(), travelDuration=1800;
+  const jumpArrow=showDirectionArrowLine(layer.group, startPos, targetPos, 0xffe27a);
+  currentJumpArrow=jumpArrow;
   (function travel(){
     if(demotionCancelled) return;
     const now=performance.now();
@@ -3539,6 +3606,8 @@ function demoteElectronToGroundOrbital(){
   })();
 
   function onReturned(){
+    jumpArrow.remove(1000);
+    currentJumpArrow=null;
     if(demotionCancelled) return;
     showOutwardRayFrom(targetPos.clone()); // fires exactly at the landing spot, no earlier
     setTimeout(()=>{
@@ -3657,6 +3726,12 @@ function instantRestorePromotedState(){
 // the excited state exactly as box6 left it, and returns to box6.
 function backFromBox9(){
   demotionCancelled=true;
+  const layer0=viewerA.currentLayer;
+  if(currentJumpArrow && layer0){
+    layer0.group.remove(currentJumpArrow.group);
+    currentJumpArrow.group.traverse(obj=>{ if(obj.geometry) obj.geometry.dispose(); });
+    currentJumpArrow=null;
+  }
 
   instantRestorePromotedState();
   // box8's own state includes the pulse-intensify step from box7 — reapply it
@@ -3712,7 +3787,7 @@ function handleBackButton(){
     document.getElementById('seq-column').classList.remove('seq-hidden');
     document.getElementById('seq-end-screen').classList.remove('seq-hidden');
   } else {
-    window.location.href='atomo.html';
+    window.location.href='Index_Atomo.html';
   }
 }
 
@@ -3779,6 +3854,7 @@ function buildColoredLemniscate(key, electronCount){
 // turn gray. Each step waits for the previous one to visually complete.
 const EXCITED_TARGET_SUB='y';
 let travelingBallMesh=null;
+let currentJumpArrow=null;
 let promotionCancelled=false;
 
 function promoteElectronToExcitedOrbital(){
@@ -3815,6 +3891,8 @@ function promoteElectronToExcitedOrbital(){
   const targetPos=new THREE.Vector3(p0.x*cosr-p0.y*sinr, p0.x*sinr+p0.y*cosr, 0);
 
   const travelStart=performance.now(), travelDuration=1800;
+  const jumpArrow=showDirectionArrowLine(layer.group, startPos, targetPos, 0xffe27a);
+  currentJumpArrow=jumpArrow;
   (function travel(){
     if(promotionCancelled) return;
     const now=performance.now();
@@ -3826,6 +3904,8 @@ function promoteElectronToExcitedOrbital(){
   })();
 
   function onArrived(){
+    jumpArrow.remove(1000);
+    currentJumpArrow=null;
     if(promotionCancelled) return;
     travelingBallMesh=null;
 
@@ -3872,6 +3952,12 @@ function undoPromotion(){
   promotionCancelled=true;
   const layer=viewerA.currentLayer;
   if(!layer) return;
+
+  if(currentJumpArrow){
+    layer.group.remove(currentJumpArrow.group);
+    currentJumpArrow.group.traverse(obj=>{ if(obj.geometry) obj.geometry.dispose(); });
+    currentJumpArrow=null;
+  }
 
   if(travelingBallMesh){
     layer.group.remove(travelingBallMesh);

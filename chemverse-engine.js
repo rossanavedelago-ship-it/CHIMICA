@@ -1744,6 +1744,54 @@ function hideFloatingLabel(id){
   if(el) el.style.opacity='0';
 }
 
+// ── DIRECTION ARROW LINE (electron jump indicator) ──────────────────────────
+// A row of small chevron arrows along a straight path, pointing from fromPos
+// toward toPos — used to highlight an electron's jump between orbitals.
+// Returns {group, remove(holdMs)}: call remove() once the jump is done: it
+// waits holdMs (default 1000) then fades out and disposes everything.
+function showDirectionArrowLine(parent, fromPos, toPos, color){
+  const group=new THREE.Group();
+  const dx=toPos.x-fromPos.x, dy=toPos.y-fromPos.y;
+  const dist=Math.hypot(dx,dy);
+  const angle=Math.atan2(dy,dx);
+  const chevronSpacing=0.12; // fixed — longer jumps just get more arrows, not sparser ones
+  const chevronSize=Math.min(0.09, dist*0.12);
+  const mat=new THREE.MeshBasicMaterial({color, transparent:true, opacity:0});
+  const mats=[mat];
+  let d=chevronSpacing*0.5;
+  while(d<dist-chevronSpacing*0.2){
+    const cx=fromPos.x+Math.cos(angle)*d, cy=fromPos.y+Math.sin(angle)*d;
+    // a simple chevron: two short line segments forming a ">" pointing along the path
+    const shape=new THREE.Shape();
+    shape.moveTo(-chevronSize*0.5, chevronSize*0.6);
+    shape.lineTo(chevronSize*0.5, 0);
+    shape.lineTo(-chevronSize*0.5, -chevronSize*0.6);
+    shape.lineTo(-chevronSize*0.2, 0);
+    shape.closePath();
+    const geo=new THREE.ShapeGeometry(shape);
+    const mesh=new THREE.Mesh(geo, mat);
+    mesh.position.set(cx,cy,0.01);
+    mesh.rotation.z=angle;
+    group.add(mesh);
+    d+=chevronSpacing;
+  }
+  parent.add(group);
+  fadeMaterialsOpacity(mats, 0, 0.9, 300);
+
+  let removed=false;
+  function remove(holdMs){
+    if(removed) return;
+    removed=true;
+    setTimeout(()=>{
+      fadeMaterialsOpacity(mats, mat.opacity, 0, 400, ()=>{
+        parent.remove(group);
+        group.traverse(obj=>{ if(obj.geometry) obj.geometry.dispose(); });
+      });
+    }, holdMs===undefined?1000:holdMs);
+  }
+  return {group, remove};
+}
+
 // ── 2D SVG ILLUSTRATIONS ──────────────────────────────────────────────────────
 
 // Builds the "head in profile, with eye and half-visible brain" illustration
